@@ -1,95 +1,105 @@
-//
-// Created by Michael on 08.11.2024.
-//
-
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <unistd.h>
-#include <arpa/inet.h>
-#include <pthread.h>
-#include <netinet/tcp.h>
-#include <stdbool.h>
+#include <netinet/in.h>
+#include <stdlib.h>
+// kvuli iotctl
+#include <sys/ioctl.h>
 
-#define PORT 8080
-#define BUFFER_SIZE 1024
+int main (void)
+{
+    int server_socket;
+    int client_socket, fd;
+    int return_value;
+    char cbuf;
+    int len_addr;
+    int a2read;
+    struct sockaddr_in my_addr, peer_addr;
+    fd_set client_socks, tests; // mnozina file deskriptoru (mj. i napr. socketu)
 
-void* handle_client(void* client_socket) {
-    int sock = *(int*)client_socket;
-    free(client_socket);
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
-    char buffer[BUFFER_SIZE];
-    int bytes_received;
+    int param = 1;
+    return_value = setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&param, sizeof(int));
 
-    // Přijímání zpráv od klienta
-    while ((bytes_received = recv(sock, buffer, BUFFER_SIZE, 0)) > 0) {
-        buffer[bytes_received] = '\0';
-        printf("Zpráva od klienta: %s\n", buffer);
+    if (return_value == -1)
+        printf("setsockopt ERR\n");
 
-        // Odeslání odpovědi zpět klientovi
-        char* response = "jasne vole\n";
-        send(sock, response, strlen(response), 0);
-        int flag = 1;
-        setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(int));
+    memset(&my_addr, 0, sizeof(struct sockaddr_in));
+
+    my_addr.sin_family = AF_INET;
+    my_addr.sin_port = htons(10000);
+    my_addr.sin_addr.s_addr = INADDR_ANY;
+
+    return_value = bind(server_socket, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in));
+
+    if (return_value == 0)
+        printf("Bind - OK\n");
+    else {
+        printf("Bind - ERR\n");
+        return -1;
     }
 
-    close(sock);
-    printf("Klient se odpojil.\n");
-    return NULL;
-}
-
-int main() {
-    int server_socket, client_socket;
-    struct sockaddr_in server_addr, client_addr;
-    socklen_t client_addr_len = sizeof(client_addr);
-
-    // Vytvoření socketu
-    if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("Chyba při vytváření socketu");
-        exit(EXIT_FAILURE);
+    return_value = listen(server_socket, 5);
+    if (return_value == 0){
+        printf("Listen - OK\n");
+    } else {
+        printf("Listen - ER\n");
     }
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
+    // vyprazdnime sadu deskriptoru a vlozime server socket
+    FD_ZERO(&client_socks);
+    FD_SET(server_socket, &client_socks);
 
-    // Bind (přiřazení portu k socketu)
-    if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        perror("Chyba při bind");
-        close(server_socket);
-        exit(EXIT_FAILURE);
-    }
+    for (;;)
+    {
+        // zkopirujeme si fd_set do noveho, stary by byl znicen (select ho modifikuje)
+        tests = client_socks;
 
-    // Naslouchání na portu
-    if (listen(server_socket, 5) < 0) {
-        perror("Chyba při listen");
-        close(server_socket);
-        exit(EXIT_FAILURE);
-    }
+        // sada deskriptoru je po kazdem volani select prepsana sadou deskriptoru kde se neco delo
+        return_value = select(FD_SETSIZE, &tests, (fd_set*)NULL, (fd_set*)NULL, (struct timeval *)0);
 
-    printf("Server běží na portu %d.\n", PORT);
-
-    bool isRunning = true;
-
-    // Hlavní smyčka pro přijímání klientů
-    while (isRunning) {
-        // Přijetí nového klienta
-        if ((client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_addr_len)) < 0) {
-            perror("Chyba při přijímání klienta");
-        } else {
-
-            printf("Nový klient připojen.\n");
-
-            // Každému klientovi vytvoříme nové vlákno
-            pthread_t thread_id;
-            int *client_sock = malloc(sizeof(int));
-            *client_sock = client_socket;
-            pthread_create(&thread_id, NULL, handle_client, client_sock);
-            pthread_detach(thread_id);
+        if (return_value < 0)
+        {
+            printf("Select ERR\n");
+            return -1;
         }
+
+        // vynechavame stdin, stdout, stderr
+        for (fd = 3; fd < FD_SETSIZE; fd++) {
+            // je dany socket v sade fd ze kterych lze cist ?
+            if (FD_ISSET(fd, &tests)) {
+                // je to server socket? prijmeme nove spojeni
+                if (fd == server_socket) {
+                    client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
+                    FD_SET(client_socket, &client_socks);
+                    printf("Pripojen novy klient a pridan do sady socketu\n");
+                }
+                else // je to klientsky socket? prijmem data
+                {
+                    ioctl(fd, FIONREAD, &a2read);
+                    if (a2read > 0) {
+                        recv(fd, &cbuf, 1, 0);
+                        printf("Přijato %c\n", cbuf);
+
+                        // Zpráva zpět klientovi
+                        char response[] = "Zprava prijata";
+                        send(fd, response, strlen(response), 0);
+                        printf("Odesláno zpět klientovi: %s\n", response);
+                    }
+                    else
+                    {
+                        close(fd);
+                        FD_CLR(fd, &client_socks);
+                        printf("Klient se odpojil a byl odebrán ze sady socketů\n");
+                    }
+                }
+            }
+        }
+
     }
 
-    close(server_socket);
     return 0;
 }
-
