@@ -1,0 +1,19 @@
+//
+// Created by Michael on 10.11.2024.
+//
+
+#ifndef SERVER_CONSTANTS_H
+#define SERVER_CONSTANTS_H
+
+#define MAX_NAME_LENGTH 32
+#define STALEMATE_VALUE 0
+#define VICOTRY_VALUE 1
+#define DEFEAT_VALUE -1
+#define ROCK_VALUE 1
+#define PAPER_VALUE 2
+#define SCISSORS_VALUE 3
+#define LIZARD_VALUE 4
+#define SPOCK_VALUE 5
+#define FAILURE_VALUE -10
+
+#endif //SERVER_CONSTANTS_H
