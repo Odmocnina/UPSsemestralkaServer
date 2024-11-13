@@ -129,29 +129,53 @@ server/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/build
 .PHONY : server/fast
 
-Player.o: Player.c.o
-.PHONY : Player.o
+game.o: game.c.o
+.PHONY : game.o
 
 # target to build an object file
-Player.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/Player.c.o
-.PHONY : Player.c.o
+game.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/game.c.o
+.PHONY : game.c.o
 
-Player.i: Player.c.i
-.PHONY : Player.i
+game.i: game.c.i
+.PHONY : game.i
 
 # target to preprocess a source file
-Player.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/Player.c.i
-.PHONY : Player.c.i
+game.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/game.c.i
+.PHONY : game.c.i
 
-Player.s: Player.c.s
-.PHONY : Player.s
+game.s: game.c.s
+.PHONY : game.s
 
 # target to generate assembly for a file
-Player.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/Player.c.s
-.PHONY : Player.c.s
+game.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/game.c.s
+.PHONY : game.c.s
+
+gameObjects.o: gameObjects.c.o
+.PHONY : gameObjects.o
+
+# target to build an object file
+gameObjects.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/gameObjects.c.o
+.PHONY : gameObjects.c.o
+
+gameObjects.i: gameObjects.c.i
+.PHONY : gameObjects.i
+
+# target to preprocess a source file
+gameObjects.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/gameObjects.c.i
+.PHONY : gameObjects.c.i
+
+gameObjects.s: gameObjects.c.s
+.PHONY : gameObjects.s
+
+# target to generate assembly for a file
+gameObjects.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/gameObjects.c.s
+.PHONY : gameObjects.c.s
 
 main.o: main.c.o
 .PHONY : main.o
@@ -177,6 +201,54 @@ main.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/main.c.s
 .PHONY : main.c.s
 
+messageHandeler.o: messageHandeler.c.o
+.PHONY : messageHandeler.o
+
+# target to build an object file
+messageHandeler.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/messageHandeler.c.o
+.PHONY : messageHandeler.c.o
+
+messageHandeler.i: messageHandeler.c.i
+.PHONY : messageHandeler.i
+
+# target to preprocess a source file
+messageHandeler.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/messageHandeler.c.i
+.PHONY : messageHandeler.c.i
+
+messageHandeler.s: messageHandeler.c.s
+.PHONY : messageHandeler.s
+
+# target to generate assembly for a file
+messageHandeler.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/messageHandeler.c.s
+.PHONY : messageHandeler.c.s
+
+player.o: player.c.o
+.PHONY : player.o
+
+# target to build an object file
+player.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/player.c.o
+.PHONY : player.c.o
+
+player.i: player.c.i
+.PHONY : player.i
+
+# target to preprocess a source file
+player.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/player.c.i
+.PHONY : player.c.i
+
+player.s: player.c.s
+.PHONY : player.s
+
+# target to generate assembly for a file
+player.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/player.c.s
+.PHONY : player.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -186,12 +258,21 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... server"
-	@echo "... Player.o"
-	@echo "... Player.i"
-	@echo "... Player.s"
+	@echo "... game.o"
+	@echo "... game.i"
+	@echo "... game.s"
+	@echo "... gameObjects.o"
+	@echo "... gameObjects.i"
+	@echo "... gameObjects.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... messageHandeler.o"
+	@echo "... messageHandeler.i"
+	@echo "... messageHandeler.s"
+	@echo "... player.o"
+	@echo "... player.i"
+	@echo "... player.s"
 .PHONY : help
 
 

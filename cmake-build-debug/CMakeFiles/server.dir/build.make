@@ -83,33 +83,81 @@ CMakeFiles/server.dir/main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/server.dir/main.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/main.c -o CMakeFiles/server.dir/main.c.s
 
-CMakeFiles/server.dir/Player.c.o: CMakeFiles/server.dir/flags.make
-CMakeFiles/server.dir/Player.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/Player.c
-CMakeFiles/server.dir/Player.c.o: CMakeFiles/server.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/server.dir/Player.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/server.dir/Player.c.o -MF CMakeFiles/server.dir/Player.c.o.d -o CMakeFiles/server.dir/Player.c.o -c /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/Player.c
+CMakeFiles/server.dir/player.c.o: CMakeFiles/server.dir/flags.make
+CMakeFiles/server.dir/player.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.c
+CMakeFiles/server.dir/player.c.o: CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/server.dir/player.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/server.dir/player.c.o -MF CMakeFiles/server.dir/player.c.o.d -o CMakeFiles/server.dir/player.c.o -c /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.c
 
-CMakeFiles/server.dir/Player.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/server.dir/Player.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/Player.c > CMakeFiles/server.dir/Player.c.i
+CMakeFiles/server.dir/player.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/server.dir/player.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.c > CMakeFiles/server.dir/player.c.i
 
-CMakeFiles/server.dir/Player.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/server.dir/Player.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/Player.c -o CMakeFiles/server.dir/Player.c.s
+CMakeFiles/server.dir/player.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/server.dir/player.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.c -o CMakeFiles/server.dir/player.c.s
+
+CMakeFiles/server.dir/messageHandeler.c.o: CMakeFiles/server.dir/flags.make
+CMakeFiles/server.dir/messageHandeler.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.c
+CMakeFiles/server.dir/messageHandeler.c.o: CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/server.dir/messageHandeler.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/server.dir/messageHandeler.c.o -MF CMakeFiles/server.dir/messageHandeler.c.o.d -o CMakeFiles/server.dir/messageHandeler.c.o -c /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.c
+
+CMakeFiles/server.dir/messageHandeler.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/server.dir/messageHandeler.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.c > CMakeFiles/server.dir/messageHandeler.c.i
+
+CMakeFiles/server.dir/messageHandeler.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/server.dir/messageHandeler.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.c -o CMakeFiles/server.dir/messageHandeler.c.s
+
+CMakeFiles/server.dir/game.c.o: CMakeFiles/server.dir/flags.make
+CMakeFiles/server.dir/game.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.c
+CMakeFiles/server.dir/game.c.o: CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/server.dir/game.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/server.dir/game.c.o -MF CMakeFiles/server.dir/game.c.o.d -o CMakeFiles/server.dir/game.c.o -c /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.c
+
+CMakeFiles/server.dir/game.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/server.dir/game.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.c > CMakeFiles/server.dir/game.c.i
+
+CMakeFiles/server.dir/game.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/server.dir/game.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.c -o CMakeFiles/server.dir/game.c.s
+
+CMakeFiles/server.dir/gameObjects.c.o: CMakeFiles/server.dir/flags.make
+CMakeFiles/server.dir/gameObjects.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.c
+CMakeFiles/server.dir/gameObjects.c.o: CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/server.dir/gameObjects.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/server.dir/gameObjects.c.o -MF CMakeFiles/server.dir/gameObjects.c.o.d -o CMakeFiles/server.dir/gameObjects.c.o -c /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.c
+
+CMakeFiles/server.dir/gameObjects.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/server.dir/gameObjects.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.c > CMakeFiles/server.dir/gameObjects.c.i
+
+CMakeFiles/server.dir/gameObjects.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/server.dir/gameObjects.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.c -o CMakeFiles/server.dir/gameObjects.c.s
 
 # Object files for target server
 server_OBJECTS = \
 "CMakeFiles/server.dir/main.c.o" \
-"CMakeFiles/server.dir/Player.c.o"
+"CMakeFiles/server.dir/player.c.o" \
+"CMakeFiles/server.dir/messageHandeler.c.o" \
+"CMakeFiles/server.dir/game.c.o" \
+"CMakeFiles/server.dir/gameObjects.c.o"
 
 # External object files for target server
 server_EXTERNAL_OBJECTS =
 
 server: CMakeFiles/server.dir/main.c.o
-server: CMakeFiles/server.dir/Player.c.o
+server: CMakeFiles/server.dir/player.c.o
+server: CMakeFiles/server.dir/messageHandeler.c.o
+server: CMakeFiles/server.dir/game.c.o
+server: CMakeFiles/server.dir/gameObjects.c.o
 server: CMakeFiles/server.dir/build.make
 server: CMakeFiles/server.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C executable server"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking C executable server"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/server.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

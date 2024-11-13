@@ -3,7 +3,3 @@
 //
 
 #include "constants.h"
-
-struct Player {
-    char name[MAX_NAME_LENGTH];
-};

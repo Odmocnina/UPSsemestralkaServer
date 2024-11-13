@@ -5,5 +5,9 @@ set(CMAKE_C_STANDARD 11)
 
 add_executable(server
         main.c
-        Player.c
-        constants.h)
+        player.c
+        constants.h
+        messageHandeler.c
+        game.h
+        game.c
+        gameObjects.c)

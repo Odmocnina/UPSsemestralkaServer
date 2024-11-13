@@ -76,13 +76,34 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/Player.c">
-			<Option target="server"/>
-		</Unit>
 		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h">
 			<Option target="server"/>
 		</Unit>
+		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.c">
+			<Option target="server"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.h">
+			<Option target="server"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.c">
+			<Option target="server"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h">
+			<Option target="server"/>
+		</Unit>
 		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/main.c">
+			<Option target="server"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.c">
+			<Option target="server"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.h">
+			<Option target="server"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.c">
+			<Option target="server"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h">
 			<Option target="server"/>
 		</Unit>
 		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/CMakeLists.txt">
