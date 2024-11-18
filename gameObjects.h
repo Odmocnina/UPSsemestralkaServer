@@ -16,7 +16,9 @@ struct lobby {
 void inicilazePlayerArray();
 
 
-void addPlayerToGamersArray(char *name);
+int addPlayerToGamersArray(char *name);
+
+void removePlayerFromGamersArray(int index);
 
 void printPlayerArray();
 

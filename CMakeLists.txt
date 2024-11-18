@@ -10,4 +10,6 @@ add_executable(server
         messageHandeler.c
         game.h
         game.c
-        gameObjects.c)
+        gameObjects.c
+        postMan.c
+        postMan.h)

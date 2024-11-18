@@ -106,6 +106,12 @@
 		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h">
 			<Option target="server"/>
 		</Unit>
+		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/postMan.c">
+			<Option target="server"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/postMan.h">
+			<Option target="server"/>
+		</Unit>
 		<Unit filename="/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>

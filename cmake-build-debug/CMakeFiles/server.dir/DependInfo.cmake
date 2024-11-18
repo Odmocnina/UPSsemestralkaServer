@@ -13,6 +13,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/main.c" "CMakeFiles/server.dir/main.c.o" "gcc" "CMakeFiles/server.dir/main.c.o.d"
   "/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.c" "CMakeFiles/server.dir/messageHandeler.c.o" "gcc" "CMakeFiles/server.dir/messageHandeler.c.o.d"
   "/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.c" "CMakeFiles/server.dir/player.c.o" "gcc" "CMakeFiles/server.dir/player.c.o.d"
+  "/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/postMan.c" "CMakeFiles/server.dir/postMan.c.o" "gcc" "CMakeFiles/server.dir/postMan.c.o.d"
   )
 
 # Targets to which this target links.

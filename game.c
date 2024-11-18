@@ -46,19 +46,19 @@ int handleSpock(int secondPlayerChoise) {
 }
 
 int resultOfGameRound(int firstPlayerChoise, int secondPlayerChoise) {
+    int navrat = FAILURE_VALUE;
     if (firstPlayerChoise == secondPlayerChoise) {
-        return STALEMATE_VALUE;
+        navrat = STALEMATE_VALUE;
     } else if (firstPlayerChoise == ROCK_VALUE) {
-        return handleRock(secondPlayerChoise);
+        navrat = handleRock(secondPlayerChoise);
     } else if (firstPlayerChoise == PAPER_VALUE) {
-        return handlePaper(secondPlayerChoise);
+        navrat = handlePaper(secondPlayerChoise);
     } else if (firstPlayerChoise == SCISSORS_VALUE) {
-        return handleScissors(secondPlayerChoise);
+        navrat = handleScissors(secondPlayerChoise);
     } else if (firstPlayerChoise == LIZARD_VALUE) {
-        return handleLizard(secondPlayerChoise);
+        navrat = handleLizard(secondPlayerChoise);
     } else if (firstPlayerChoise == SPOCK_VALUE) {
-        return handleSpock(secondPlayerChoise);
-    } else {
-        return FAILURE_VALUE;
+        navrat = handleSpock(secondPlayerChoise);
     }
+    return navrat;
 }

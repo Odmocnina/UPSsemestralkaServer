@@ -11,24 +11,36 @@
 struct player players[MAX_NUMBER_OF_PLAYERS];
 
 void inicilazePlayerArray() {
+    printf("Inicializuji pole hracu\n");
     for (int i = 0; i < MAX_NUMBER_OF_PLAYERS; i = i + 1) {
         players[i].state = FREE_POSITION;
+
+        players[i].index = FREE_POSITION;
     }
 }
 
-void addPlayerToGamersArray(char *name) {
+int addPlayerToGamersArray(char *name) {
     int i = 0;
     bool found = false;
+    int navrat = FAILURE_VALUE;
     while (!found && i < MAX_NUMBER_OF_PLAYERS) {
         if (players[i].state == FREE_POSITION) {
             strncpy(players[i].name, name, sizeof(players[i].name));
             players[i].name[MAX_NAME_LENGTH - 1] = '\0';
             players[i].state = IN_LOBBY_VALUE;
             players[i].index = i;
+            navrat = i;
             found = true;
         }
         i = i + 1;
     }
+    return navrat;
+}
+
+void removePlayerFromGamersArray(int index) {
+    players[index].state = FREE_POSITION;
+    players[index].name[0] = '\0';
+    players[index].index = FREE_POSITION;
 }
 
 void printPlayerArray() {

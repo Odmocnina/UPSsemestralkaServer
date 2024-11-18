@@ -4,35 +4,69 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "constants.h"
 #include "messageHandeler.h"
 #include "gameObjects.h"
+
+
 
 int handleLogin(char *message) {
     strtok(message, ":");
     strtok(NULL, ":");
     char *token = strtok(NULL, ":");
-    printf("prihlasen: %s\n", token);
-    addPlayerToGamersArray(token);
+    int navrat = addPlayerToGamersArray(token);
+    if (navrat == FAILURE_VALUE) {
+        printf("Moc hracu\n");
+    } else {
+        printf("Hrac pridan\n");
+        printf("Prihlasen: %s\n", token);
+    }
+    return navrat;
 }
 
-int handleMessage(char *message) {
-    printf("Prijata zprava: %s\n", message);
+int handlelogout(char *message) {
+    strtok(message, ":");
+    strtok(NULL, ":");
+    char *token = strtok(NULL, ":");
+    removePlayerFromGamersArray(atoi(token));
+    return atoi(token);
+}
+
+void makeMessage(char *buffer, char *type, int id) {
+    //char *message = "Mess:";
+    char idInChar = id;  //muj genius je tak velky, ze ma vlastni gravitacni pole
+    //strcat(message, type);
+    //strcat(message, ":" + idInChar + '\n');
+    sprintf(buffer, "Mess:%s:%c:\n", type, id);
+}
+
+int handleMessage(char *message, char *sendBackMessage) {
+    printf("Prijata zprava: %s", message);
     if (strncmp(message, "Mess", LENGTH_OF_MESSAGE_SIGNATURE) != 0) {
-        printf("Message is not valid\n");
-        return MESSAGE_NOT_VALID;
+        printf("Zprava neni validni\n");
+        return FAILURE_VALUE;
     }
 
-    printf("Message is valid\n");
+    printf("Zprava je validni\n");
     int i = START_OF_MESSAGE;
     int j = 0;
     char typeOfMessage[MAXIMAL_LENGHT_OF_MESSAGE_TYPE];
     while (message[i] != '\n') {
         if (message[i] == ':') {  // Pokud narazíme na středník, ukončíme parsování
             typeOfMessage[j] = '\0';  // Ukončíme slov
-            if (strcmp(typeOfMessage, "login") == 0) {
-                printf("login\n");
-                handleLogin(message);
+            if (strcmp(typeOfMessage, "login") == STRINGS_ARE_SAME) {
+                printf("Login\n");
+                int id = handleLogin(message);
+                if (id != FAILURE_VALUE) {
+                    makeMessage(sendBackMessage, "login", id);
+                }
+            } else if (strcmp(typeOfMessage, "logout") == STRINGS_ARE_SAME) {
+                printf("logout\n");
+                int id = handlelogout(message);
+                if (id != FAILURE_VALUE) {
+                    makeMessage(sendBackMessage, "logout", id);
+                }
             }
         }
         typeOfMessage[j] = message[i];

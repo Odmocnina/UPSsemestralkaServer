@@ -1,1 +1,1 @@
-/usr/bin/cc -g CMakeFiles/server.dir/main.c.o CMakeFiles/server.dir/player.c.o CMakeFiles/server.dir/messageHandeler.c.o CMakeFiles/server.dir/game.c.o CMakeFiles/server.dir/gameObjects.c.o -o server 
+/usr/bin/cc -g CMakeFiles/server.dir/main.c.o CMakeFiles/server.dir/player.c.o CMakeFiles/server.dir/messageHandeler.c.o CMakeFiles/server.dir/game.c.o CMakeFiles/server.dir/gameObjects.c.o CMakeFiles/server.dir/postMan.c.o -o server 

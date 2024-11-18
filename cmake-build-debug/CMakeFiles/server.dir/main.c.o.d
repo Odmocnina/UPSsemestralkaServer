@@ -76,8 +76,20 @@ CMakeFiles/server.dir/main.c.o: \
  /usr/include/x86_64-linux-gnu/bits/in.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/pthread.h \
+ /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
+ /usr/include/x86_64-linux-gnu/bits/cpu-set.h /usr/include/time.h \
+ /usr/include/x86_64-linux-gnu/bits/time.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
+ /usr/include/x86_64-linux-gnu/bits/setjmp.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
+ /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
+ /usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h \
+ /usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h \
  /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.h \
  /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h \
  /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h \
- /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h
+ /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h \
+ /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/postMan.h

@@ -9,6 +9,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/server.dir/messageHandeler.c.o.d"
   "CMakeFiles/server.dir/player.c.o"
   "CMakeFiles/server.dir/player.c.o.d"
+  "CMakeFiles/server.dir/postMan.c.o"
+  "CMakeFiles/server.dir/postMan.c.o.d"
   "server"
   "server.pdb"
 )

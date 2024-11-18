@@ -5,6 +5,6 @@
 #ifndef SERVER_MESSAGEHANDELER_H
 #define SERVER_MESSAGEHANDELER_H
 
-int handleMessage(char *message);
+int handleMessage(char *message, char *sendBackMessage);
 
 #endif //SERVER_MESSAGEHANDELER_H

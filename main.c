@@ -5,32 +5,71 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <stdlib.h>
+#include <pthread.h>
+#include <stdbool.h>
 #include "messageHandeler.h"
 #include "gameObjects.h"
+#include "postMan.h"
 
 
-int main (void){
 
-    int server_socket = 0;
-    int client_socket = 0;
-    int return_value = 0;
 
-    char cbuf[51];
-    int len_addr;
-    struct sockaddr_in my_addr, peer_addr;
+// Struktura argumentů pro vlákno
+struct threadArgs {
+    int clientSocket;
+};
 
-    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+/*// Obsluha klienta ve vláknu
+void *clientHandler(void *args) {
+    struct threadArgs *targs = (struct threadArgs *)args;
+    int clientSocket = targs->clientSocket;
+    free(targs);
 
-    memset(&my_addr, 0, sizeof(struct sockaddr_in));
+    char bufferForMessage[MAX_SIZE_OF_MESSAGE];
+    int returnValue;
 
-    my_addr.sin_family = AF_INET;
-    my_addr.sin_port = htons(10000);
-    my_addr.sin_addr.s_addr = INADDR_ANY;
+    //addPlayerToGamersArray("Untiteled");
+    printPlayerArray();
 
-    return_value = bind(server_socket, (struct sockaddr *) &my_addr, \
+    do {
+        memset(bufferForMessage, 0, sizeof(bufferForMessage));
+        returnValue = recv(clientSocket, bufferForMessage, sizeof(bufferForMessage) - 1, 0);
+        if (returnValue > 0) {
+            printf("Přijato: %s\n", bufferForMessage);
+            handleMessage(bufferForMessage);
+            //strncpy(bufferForMessage, "jasně vole\n", sizeof(bufferForMessage) - 1);
+            strncpy(bufferForMessage, "Mess:\n", sizeof(bufferForMessage) - 1);
+            send(clientSocket, bufferForMessage, strlen(bufferForMessage), 0);
+        }
+    } while (returnValue > 0);
+
+    close(clientSocket);
+    printf("Klient odpojen\n");
+    return NULL;
+}*/
+
+
+int main() {
+
+    int serverSocket = 0;
+    int clientSocket = 0;
+    int returnValue = 0;
+
+    int lenAdr;
+    struct sockaddr_in maAddress, peerAddress;
+
+    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+    memset(&maAddress, 0, sizeof(struct sockaddr_in));
+
+    maAddress.sin_family = AF_INET;
+    maAddress.sin_port = htons(PORT);
+    maAddress.sin_addr.s_addr = INADDR_ANY;
+
+    returnValue = bind(serverSocket, (struct sockaddr *) &maAddress, \
 	sizeof(struct sockaddr_in));
 
-    if (return_value == 0)
+    if (returnValue == 0)
         printf("Bind - OK\n");
     else {
         printf("Bind - ERR\n");
@@ -39,31 +78,30 @@ int main (void){
 
     inicilazePlayerArray();
 
-    listen(server_socket, 5);
+    listen(serverSocket, 5);
 
-    for (;;){
-        client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
-        if (client_socket > 0) {
-            return_value = fork ();
-            if (return_value == 0){
-                printf("Hura nove spojeni\n");
-                do {
-                    memset(cbuf, 0, sizeof(cbuf));
-                    return_value=recv(client_socket, &cbuf, 50, 0);
-                    printf("Prijato %s\n",cbuf);
-                    int stateOfMessage = handleMessage(cbuf);
-                    memcpy(cbuf, "jasne vole\n", 11);
-                    send(client_socket, &cbuf, return_value, 0);
-                } while (return_value > 0);
-                close(client_socket);
-                return 0;
-            } else {
-                close(client_socket);
+    bool serverIsRunning = true;
+
+    while (serverIsRunning == true) {
+        clientSocket = accept(serverSocket, (struct sockaddr *)&peerAddress, &lenAdr);
+        if (clientSocket > 0) {
+            printf("Nové spojení\n");
+
+            // Vytvoření vlákna pro obsluhu klienta
+            pthread_t threadId;
+            struct threadArgs *args = malloc(sizeof(struct threadArgs));
+            args->clientSocket = clientSocket;
+
+            if (pthread_create(&threadId, NULL, clientHandler, args) != 0) {
+                perror("Chyba pri vytvareni vlakna");
+                free(args);
+                close(clientSocket);
             }
-        }
-        else {
-            printf ("Brutal Fatal ERROR\n");
-            return -1;
+
+            // Volitelně odpojit vlákno
+            pthread_detach(threadId);
+        } else {
+            perror("Chyba pri prijeti spojeni");
         }
     }
 

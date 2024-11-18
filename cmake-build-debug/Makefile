@@ -249,6 +249,30 @@ player.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/player.c.s
 .PHONY : player.c.s
 
+postMan.o: postMan.c.o
+.PHONY : postMan.o
+
+# target to build an object file
+postMan.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/postMan.c.o
+.PHONY : postMan.c.o
+
+postMan.i: postMan.c.i
+.PHONY : postMan.i
+
+# target to preprocess a source file
+postMan.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/postMan.c.i
+.PHONY : postMan.c.i
+
+postMan.s: postMan.c.s
+.PHONY : postMan.s
+
+# target to generate assembly for a file
+postMan.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/postMan.c.s
+.PHONY : postMan.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -273,6 +297,9 @@ help:
 	@echo "... player.o"
 	@echo "... player.i"
 	@echo "... player.s"
+	@echo "... postMan.o"
+	@echo "... postMan.i"
+	@echo "... postMan.s"
 .PHONY : help
 
 
