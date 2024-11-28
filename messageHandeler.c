@@ -9,22 +9,6 @@
 #include "messageHandeler.h"
 #include "gameObjects.h"
 
-
-
-int handleLogin(char *message) {
-    strtok(message, ":");
-    strtok(NULL, ":");
-    char *token = strtok(NULL, ":");
-    int navrat = addPlayerToGamersArray(token);
-    if (navrat == FAILURE_VALUE) {
-        printf("Moc hracu\n");
-    } else {
-        printf("Hrac pridan\n");
-        printf("Prihlasen: %s\n", token);
-    }
-    return navrat;
-}
-
 int handlelogout(char *message) {
     strtok(message, ":");
     strtok(NULL, ":");
@@ -38,12 +22,30 @@ void makeMessage(char *buffer, char *type, int id) {
     char idInChar = id;  //muj genius je tak velky, ze ma vlastni gravitacni pole
     //strcat(message, type);
     //strcat(message, ":" + idInChar + '\n');
-    sprintf(buffer, "Mess:%s:%c:\n", type, id);
+    sprintf(buffer, "Mess:%s:%d:\n", type, id);
+    printf(buffer);
+}
+
+int handleLogin(char *message) {
+    strtok(message, ":");
+    strtok(NULL, ":");
+    char *token = strtok(NULL, ":");
+    int navrat = addPlayerToGamersArray(token);
+    if (navrat == FAILURE_VALUE) {
+        printf("Moc hracu\n");
+    } else {
+        printf("Hrac pridan\n");
+        printf("Prihlasen: %s\n", token);
+    }
+    //int gameStartAttempt = handleGameStart(navrat);
+
+    return navrat;
 }
 
 int handleMessage(char *message, char *sendBackMessage) {
+
     printf("Prijata zprava: %s", message);
-    if (strncmp(message, "Mess", LENGTH_OF_MESSAGE_SIGNATURE) != 0) {
+    if (strncmp(message, "Mess:", LENGTH_OF_MESSAGE_SIGNATURE + 1) != 0) {
         printf("Zprava neni validni\n");
         return FAILURE_VALUE;
     }
@@ -73,6 +75,7 @@ int handleMessage(char *message, char *sendBackMessage) {
         i = i + 1;
         j = j + 1;
     }
+    printf(sendBackMessage);
 
     printPlayerArray();
 

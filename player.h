@@ -10,7 +10,8 @@
 struct player {
     char name[MAX_NAME_LENGTH];
     int state;
-    int index;
+    int index; //funguje zaroven jako id
+    int time;
 };
 
 #endif //SERVER_PLAYER_H

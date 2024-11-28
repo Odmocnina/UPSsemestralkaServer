@@ -317,8 +317,17 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
   /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
   /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
   /usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h \
-  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h
+  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h \
+  /usr/include/fcntl.h \
+  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+  /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/struct_stat.h
 
+
+/usr/include/x86_64-linux-gnu/bits/fcntl-linux.h:
+
+/usr/include/x86_64-linux-gnu/bits/fcntl.h:
 
 /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.c:
 
@@ -381,6 +390,8 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 /usr/include/netinet/in.h:
 
 /usr/include/x86_64-linux-gnu/bits/socket_type.h:
+
+/usr/include/x86_64-linux-gnu/bits/struct_stat.h:
 
 /usr/include/x86_64-linux-gnu/bits/socket.h:
 
@@ -447,6 +458,8 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 /usr/include/x86_64-linux-gnu/asm/socket.h:
 
 /usr/include/x86_64-linux-gnu/bits/timesize.h:
+
+/usr/include/fcntl.h:
 
 /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/main.c:
 
@@ -537,6 +550,8 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 /usr/include/x86_64-linux-gnu/bits/types/time_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
+
+/usr/include/x86_64-linux-gnu/bits/stat.h:
 
 /usr/include/x86_64-linux-gnu/bits/types.h:
 

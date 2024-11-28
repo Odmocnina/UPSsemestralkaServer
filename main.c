@@ -93,7 +93,7 @@ int main() {
             args->clientSocket = clientSocket;
 
             if (pthread_create(&threadId, NULL, clientHandler, args) != 0) {
-                perror("Chyba pri vytvareni vlakna");
+                printf("Chyba pri vytvareni vlakna");
                 free(args);
                 close(clientSocket);
             }
@@ -101,7 +101,7 @@ int main() {
             // Volitelně odpojit vlákno
             pthread_detach(threadId);
         } else {
-            perror("Chyba pri prijeti spojeni");
+            printf("Chyba pri prijeti spojeni");
         }
     }
 

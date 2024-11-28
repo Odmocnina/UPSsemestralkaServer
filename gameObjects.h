@@ -22,4 +22,10 @@ void removePlayerFromGamersArray(int index);
 
 void printPlayerArray();
 
+int getFreePlayer();
+
+void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer);
+
+int attemptGameStart(char *message);
+
 #endif //SERVER_GAMEOBJECTS_H
