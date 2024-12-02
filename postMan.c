@@ -27,11 +27,74 @@ void resetNumber(int *number, int resetNumber) {
     *number = resetNumber;
 }
 
+void *pingHandler(void *args) {
+    int clientSocket = *(int *)args;
+    free(args); // Pokud alokujete paměť pro předávání argumentů.
+
+    const char *pingMessage = "ping\n";
+    char pongResponse[16] = {0};
+    struct timeval timeout = {5, 0}; // Nastavení timeoutu na 5 sekund.
+    int returnValue;
+
+    while (1) {
+        sleep(10); // Posíláme ping každých 10 sekund.
+        printf("Posílám ping klientovi.\n");
+
+        // Odeslání "ping"
+        returnValue = send(clientSocket, pingMessage, strlen(pingMessage), 0);
+        if (returnValue <= 0) {
+            printf("Nepodařilo se odeslat ping. Odpojuji klienta.\n");
+            close(clientSocket);
+            pthread_exit(NULL);
+        }
+
+        // Nastavení timeoutu pro příjem odpovědi
+        setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof timeout);
+
+        // Příjem odpovědi "pong"
+        returnValue = recv(clientSocket, pongResponse, sizeof(pongResponse) - 1, 0);
+        if (returnValue <= 0) {
+            printf("Klient neodpověděl na ping. Odpojuji klienta.\n");
+            close(clientSocket);
+            pthread_exit(NULL);
+        }
+
+        pongResponse[returnValue] = '\0'; // Ujistíme se, že máme validní řetězec.
+        if (strcmp(pongResponse, "pong\n") != 0) {
+            printf("Neočekávaná odpověď od klienta: %s. Odpojuji klienta.\n", pongResponse);
+            close(clientSocket);
+            pthread_exit(NULL);
+        }
+
+        printf("Klient odpověděl na ping: %s\n", pongResponse);
+    }
+
+    return NULL;
+}
+
 // Obsluha klienta ve vláknu
 void *clientHandler(void *args) {
     struct threadArgs *targs = (struct threadArgs *)args;
     int clientSocket = targs->clientSocket;
     free(targs);
+
+    /*pthread_t pingThread;
+    int *clientSocketCopy = malloc(sizeof(int));
+    if (clientSocketCopy == NULL) {
+        perror("Chyba při alokaci paměti");
+        close(clientSocket);
+        return NULL;
+    }
+    *clientSocketCopy = clientSocket;
+
+    // Spuštění vlákna pro pingování
+    if (pthread_create(&pingThread, NULL, pingHandler, clientSocketCopy) != 0) {
+        perror("Nepodařilo se vytvořit vlákno pro pingování");
+        close(clientSocket);
+        free(clientSocketCopy);
+        return NULL;
+    }
+    pthread_detach(pingThread); // Uvolní vlákno automaticky po ukončení.*/
 
     char bufferForMessage[MAX_SIZE_OF_MESSAGE];
     char fullMessage[MAX_SIZE_OF_MESSAGE] = {0};
@@ -39,11 +102,6 @@ void *clientHandler(void *args) {
     char signature[LENGTH_OF_MESSAGE_SIGNATURE + 1] = {0};
     int received = 0;
     int returnValue;
-    int id;
-
-    // Přijetí hlavičky (LENGTH_OF_MESSAGE_SIGNATURE)
-
-    bool firstIteration = true;
 
     do {
         while (received < LENGTH_OF_MESSAGE_SIGNATURE) {
@@ -98,10 +156,11 @@ void *clientHandler(void *args) {
         fullMessage[received] = '\0';
         printf("Přijatá zpráva: %s\n", fullMessage);
 
+        //char zprav[16] = "-\n";
+
         // Zpracování zprávy
-        int messageOk = handleMessage(fullMessage, bufferForSendBackMessage);
+        int messageOk = handleMessage(fullMessage, bufferForSendBackMessage, clientSocket);
         if (messageOk != FAILURE_VALUE) {
-            printf("Odesílám klientovi: %s\n", bufferForSendBackMessage);
             returnValue = send(clientSocket, bufferForSendBackMessage, strlen(bufferForSendBackMessage), 0);
             if (returnValue < 0) {
                 printf("Chyba při odesílání zprávy");
@@ -109,13 +168,17 @@ void *clientHandler(void *args) {
             if (strstr(bufferForSendBackMessage, "login") != NULL) {
                 int game = attemptGameStart(bufferForSendBackMessage);
                 if (game != FAILURE_VALUE) {
-                    returnValue = send(clientSocket, "Mess:gameBegin:\n", 15, 0);
+                    printf("posilam zacatek hry");
+                    char gameBegin[16] = "Mess:gameBegin:\n";
+                    returnValue = send(clientSocket, gameBegin, strlen(gameBegin), 0);
+                    send(getSocketOfPlayer(game), gameBegin, strlen(gameBegin), 0);
                 }
             }
             if (strstr(bufferForSendBackMessage, "logout") != NULL) {
                 break;
             }
         }
+        printf("reset number\n");
         resetNumber(&received, -2); //tady je -2 protoze pokud je zpraovavana dalsi zpravat, tak to
         // jde do toho prvniho cyklu a nejak to prej precte 2veci, i kdyz je to neprcte
         memset(fullMessage, 0, sizeof(fullMessage));

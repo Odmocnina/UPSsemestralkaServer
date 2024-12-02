@@ -16,7 +16,7 @@ struct lobby {
 void inicilazePlayerArray();
 
 
-int addPlayerToGamersArray(char *name);
+int addPlayerToGamersArray(char *name, int clientSocket);
 
 void removePlayerFromGamersArray(int index);
 
@@ -27,5 +27,7 @@ int getFreePlayer();
 void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer);
 
 int attemptGameStart(char *message);
+
+int getSocketOfPlayer(int indexOfPlayer);
 
 #endif //SERVER_GAMEOBJECTS_H

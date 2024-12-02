@@ -11,6 +11,7 @@ struct player {
     char name[MAX_NAME_LENGTH];
     int state;
     int index; //funguje zaroven jako id
+    int clientSocket;
     int time;
 };
 

@@ -27,7 +27,7 @@ void inicilazePlayerArray() {
     }
 }
 
-int addPlayerToGamersArray(char *name) {
+int addPlayerToGamersArray(char *name, int clientSocket) {
     int i = 0;
     bool found = false;
     int navrat = FAILURE_VALUE;
@@ -35,8 +35,9 @@ int addPlayerToGamersArray(char *name) {
         if (players[i].state == FREE_POSITION) {
             strncpy(players[i].name, name, sizeof(players[i].name));
             players[i].name[MAX_NAME_LENGTH - 1] = '\0';
-            players[i].state = IN_LOBBY_VALUE;
+            players[i].state = WAITING_VALUE;
             players[i].index = i;
+            players[i].clientSocket = clientSocket;
             navrat = i;
             found = true;
         }
@@ -45,17 +46,19 @@ int addPlayerToGamersArray(char *name) {
     return navrat;
 }
 
-int getFreePlayer() {
+int getFreePlayer(int indexOfConnectedPlayer) {
     int i = 0;
     int navrat = FAILURE_VALUE;
     bool found = false;
     while (!found && i < (MAX_NUMBER_OF_PLAYERS)) {
-        if (players[i].state == WAITING_VALUE) {
+        printf("hledam");
+        if (players[i].state == WAITING_VALUE && i != indexOfConnectedPlayer) {
             found = true;
             navrat = i;
         }
         i = i + 1;
     }
+    printf("navrat %d\n", navrat);
     return navrat;
 }
 
@@ -82,11 +85,12 @@ void printPlayerArray() {
 }
 
 int attemptGameStart(char *message) {
-    int freePlayer = getFreePlayer();
+    strtok(message, ":");
+    strtok(NULL, ":");
+    int id = atoi(strtok(NULL, ":"));
+    int freePlayer = getFreePlayer(id);
     if (freePlayer != FAILURE_VALUE) {
-        strtok(message, ":");
-        strtok(NULL, ":");
-        int id = atoi(strtok(NULL, ":"));
+        printf("vytvarim hru\n");
         addNewRunningGame(id, freePlayer);
     }
     return freePlayer;
@@ -103,4 +107,8 @@ void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer) {
         }
         i = i + 1;
     }
+}
+
+int getSocketOfPlayer(int indexOfPlayer) {
+    return players[indexOfPlayer].clientSocket;
 }

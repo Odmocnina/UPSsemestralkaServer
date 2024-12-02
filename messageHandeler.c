@@ -18,19 +18,16 @@ int handlelogout(char *message) {
 }
 
 void makeMessage(char *buffer, char *type, int id) {
-    //char *message = "Mess:";
-    char idInChar = id;  //muj genius je tak velky, ze ma vlastni gravitacni pole
-    //strcat(message, type);
-    //strcat(message, ":" + idInChar + '\n');
+    //char idInChar = id;  //muj genius je tak velky, ze ma vlastni gravitacni pole
     sprintf(buffer, "Mess:%s:%d:\n", type, id);
     printf(buffer);
 }
 
-int handleLogin(char *message) {
+int handleLogin(char *message, int clientSocket) {
     strtok(message, ":");
     strtok(NULL, ":");
     char *token = strtok(NULL, ":");
-    int navrat = addPlayerToGamersArray(token);
+    int navrat = addPlayerToGamersArray(token, clientSocket);
     if (navrat == FAILURE_VALUE) {
         printf("Moc hracu\n");
     } else {
@@ -42,7 +39,7 @@ int handleLogin(char *message) {
     return navrat;
 }
 
-int handleMessage(char *message, char *sendBackMessage) {
+int handleMessage(char *message, char *sendBackMessage, int clientSocket) {
 
     printf("Prijata zprava: %s", message);
     if (strncmp(message, "Mess:", LENGTH_OF_MESSAGE_SIGNATURE + 1) != 0) {
@@ -59,7 +56,7 @@ int handleMessage(char *message, char *sendBackMessage) {
             typeOfMessage[j] = '\0';  // Ukončíme slov
             if (strcmp(typeOfMessage, "login") == STRINGS_ARE_SAME) {
                 printf("Login\n");
-                int id = handleLogin(message);
+                int id = handleLogin(message, clientSocket);
                 if (id != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "login", id);
                 }
@@ -75,7 +72,6 @@ int handleMessage(char *message, char *sendBackMessage) {
         i = i + 1;
         j = j + 1;
     }
-    printf(sendBackMessage);
 
     printPlayerArray();
 
