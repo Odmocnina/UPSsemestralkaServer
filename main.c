@@ -19,36 +19,6 @@ struct threadArgs {
     int clientSocket;
 };
 
-/*// Obsluha klienta ve vláknu
-void *clientHandler(void *args) {
-    struct threadArgs *targs = (struct threadArgs *)args;
-    int clientSocket = targs->clientSocket;
-    free(targs);
-
-    char bufferForMessage[MAX_SIZE_OF_MESSAGE];
-    int returnValue;
-
-    //addPlayerToGamersArray("Untiteled");
-    printPlayerArray();
-
-    do {
-        memset(bufferForMessage, 0, sizeof(bufferForMessage));
-        returnValue = recv(clientSocket, bufferForMessage, sizeof(bufferForMessage) - 1, 0);
-        if (returnValue > 0) {
-            printf("Přijato: %s\n", bufferForMessage);
-            handleMessage(bufferForMessage);
-            //strncpy(bufferForMessage, "jasně vole\n", sizeof(bufferForMessage) - 1);
-            strncpy(bufferForMessage, "Mess:\n", sizeof(bufferForMessage) - 1);
-            send(clientSocket, bufferForMessage, strlen(bufferForMessage), 0);
-        }
-    } while (returnValue > 0);
-
-    close(clientSocket);
-    printf("Klient odpojen\n");
-    return NULL;
-}*/
-
-
 int main() {
 
     int serverSocket = 0;
@@ -59,6 +29,20 @@ int main() {
     struct sockaddr_in maAddress, peerAddress;
 
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+    // Nastavení SO_REUSEADDR a SO_REUSEPORT
+    int opt = 1;
+    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        perror("Chyba při nastavování SO_REUSEADDR");
+        close(serverSocket);
+        return -1;
+    }
+
+    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) < 0) {
+        perror("Chyba při nastavování SO_REUSEPORT");
+        close(serverSocket);
+        return -1;
+    }
 
     memset(&maAddress, 0, sizeof(struct sockaddr_in));
 

@@ -12,7 +12,10 @@ struct player {
     int state;
     int index; //funguje zaroven jako id
     int clientSocket;
-    int time;
+    //int time;
+    int turn;
+    int game;
+    bool makerOfGame;
 };
 
 #endif //SERVER_PLAYER_H

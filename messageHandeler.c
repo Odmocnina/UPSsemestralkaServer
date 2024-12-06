@@ -39,41 +39,61 @@ int handleLogin(char *message, int clientSocket) {
     return navrat;
 }
 
-int handleMessage(char *message, char *sendBackMessage, int clientSocket) {
+int handleTurn(char *message) {
+    strtok(message, ":");
+    strtok(NULL, ":");
+    //int id = atoi(strtok(NULL, ":"));
+    int turn = atoi(strtok(NULL, ":"));
+    int navrat = FAILURE_VALUE;
+    navrat = turn;
+    return navrat;
+}
 
-    printf("Prijata zprava: %s", message);
+int handleMessage(char *message, char *sendBackMessage, int clientSocket) {
     if (strncmp(message, "Mess:", LENGTH_OF_MESSAGE_SIGNATURE + 1) != 0) {
         printf("Zprava neni validni\n");
         return FAILURE_VALUE;
     }
 
+    char fullMessageForInspection[strlen(message)];
+    strcpy(fullMessageForInspection, message);
+
     printf("Zprava je validni\n");
     int i = START_OF_MESSAGE;
     int j = 0;
+    int navrat = FAILURE_VALUE;
     char typeOfMessage[MAXIMAL_LENGHT_OF_MESSAGE_TYPE];
-    while (message[i] != '\n') {
-        if (message[i] == ':') {  // Pokud narazíme na středník, ukončíme parsování
+    while (fullMessageForInspection[i] != '\n') {
+        if (fullMessageForInspection[i] == ':') {  // Pokud narazíme na středník, ukončíme parsování
             typeOfMessage[j] = '\0';  // Ukončíme slov
             if (strcmp(typeOfMessage, "login") == STRINGS_ARE_SAME) {
                 printf("Login\n");
-                int id = handleLogin(message, clientSocket);
+                int id = handleLogin(fullMessageForInspection, clientSocket);
                 if (id != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "login", id);
                 }
+                navrat = id;
             } else if (strcmp(typeOfMessage, "logout") == STRINGS_ARE_SAME) {
                 printf("logout\n");
-                int id = handlelogout(message);
+                int id = handlelogout(fullMessageForInspection);
                 if (id != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "logout", id);
                 }
+            } else if (strcmp(typeOfMessage, "turn") == STRINGS_ARE_SAME) {
+                printf("turn\n");
+                int turn = handleTurn(fullMessageForInspection);
+                if (turn != FAILURE_VALUE) {
+                    makeMessage(sendBackMessage, "turn", turn);
+                }
+                navrat = turn;
             }
         }
-        typeOfMessage[j] = message[i];
+        typeOfMessage[j] = fullMessageForInspection[i];
         i = i + 1;
         j = j + 1;
     }
 
-    printPlayerArray();
+    printPlayerArray2();
 
-    return SUCCESS_VALUE;
+    return navrat;
 }

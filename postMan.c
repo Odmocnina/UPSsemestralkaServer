@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include "messageHandeler.h"
 #include "gameObjects.h"
+#include "game.h"
 #include <pthread.h>
 #include <stdbool.h>
 #include <fcntl.h>
@@ -102,15 +103,14 @@ void *clientHandler(void *args) {
     char signature[LENGTH_OF_MESSAGE_SIGNATURE + 1] = {0};
     int received = 0;
     int returnValue;
+    int id;
+    int game = FAILURE_VALUE;
 
     do {
         while (received < LENGTH_OF_MESSAGE_SIGNATURE) {
-            printf("v prvnim while ");
             memset(bufferForMessage, 0, sizeof(bufferForMessage));
             returnValue = recv(clientSocket, bufferForMessage, LENGTH_OF_MESSAGE_SIGNATURE - received, 0);
-            printf(bufferForMessage);
             if (returnValue > 0) {
-                printf(" davam");
                 memcpy(signature + received, bufferForMessage, returnValue);
                 received = received + returnValue;
             } else if (returnValue == 0) {
@@ -122,9 +122,7 @@ void *clientHandler(void *args) {
                 close(clientSocket);
                 return NULL;
             }
-            printf("recived: %d\n", received);
         }
-        printf("Přijatá signatura: %s\n", signature);
 
         strncpy(fullMessage, signature, LENGTH_OF_MESSAGE_SIGNATURE);
 
@@ -156,29 +154,44 @@ void *clientHandler(void *args) {
         fullMessage[received] = '\0';
         printf("Přijatá zpráva: %s\n", fullMessage);
 
-        //char zprav[16] = "-\n";
-
         // Zpracování zprávy
         int messageOk = handleMessage(fullMessage, bufferForSendBackMessage, clientSocket);
+        printf("messageOk: %d\n", messageOk);
         if (messageOk != FAILURE_VALUE) {
             returnValue = send(clientSocket, bufferForSendBackMessage, strlen(bufferForSendBackMessage), 0);
             if (returnValue < 0) {
                 printf("Chyba při odesílání zprávy");
             }
-            if (strstr(bufferForSendBackMessage, "login") != NULL) {
-                int game = attemptGameStart(bufferForSendBackMessage);
-                if (game != FAILURE_VALUE) {
-                    printf("posilam zacatek hry");
-                    char gameBegin[16] = "Mess:gameBegin:\n";
+            if (strstr(fullMessage, "login") != NULL) {
+                id = messageOk;
+                bool isGame = attemptGameStart(id);
+                game = getGameOfPlayer(id);
+                if (isGame != false) {
+                    char gameBegin[LENGHT_OF_START_GAME_MESSAGE] = "Mess:gameBegin:\n";
                     returnValue = send(clientSocket, gameBegin, strlen(gameBegin), 0);
-                    send(getSocketOfPlayer(game), gameBegin, strlen(gameBegin), 0);
+                    send(getSocketOfPlayer(game, false), gameBegin, strlen(gameBegin), 0);
+                }
+            }
+            if (strstr(fullMessage, "turn") != NULL) {
+                setTurnOfPlayer(id, messageOk);
+                game = getGameOfPlayer(id);
+                if (bothPlayersHaveTurn(game)) {
+                    char messageForFirstPlayer[MAX_SIZE_OF_MESSAGE];
+                    char messageForSecondPlayer[MAX_SIZE_OF_MESSAGE];
+                    handleGame(game, messageForFirstPlayer, messageForSecondPlayer);
+                    printf("posilam hracum vysledky");
+                    send(clientSocket, messageForFirstPlayer, strlen(messageForFirstPlayer), 0);
+                    send(getSocketOfPlayer(game, !getWhoIsPlayer(id)), messageForSecondPlayer, strlen(messageForSecondPlayer), 0);
+                    printf("oba hraci hrali\n");
+                    char bothPlayerTurn[26] = "Mess:bothPlayerTurn:\n";
+                    send(clientSocket, bothPlayerTurn, strlen(bothPlayerTurn), 0);
+                    send(getSocketOfPlayer(game, !getWhoIsPlayer(id)), bothPlayerTurn, strlen(bothPlayerTurn), 0);
                 }
             }
             if (strstr(bufferForSendBackMessage, "logout") != NULL) {
                 break;
             }
         }
-        printf("reset number\n");
         resetNumber(&received, -2); //tady je -2 protoze pokud je zpraovavana dalsi zpravat, tak to
         // jde do toho prvniho cyklu a nejak to prej precte 2veci, i kdyz je to neprcte
         memset(fullMessage, 0, sizeof(fullMessage));

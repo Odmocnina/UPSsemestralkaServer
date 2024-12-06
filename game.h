@@ -7,6 +7,8 @@
 
 #include "constants.h"
 
-int resultOfGameRound(int firstPlayerChoise, int secondPlayerChoise);
+//int resultOfGameRound(int firstPlayerChoise, int secondPlayerChoise);
+
+void handleGame(int indexOfGame, char *messageForFirstPlayer, char *messageForSecondPlayer);
 
 #endif //SERVER_GAME_H

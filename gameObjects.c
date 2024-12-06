@@ -51,14 +51,12 @@ int getFreePlayer(int indexOfConnectedPlayer) {
     int navrat = FAILURE_VALUE;
     bool found = false;
     while (!found && i < (MAX_NUMBER_OF_PLAYERS)) {
-        printf("hledam");
         if (players[i].state == WAITING_VALUE && i != indexOfConnectedPlayer) {
             found = true;
             navrat = i;
         }
         i = i + 1;
     }
-    printf("navrat %d\n", navrat);
     return navrat;
 }
 
@@ -84,19 +82,19 @@ void printPlayerArray() {
     printf("\n");
 }
 
-int attemptGameStart(char *message) {
-    strtok(message, ":");
-    strtok(NULL, ":");
-    int id = atoi(strtok(NULL, ":"));
-    int freePlayer = getFreePlayer(id);
-    if (freePlayer != FAILURE_VALUE) {
-        printf("vytvarim hru\n");
-        addNewRunningGame(id, freePlayer);
+void printPlayerArray2() {
+    printf("Zacatek vypisu hracu\n");
+    for (int i = 0; i < MAX_NUMBER_OF_PLAYERS; i = i + 1) {
+        printf("Jmeno: %s\n", players[i].name);
+        printf("Stav: %d\n", players[i].state);
+        printf("index: %d\n", players[i].index);
+        printf("game: %d\n", players[i].game);
+        printf("turn: %d\n", players[i].turn);
     }
-    return freePlayer;
+    printf("\n");
 }
 
-void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer) {
+void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
     int i = 0;
     bool found = false;
     while (!found && i < (MAX_NUMBER_OF_PLAYERS / 2)) {
@@ -104,11 +102,83 @@ void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer) {
             found = true;
             runningGames[i].indexOfPlayer1 = indexFirstPlayer;
             runningGames[i].indexOfPlayer2 = indexSecondPlayer;
+            players[indexFirstPlayer].state = IN_GAME_VALUE;
+            players[indexSecondPlayer].state = IN_GAME_VALUE;
+            players[indexFirstPlayer].turn = TURN_NOT_PICKED_YET;
+            players[indexSecondPlayer].turn = TURN_NOT_PICKED_YET;
+            *game = i;
+            players[indexFirstPlayer].game = i;
+            players[indexSecondPlayer].game = i;
+            players[indexFirstPlayer].makerOfGame = true;
+            players[indexSecondPlayer].makerOfGame = false;
         }
         i = i + 1;
     }
 }
 
-int getSocketOfPlayer(int indexOfPlayer) {
-    return players[indexOfPlayer].clientSocket;
+bool attemptGameStart(int id) {
+    printf("Pokus o zanuti hry\n");
+    //strtok(message, ":");
+    //strtok(NULL, ":");
+    //int id = atoi(strtok(NULL, ":"));
+    //printf("id: %d\n", id);
+    int freePlayer = getFreePlayer(id);
+    int navrat = false;
+    if (freePlayer != FAILURE_VALUE) {
+        addNewRunningGame(id, freePlayer, &navrat);
+        navrat = true;
+    }
+    return navrat;
+}
+
+int getIdOfOpponent(int indexOfGame, bool who) {
+    if (who == false) {
+        return players[runningGames[indexOfGame].indexOfPlayer2].index;
+    }
+    if (who == true) {
+        return players[runningGames[indexOfGame].indexOfPlayer1].index;
+    }
+}
+
+int getSocketOfPlayer(int indexOfGame, bool who) {
+    if (who == false) {
+        return players[runningGames[indexOfGame].indexOfPlayer2].clientSocket;
+    }
+    if (who == true) {
+        return players[runningGames[indexOfGame].indexOfPlayer1].clientSocket;
+    }
+}
+
+void setTurnOfPlayer(int indexOfPlayer, int turn) {
+    printf("nastavuju tah\n");
+    players[indexOfPlayer].turn = turn;
+}
+
+bool bothPlayersHaveTurn(int indexOfGame) {
+    if (indexOfGame == FAILURE_VALUE) {
+        printf("v saniti checku");
+        return false;
+    }
+    int turnOfFirstPlayer = players[runningGames[indexOfGame].indexOfPlayer1].turn;
+    int turnOfSecondPlayer = players[runningGames[indexOfGame].indexOfPlayer2].turn;
+    printf("turn1: %d turn2: %d\n", turnOfFirstPlayer, turnOfSecondPlayer);
+    return turnOfFirstPlayer != TURN_NOT_PICKED_YET && turnOfSecondPlayer != TURN_NOT_PICKED_YET;
+}
+
+void getIndexOfPlayers(int indexOfGame, int *firstPlayer, int *secondPlayer) {
+    *firstPlayer = runningGames[indexOfGame].indexOfPlayer1;
+    *secondPlayer = runningGames[indexOfGame].indexOfPlayer2;
+}
+
+int getTurnOfPlayer(int indexOfPlayer) {
+    printf("turn of player %d: %d", indexOfPlayer, players[indexOfPlayer].turn);
+    return players[indexOfPlayer].turn;
+}
+
+int getGameOfPlayer(int indexOfPlayer) {
+    return players[indexOfPlayer].game;
+}
+
+bool getWhoIsPlayer(int id) {
+    return players[id].makerOfGame;
 }

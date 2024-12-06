@@ -3,15 +3,42 @@
 
 CMakeFiles/server.dir/game.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.c \
   /usr/include/stdc-predef.h \
+  /usr/include/stdio.h \
+  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/features.h \
+  /usr/include/features-time64.h \
+  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/bits/timesize.h \
+  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+  /usr/include/x86_64-linux-gnu/bits/long-double.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+  /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
+  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdarg.h \
+  /usr/include/x86_64-linux-gnu/bits/types.h \
+  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+  /usr/include/x86_64-linux-gnu/bits/time64.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.h \
-  /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h
+  /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h \
+  /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h \
+  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h \
+  /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h
 
 CMakeFiles/server.dir/gameObjects.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.c \
   /usr/include/stdc-predef.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h \
+  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h \
-  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h \
   /usr/include/string.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
   /usr/include/features.h \
@@ -236,6 +263,7 @@ CMakeFiles/server.dir/messageHandeler.c.o: /mnt/c/Users/Michael/Documents/Skola/
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h \
+  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h
 
 CMakeFiles/server.dir/player.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.c \
@@ -330,8 +358,10 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h \
+  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h \
+  /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.h \
   /usr/include/pthread.h \
   /usr/include/sched.h \
   /usr/include/x86_64-linux-gnu/bits/sched.h \
@@ -345,7 +375,6 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
   /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
   /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
   /usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h \
-  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h \
   /usr/include/fcntl.h \
   /usr/include/x86_64-linux-gnu/bits/fcntl.h \
   /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
@@ -423,6 +452,32 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 
 /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
 
+/usr/include/x86_64-linux-gnu/bits/types/struct_osockaddr.h:
+
+/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+
+/usr/include/asm-generic/bitsperlong.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/include/x86_64-linux-gnu/bits/stat.h:
+
+/usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
+
+/usr/include/x86_64-linux-gnu/bits/types.h:
+
+/usr/include/x86_64-linux-gnu/bits/floatn.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/FILE.h:
+
+/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.h:
+
+/usr/include/features.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
@@ -431,87 +486,45 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 
 /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
 
+/usr/include/asm-generic/posix_types.h:
+
+/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.h:
+
+/usr/include/x86_64-linux-gnu/bits/typesizes.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
 
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
-
-/usr/include/x86_64-linux-gnu/bits/getopt_posix.h:
-
-/usr/include/stdio.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/stat.h:
-
-/usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
-
-/usr/include/x86_64-linux-gnu/bits/types.h:
-
-/usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_osockaddr.h:
-
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
-
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/12/include/stdarg.h:
 
 /usr/include/x86_64-linux-gnu/sys/types.h:
 
-/usr/include/strings.h:
-
-/usr/include/x86_64-linux-gnu/bits/floatn-common.h:
-
 /usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
 
 /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.c:
 
-/usr/include/asm-generic/posix_types.h:
+/usr/include/x86_64-linux-gnu/bits/floatn-common.h:
 
-/usr/include/x86_64-linux-gnu/bits/typesizes.h:
+/usr/include/strings.h:
 
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.h:
+/usr/include/x86_64-linux-gnu/bits/getopt_posix.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
+/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
 
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h:
+/usr/include/stdio.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h:
+/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
 
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.c:
+/usr/include/x86_64-linux-gnu/sys/cdefs.h:
 
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/postMan.h:
+/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h:
 
-/usr/include/x86_64-linux-gnu/bits/select.h:
+/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.c:
 
-/usr/include/x86_64-linux-gnu/bits/getopt_core.h:
+/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
 
-/usr/include/x86_64-linux-gnu/asm/socket.h:
-
-/usr/include/x86_64-linux-gnu/bits/timesize.h:
-
-/usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
-
-/usr/include/asm-generic/socket.h:
-
-/usr/include/features-time64.h:
-
-/usr/include/x86_64-linux-gnu/bits/in.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/wordsize.h:
-
-/usr/include/stdlib.h:
+/usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
 
 /usr/include/x86_64-linux-gnu/sys/socket.h:
 
@@ -529,25 +542,41 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
 
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.h:
+/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
 
-/usr/include/features.h:
+/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
+/usr/include/x86_64-linux-gnu/bits/wordsize.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/FILE.h:
+/usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h:
 
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.c:
+/usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
+/usr/include/stdlib.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
+/usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
 
-/usr/include/x86_64-linux-gnu/sys/cdefs.h:
+/usr/include/asm-generic/socket.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
+/usr/include/features-time64.h:
 
-/usr/include/x86_64-linux-gnu/bits/floatn.h:
+/usr/include/x86_64-linux-gnu/bits/getopt_core.h:
+
+/usr/include/x86_64-linux-gnu/asm/socket.h:
+
+/usr/include/x86_64-linux-gnu/bits/timesize.h:
+
+/usr/include/x86_64-linux-gnu/bits/in.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h:
+
+/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.c:
+
+/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/postMan.h:
+
+/usr/include/x86_64-linux-gnu/bits/select.h:
 
 /usr/include/x86_64-linux-gnu/bits/waitflags.h:
 
@@ -561,9 +590,9 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 
 /usr/include/x86_64-linux-gnu/bits/endian.h:
 
-/usr/include/x86_64-linux-gnu/bits/long-double.h:
-
 /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/long-double.h:
 
 /usr/include/x86_64-linux-gnu/bits/byteswap.h:
 
