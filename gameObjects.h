@@ -37,6 +37,8 @@ void setTurnOfPlayer(int indexOfPlayer, int turn, int game);
 
 void unSetTurnOfPlayer(int indexOfPlayer);
 
+void unSetWhoTurnedFirst(int game);
+
 bool bothPlayersHaveTurn(int indexOfGame);
 
 void getIndexOfPlayers(int indexOfGame, int *firstPlayer, int *secondPlayer);

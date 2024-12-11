@@ -52,7 +52,6 @@ int handleSpock(int firstPlayerTurn) {
         return FIRST_PLAYER_WON;
     }
 }
-
 int resultOfGameRound(int firstPlayerTurn, int secondPlayerTurn) {
     int navrat = FAILURE_VALUE;
     printf("first player: %d second player %d\n", firstPlayerTurn, secondPlayerTurn);
@@ -77,9 +76,11 @@ void handleGame(int indexOfGame, char *messageForFirstPlayer, char *messageForSe
     int indexOfFirstPlayer;
     int indexOfSecondPlayer;
     getIndexOfPlayers(indexOfGame, &indexOfFirstPlayer, &indexOfSecondPlayer);
+    printGamesArray();
     printf("indexy hracu: %d %d\n", indexOfFirstPlayer, indexOfSecondPlayer);
     int firstPlayerTurn = getTurnOfPlayer(indexOfFirstPlayer);
     int secondPlayerTurn = getTurnOfPlayer(indexOfSecondPlayer);
+    printf("Tahy hracu: %d %d\n", firstPlayerTurn, secondPlayerTurn);
     int result = resultOfGameRound(firstPlayerTurn, secondPlayerTurn);
     printf("vysledek hry: %d\n", result);
     if (result == STALEMATE_VALUE) {

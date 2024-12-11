@@ -10,8 +10,8 @@
 #define FIRST_PLAYER_WON 1
 #define SECOND_PLAYER_WON -1
 #define ROCK_VALUE 1
-#define PAPER_VALUE 2
-#define SCISSORS_VALUE 3
+#define SCISSORS_VALUE 2
+#define PAPER_VALUE 3
 #define LIZARD_VALUE 4
 #define SPOCK_VALUE 5
 #define FAILURE_VALUE -10

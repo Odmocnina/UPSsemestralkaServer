@@ -184,22 +184,22 @@ void *clientHandler(void *args) {
                     int whoSooner = getWhoTurnedSooner(game);
                     //printGamesArray();
                     printf("who turned sooner: %d\n", whoSooner);
-                    if (whoSooner == id) {
-                        handleGame(game, messageForFirstPlayer, messageForSecondPlayer);
-                    } else {
-                        handleGame(game, messageForSecondPlayer, messageForFirstPlayer);
-                    }
+                    handleGame(game, messageForFirstPlayer, messageForSecondPlayer);
                     printf("%s\n", messageForFirstPlayer);
                     printf("%s\n", messageForSecondPlayer);
-                    printf("posilam hracum vysledky");
-                    send(clientSocket, messageForFirstPlayer, strlen(messageForFirstPlayer), 0);
-                    send(getSocketOfPlayer(opponetId), messageForSecondPlayer, strlen(messageForSecondPlayer), 0);
-                    printf("oba hraci hrali\n");
+                    if (whoSooner == id) {
+                        send(clientSocket, messageForFirstPlayer, strlen(messageForFirstPlayer), 0);
+                        send(getSocketOfPlayer(opponetId), messageForSecondPlayer, strlen(messageForSecondPlayer), 0);
+                    } else {
+                        send(getSocketOfPlayer(opponetId), messageForFirstPlayer, strlen(messageForFirstPlayer), 0);
+                        send(clientSocket, messageForSecondPlayer, strlen(messageForSecondPlayer), 0);
+                    }
                     char bothPlayerTurn[26] = "Mess:bothPlayerTurn:\n";
                     send(clientSocket, bothPlayerTurn, strlen(bothPlayerTurn), 0);
                     send(getSocketOfPlayer(opponetId), bothPlayerTurn, strlen(bothPlayerTurn), 0);
                     unSetTurnOfPlayer(id);
                     unSetTurnOfPlayer(opponetId);
+                    unSetWhoTurnedFirst(game);
                 }
             }
             if (strstr(bufferForSendBackMessage, "logout") != NULL) {

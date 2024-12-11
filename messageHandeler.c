@@ -92,9 +92,6 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket) {
                     makeMessage(sendBackMessage, "turn", turn);
                 }
                 navrat = turn;
-            } else if (strcmp(typeOfMessage, "ready") == STRINGS_ARE_SAME) {
-                printf("ready\n");
-                unSetTurnOfPlayer(clientSocket);//soket zde se bude predavat jako id
             }
         }
         typeOfMessage[j] = fullMessageForInspection[i];

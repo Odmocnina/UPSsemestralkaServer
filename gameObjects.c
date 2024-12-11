@@ -134,7 +134,7 @@ bool attemptGameStart(int id) {
     int freePlayer = getFreePlayer(id);
     int navrat = false;
     if (freePlayer != FAILURE_VALUE) {
-        addNewRunningGame(id, freePlayer, &navrat);
+        addNewRunningGame(freePlayer, id, &navrat);
         navrat = true;
     }
     return navrat;
@@ -153,12 +153,9 @@ int getSocketOfPlayer(int id) {
 }
 
 void setTurnOfPlayer(int indexOfPlayer, int turn, int game) {
-    printf("nastavuju tah\n");
     players[indexOfPlayer].turn = turn;
-    if (indexOfPlayer == runningGames[game].indexOfPlayer2) {
+    if (runningGames[game].whoTurnedSooner == NOONE_PLAYED_YET) {
         runningGames[game].whoTurnedSooner = indexOfPlayer;
-    } else {
-        runningGames[game].whoTurnedSooner = false;
     }
 }
 
@@ -173,7 +170,6 @@ bool bothPlayersHaveTurn(int indexOfGame) {
     }
     int turnOfFirstPlayer = players[runningGames[indexOfGame].indexOfPlayer1].turn;
     int turnOfSecondPlayer = players[runningGames[indexOfGame].indexOfPlayer2].turn;
-    printf("turn1: %d turn2: %d\n", turnOfFirstPlayer, turnOfSecondPlayer);
     return turnOfFirstPlayer != TURN_NOT_PICKED_YET && turnOfSecondPlayer != TURN_NOT_PICKED_YET;
 }
 
@@ -183,7 +179,7 @@ void getIndexOfPlayers(int indexOfGame, int *firstPlayer, int *secondPlayer) {
 }
 
 int getTurnOfPlayer(int indexOfPlayer) {
-    printf("turn of player %d: %d", indexOfPlayer, players[indexOfPlayer].turn);
+    printf("turn of player %d: %d\n", indexOfPlayer, players[indexOfPlayer].turn);
     return players[indexOfPlayer].turn;
 }
 
@@ -193,6 +189,10 @@ int getGameOfPlayer(int indexOfPlayer) {
 
 int getWhoTurnedSooner(int game) {
     return runningGames[game].whoTurnedSooner;
+}
+
+void unSetWhoTurnedFirst(int game) {
+    runningGames[game].whoTurnedSooner = NOONE_PLAYED_YET;
 }
 
 //bool getWhoIsPlayer(int id) {
