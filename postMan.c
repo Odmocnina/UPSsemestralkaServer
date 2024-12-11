@@ -104,6 +104,7 @@ void *clientHandler(void *args) {
     int received = 0;
     int returnValue;
     int id;
+    int opponetId;
     int game = FAILURE_VALUE;
 
     do {
@@ -134,12 +135,12 @@ void *clientHandler(void *args) {
             returnValue = recv(clientSocket, bufferForMessage + received, 1, 0); // de pres jedn znak ale upravit pak ze plus do toho bufferForMeessage
             if (returnValue > 0) {
                 //for (int i = 0; i < returnValue; i = i + 1) {
-                    if (bufferForMessage[received] == '\n') {
-                        foundNewline = true;
-                        //break;
-                    }
-                    fullMessage[received] = bufferForMessage[received];
-                    received = received + 1;
+                if (bufferForMessage[received] == '\n') {
+                    foundNewline = true;
+                    //break;
+                }
+                fullMessage[received] = bufferForMessage[received];
+                received = received + 1;
                 //}
             } else if (returnValue == 0) {
                 printf("Klient uzavřel spojení\n");
@@ -168,24 +169,37 @@ void *clientHandler(void *args) {
                 game = getGameOfPlayer(id);
                 if (isGame != false) {
                     char gameBegin[LENGHT_OF_START_GAME_MESSAGE] = "Mess:gameBegin:\n";
+                    opponetId = getIdOfOpponent(game, id);
                     returnValue = send(clientSocket, gameBegin, strlen(gameBegin), 0);
-                    send(getSocketOfPlayer(game, false), gameBegin, strlen(gameBegin), 0);
+                    send(getSocketOfPlayer(opponetId), gameBegin, strlen(gameBegin), 0);
                 }
             }
             if (strstr(fullMessage, "turn") != NULL) {
-                setTurnOfPlayer(id, messageOk);
+                setTurnOfPlayer(id, messageOk, game);
                 game = getGameOfPlayer(id);
+                opponetId = getIdOfOpponent(game, id);
                 if (bothPlayersHaveTurn(game)) {
                     char messageForFirstPlayer[MAX_SIZE_OF_MESSAGE];
                     char messageForSecondPlayer[MAX_SIZE_OF_MESSAGE];
-                    handleGame(game, messageForFirstPlayer, messageForSecondPlayer);
+                    int whoSooner = getWhoTurnedSooner(game);
+                    //printGamesArray();
+                    printf("who turned sooner: %d\n", whoSooner);
+                    if (whoSooner == id) {
+                        handleGame(game, messageForFirstPlayer, messageForSecondPlayer);
+                    } else {
+                        handleGame(game, messageForSecondPlayer, messageForFirstPlayer);
+                    }
+                    printf("%s\n", messageForFirstPlayer);
+                    printf("%s\n", messageForSecondPlayer);
                     printf("posilam hracum vysledky");
                     send(clientSocket, messageForFirstPlayer, strlen(messageForFirstPlayer), 0);
-                    send(getSocketOfPlayer(game, !getWhoIsPlayer(id)), messageForSecondPlayer, strlen(messageForSecondPlayer), 0);
+                    send(getSocketOfPlayer(opponetId), messageForSecondPlayer, strlen(messageForSecondPlayer), 0);
                     printf("oba hraci hrali\n");
                     char bothPlayerTurn[26] = "Mess:bothPlayerTurn:\n";
                     send(clientSocket, bothPlayerTurn, strlen(bothPlayerTurn), 0);
-                    send(getSocketOfPlayer(game, !getWhoIsPlayer(id)), bothPlayerTurn, strlen(bothPlayerTurn), 0);
+                    send(getSocketOfPlayer(opponetId), bothPlayerTurn, strlen(bothPlayerTurn), 0);
+                    unSetTurnOfPlayer(id);
+                    unSetTurnOfPlayer(opponetId);
                 }
             }
             if (strstr(bufferForSendBackMessage, "logout") != NULL) {

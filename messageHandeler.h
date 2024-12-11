@@ -7,4 +7,6 @@
 
 int handleMessage(char *message, char *sendBackMessage, int clientSocket);
 
+int getTurnFormMessage(char *message);
+
 #endif //SERVER_MESSAGEHANDELER_H

@@ -94,6 +94,16 @@ void printPlayerArray2() {
     printf("\n");
 }
 
+void printGamesArray() {
+    printf("Zacatek vypisu her\n");
+    for (int i = 0; i < MAX_NUMBER_OF_PLAYERS / 2; i = i + 1) {
+        printf("id1: %d\n", runningGames[i].indexOfPlayer1);
+        printf("id2: %d\n", runningGames[i].indexOfPlayer2);
+        printf("wps: %d\n", runningGames[i].whoTurnedSooner);
+    }
+    printf("\n");
+}
+
 void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
     int i = 0;
     bool found = false;
@@ -102,6 +112,7 @@ void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
             found = true;
             runningGames[i].indexOfPlayer1 = indexFirstPlayer;
             runningGames[i].indexOfPlayer2 = indexSecondPlayer;
+            runningGames[i].whoTurnedSooner = false;
             players[indexFirstPlayer].state = IN_GAME_VALUE;
             players[indexSecondPlayer].state = IN_GAME_VALUE;
             players[indexFirstPlayer].turn = TURN_NOT_PICKED_YET;
@@ -109,8 +120,6 @@ void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
             *game = i;
             players[indexFirstPlayer].game = i;
             players[indexSecondPlayer].game = i;
-            players[indexFirstPlayer].makerOfGame = true;
-            players[indexSecondPlayer].makerOfGame = false;
         }
         i = i + 1;
     }
@@ -131,27 +140,30 @@ bool attemptGameStart(int id) {
     return navrat;
 }
 
-int getIdOfOpponent(int indexOfGame, bool who) {
-    if (who == false) {
-        return players[runningGames[indexOfGame].indexOfPlayer2].index;
-    }
-    if (who == true) {
-        return players[runningGames[indexOfGame].indexOfPlayer1].index;
-    }
-}
-
-int getSocketOfPlayer(int indexOfGame, bool who) {
-    if (who == false) {
-        return players[runningGames[indexOfGame].indexOfPlayer2].clientSocket;
-    }
-    if (who == true) {
-        return players[runningGames[indexOfGame].indexOfPlayer1].clientSocket;
+int getIdOfOpponent(int game, int id) {
+    if (runningGames[game].indexOfPlayer2 == id) {
+        return runningGames[game].indexOfPlayer1;
+    } else {
+        return runningGames[game].indexOfPlayer2;
     }
 }
 
-void setTurnOfPlayer(int indexOfPlayer, int turn) {
+int getSocketOfPlayer(int id) {
+    return players[id].clientSocket;
+}
+
+void setTurnOfPlayer(int indexOfPlayer, int turn, int game) {
     printf("nastavuju tah\n");
     players[indexOfPlayer].turn = turn;
+    if (indexOfPlayer == runningGames[game].indexOfPlayer2) {
+        runningGames[game].whoTurnedSooner = indexOfPlayer;
+    } else {
+        runningGames[game].whoTurnedSooner = false;
+    }
+}
+
+void unSetTurnOfPlayer(int indexOfPlayer) {
+    players[indexOfPlayer].turn = TURN_NOT_PICKED_YET;
 }
 
 bool bothPlayersHaveTurn(int indexOfGame) {
@@ -179,6 +191,10 @@ int getGameOfPlayer(int indexOfPlayer) {
     return players[indexOfPlayer].game;
 }
 
-bool getWhoIsPlayer(int id) {
-    return players[id].makerOfGame;
+int getWhoTurnedSooner(int game) {
+    return runningGames[game].whoTurnedSooner;
 }
+
+//bool getWhoIsPlayer(int id) {
+//    return players[id].makerOfGame;
+//}

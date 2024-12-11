@@ -9,6 +9,7 @@
 #include "gameObjects.h"
 
 int handleRock(int firstPlayerTurn) {
+    printf("v kamenu: %d\n", firstPlayerTurn);
     if (firstPlayerTurn == SCISSORS_VALUE || firstPlayerTurn == LIZARD_VALUE) {
         return SECOND_PLAYER_WON;
     } else {
@@ -17,6 +18,7 @@ int handleRock(int firstPlayerTurn) {
 }
 
 int handlePaper(int firstPlayerTurn) {
+    printf("v papiru: %d\n", firstPlayerTurn);
     if (firstPlayerTurn == ROCK_VALUE || firstPlayerTurn == SPOCK_VALUE) {
         return SECOND_PLAYER_WON;
     } else {
@@ -25,6 +27,7 @@ int handlePaper(int firstPlayerTurn) {
 }
 
 int handleScissors(int firstPlayerTurn) {
+    printf("v nuzky: %d\n", firstPlayerTurn);
     if (firstPlayerTurn == PAPER_VALUE || firstPlayerTurn == LIZARD_VALUE) {
         return SECOND_PLAYER_WON;
     } else {
@@ -33,6 +36,7 @@ int handleScissors(int firstPlayerTurn) {
 }
 
 int handleLizard(int firstPlayerTurn) {
+    printf("v tapirovi: %d\n", firstPlayerTurn);
     if (firstPlayerTurn == PAPER_VALUE || firstPlayerTurn == SPOCK_VALUE) {
         return SECOND_PLAYER_WON;
     } else {
@@ -41,6 +45,7 @@ int handleLizard(int firstPlayerTurn) {
 }
 
 int handleSpock(int firstPlayerTurn) {
+    printf("v spock: %d\n", firstPlayerTurn);
     if (firstPlayerTurn == ROCK_VALUE || firstPlayerTurn == SCISSORS_VALUE) {
         return SECOND_PLAYER_WON;
     } else {
@@ -50,18 +55,19 @@ int handleSpock(int firstPlayerTurn) {
 
 int resultOfGameRound(int firstPlayerTurn, int secondPlayerTurn) {
     int navrat = FAILURE_VALUE;
+    printf("first player: %d second player %d\n", firstPlayerTurn, secondPlayerTurn);
     if (firstPlayerTurn == secondPlayerTurn) {
         navrat = STALEMATE_VALUE;
-    } else if (firstPlayerTurn == ROCK_VALUE) {
-        navrat = handleRock(secondPlayerTurn);
-    } else if (firstPlayerTurn == PAPER_VALUE) {
-        navrat = handlePaper(secondPlayerTurn);
-    } else if (firstPlayerTurn == SCISSORS_VALUE) {
-        navrat = handleScissors(secondPlayerTurn);
-    } else if (firstPlayerTurn == LIZARD_VALUE) {
-        navrat = handleLizard(secondPlayerTurn);
-    } else if (firstPlayerTurn == SPOCK_VALUE) {
-        navrat = handleSpock(secondPlayerTurn);
+    } else if (secondPlayerTurn == ROCK_VALUE) {
+        navrat = handleRock(firstPlayerTurn);
+    } else if (secondPlayerTurn == PAPER_VALUE) {
+        navrat = handlePaper(firstPlayerTurn);
+    } else if (secondPlayerTurn == SCISSORS_VALUE) {
+        navrat = handleScissors(firstPlayerTurn);
+    } else if (secondPlayerTurn == LIZARD_VALUE) {
+        navrat = handleLizard(firstPlayerTurn);
+    } else if (secondPlayerTurn == SPOCK_VALUE) {
+        navrat = handleSpock(firstPlayerTurn);
     }
     return navrat;
 }
@@ -75,6 +81,7 @@ void handleGame(int indexOfGame, char *messageForFirstPlayer, char *messageForSe
     int firstPlayerTurn = getTurnOfPlayer(indexOfFirstPlayer);
     int secondPlayerTurn = getTurnOfPlayer(indexOfSecondPlayer);
     int result = resultOfGameRound(firstPlayerTurn, secondPlayerTurn);
+    printf("vysledek hry: %d\n", result);
     if (result == STALEMATE_VALUE) {
         sprintf(messageForFirstPlayer, "Mess:%s:%s:%d:\n", "gameResult", "s", secondPlayerTurn);
         sprintf(messageForSecondPlayer, "Mess:%s:%s:%d:\n", "gameResult", "s", firstPlayerTurn);

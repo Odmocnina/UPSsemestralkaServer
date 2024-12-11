@@ -36,6 +36,7 @@ int handleLogin(char *message, int clientSocket) {
     }
     //int gameStartAttempt = handleGameStart(navrat);
 
+    printf("Pred navratem");
     return navrat;
 }
 
@@ -47,6 +48,10 @@ int handleTurn(char *message) {
     int navrat = FAILURE_VALUE;
     navrat = turn;
     return navrat;
+}
+
+int getTurnFormMessage(char *message) {
+    return handleTurn(message);
 }
 
 int handleMessage(char *message, char *sendBackMessage, int clientSocket) {
@@ -72,6 +77,7 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket) {
                 if (id != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "login", id);
                 }
+                printf("Po vytvoreni zpravy %d\n", id);
                 navrat = id;
             } else if (strcmp(typeOfMessage, "logout") == STRINGS_ARE_SAME) {
                 printf("logout\n");
@@ -86,14 +92,15 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket) {
                     makeMessage(sendBackMessage, "turn", turn);
                 }
                 navrat = turn;
+            } else if (strcmp(typeOfMessage, "ready") == STRINGS_ARE_SAME) {
+                printf("ready\n");
+                unSetTurnOfPlayer(clientSocket);//soket zde se bude predavat jako id
             }
         }
         typeOfMessage[j] = fullMessageForInspection[i];
         i = i + 1;
         j = j + 1;
     }
-
-    printPlayerArray2();
 
     return navrat;
 }

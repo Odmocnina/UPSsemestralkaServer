@@ -15,7 +15,6 @@ struct player {
     //int time;
     int turn;
     int game;
-    bool makerOfGame;
 };
 
 #endif //SERVER_PLAYER_H
