@@ -73,6 +73,10 @@ void *pingHandler(void *args) {
     return NULL;
 }
 
+int processMessage() {
+
+}
+
 // Obsluha klienta ve vláknu
 void *clientHandler(void *args) {
     struct threadArgs *targs = (struct threadArgs *)args;
@@ -153,11 +157,10 @@ void *clientHandler(void *args) {
             }
         }
         fullMessage[received] = '\0';
-        printf("Přijatá zpráva: %s\n", fullMessage);
+        printf("Přijatá zpráva: %s", fullMessage);
 
         // Zpracování zprávy
         int messageOk = handleMessage(fullMessage, bufferForSendBackMessage, clientSocket);
-        printf("messageOk: %d\n", messageOk);
         if (messageOk != FAILURE_VALUE) {
             returnValue = send(clientSocket, bufferForSendBackMessage, strlen(bufferForSendBackMessage), 0);
             if (returnValue < 0) {
@@ -181,28 +184,39 @@ void *clientHandler(void *args) {
                 if (bothPlayersHaveTurn(game)) {
                     char messageForFirstPlayer[MAX_SIZE_OF_MESSAGE];
                     char messageForSecondPlayer[MAX_SIZE_OF_MESSAGE];
-                    int whoSooner = getWhoTurnedSooner(game);
-                    //printGamesArray();
-                    printf("who turned sooner: %d\n", whoSooner);
+                    //int whoSooner = getWhoTurnedSooner(game);
                     handleGame(game, messageForFirstPlayer, messageForSecondPlayer);
-                    printf("%s\n", messageForFirstPlayer);
-                    printf("%s\n", messageForSecondPlayer);
-                    if (whoSooner == id) {
+                    if (isFirstPlayer(id, game)) {
                         send(clientSocket, messageForFirstPlayer, strlen(messageForFirstPlayer), 0);
                         send(getSocketOfPlayer(opponetId), messageForSecondPlayer, strlen(messageForSecondPlayer), 0);
                     } else {
                         send(getSocketOfPlayer(opponetId), messageForFirstPlayer, strlen(messageForFirstPlayer), 0);
                         send(clientSocket, messageForSecondPlayer, strlen(messageForSecondPlayer), 0);
                     }
-                    char bothPlayerTurn[26] = "Mess:bothPlayerTurn:\n";
+                    printf("posilam ze oba hraci hrali");
+                    char bothPlayerTurn[LENGTH_OF_BOTHPLAYERS_TURED_MESSAGE] = "Mess:bothPlayerTurn:\n";
                     send(clientSocket, bothPlayerTurn, strlen(bothPlayerTurn), 0);
                     send(getSocketOfPlayer(opponetId), bothPlayerTurn, strlen(bothPlayerTurn), 0);
                     unSetTurnOfPlayer(id);
                     unSetTurnOfPlayer(opponetId);
-                    unSetWhoTurnedFirst(game);
+                    //unSetWhoTurnedFirst(game);
                 }
             }
-            if (strstr(bufferForSendBackMessage, "logout") != NULL) {
+            if (strstr(fullMessage, "game") != NULL) {
+                unsetGame(game);
+                freePlayer(id);
+                game = FAILURE_VALUE;
+                opponetId = FAILURE_VALUE;
+                bool isGame = attemptGameStart(id);
+                game = getGameOfPlayer(id);
+                if (isGame != false) {
+                    char gameBegin[LENGHT_OF_START_GAME_MESSAGE] = "Mess:gameBegin:\n";
+                    opponetId = getIdOfOpponent(game, id);
+                    returnValue = send(clientSocket, gameBegin, strlen(gameBegin), 0);
+                    send(getSocketOfPlayer(opponetId), gameBegin, strlen(gameBegin), 0);
+                }
+            }
+            if (strstr(fullMessage, "logout") != NULL) {
                 break;
             }
         }

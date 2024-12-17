@@ -24,6 +24,7 @@ void inicilazePlayerArray() {
         runningGames[i].indexOfPlayer1 = FREE_POSITION;
 
         runningGames[i].indexOfPlayer2 = FREE_POSITION;
+
     }
 }
 
@@ -88,7 +89,7 @@ void printPlayerArray2() {
         printf("Jmeno: %s\n", players[i].name);
         printf("Stav: %d\n", players[i].state);
         printf("index: %d\n", players[i].index);
-        printf("game: %d\n", players[i].game);
+        printf("lobby: %d\n", players[i].game);
         printf("turn: %d\n", players[i].turn);
     }
     printf("\n");
@@ -99,9 +100,31 @@ void printGamesArray() {
     for (int i = 0; i < MAX_NUMBER_OF_PLAYERS / 2; i = i + 1) {
         printf("id1: %d\n", runningGames[i].indexOfPlayer1);
         printf("id2: %d\n", runningGames[i].indexOfPlayer2);
-        printf("wps: %d\n", runningGames[i].whoTurnedSooner);
+        printf("kola: %d\n", runningGames[i].numberOfPlayedRounds);
+        printf("1s: %d\n", runningGames[i].indexOfPlayer1);
+        printf("2s: %d\n", runningGames[i].indexOfPlayer2);
     }
     printf("\n");
+}
+
+int getScoreOfFirstPlayer(int game) {
+    return runningGames[game].firstPlayerScore;
+}
+
+int getScoreOfSecondPlayer(int game) {
+    return runningGames[game].secondPlayerScore;
+}
+
+int getNumberOfRounds(int game) {
+    return runningGames[game].numberOfPlayedRounds;
+}
+
+void updateGameScore(int game, int player1Gain, int player2Gain, int stalemateGain) {
+    printf("v update lobby score %d %d\n", player1Gain, player2Gain);
+    runningGames[game].firstPlayerScore = runningGames[game].firstPlayerScore + player1Gain;
+    runningGames[game].secondPlayerScore = runningGames[game].secondPlayerScore + player2Gain;
+    runningGames[game].numberOfStalemates = runningGames[game].numberOfStalemates + stalemateGain;
+    runningGames[game].numberOfPlayedRounds = runningGames[game].numberOfPlayedRounds + 1;
 }
 
 void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
@@ -112,7 +135,10 @@ void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
             found = true;
             runningGames[i].indexOfPlayer1 = indexFirstPlayer;
             runningGames[i].indexOfPlayer2 = indexSecondPlayer;
-            runningGames[i].whoTurnedSooner = false;
+            runningGames[i].numberOfPlayedRounds = 0;
+            runningGames[i].firstPlayerScore = 0;
+            runningGames[i].secondPlayerScore = 0;
+            runningGames[i].numberOfStalemates = 0;
             players[indexFirstPlayer].state = IN_GAME_VALUE;
             players[indexSecondPlayer].state = IN_GAME_VALUE;
             players[indexFirstPlayer].turn = TURN_NOT_PICKED_YET;
@@ -154,9 +180,9 @@ int getSocketOfPlayer(int id) {
 
 void setTurnOfPlayer(int indexOfPlayer, int turn, int game) {
     players[indexOfPlayer].turn = turn;
-    if (runningGames[game].whoTurnedSooner == NOONE_PLAYED_YET) {
+    /*if (runningGames[game].whoTurnedSooner == NOONE_PLAYED_YET) {
         runningGames[game].whoTurnedSooner = indexOfPlayer;
-    }
+    }*/
 }
 
 void unSetTurnOfPlayer(int indexOfPlayer) {
@@ -179,7 +205,6 @@ void getIndexOfPlayers(int indexOfGame, int *firstPlayer, int *secondPlayer) {
 }
 
 int getTurnOfPlayer(int indexOfPlayer) {
-    printf("turn of player %d: %d\n", indexOfPlayer, players[indexOfPlayer].turn);
     return players[indexOfPlayer].turn;
 }
 
@@ -187,12 +212,34 @@ int getGameOfPlayer(int indexOfPlayer) {
     return players[indexOfPlayer].game;
 }
 
-int getWhoTurnedSooner(int game) {
-    return runningGames[game].whoTurnedSooner;
+bool isFirstPlayer(int id, int game) {
+    return runningGames[game].indexOfPlayer1 == id;
 }
 
-void unSetWhoTurnedFirst(int game) {
-    runningGames[game].whoTurnedSooner = NOONE_PLAYED_YET;
+int freePlayer(int id) {
+    if (players[id].state == WAITING_VALUE) {
+        return FAILURE_VALUE;
+    }
+    players[id].state = WAITING_VALUE;
+    players[id].turn = TURN_NOT_PICKED_YET;
+    return SUCCESS_VALUE;
+}
+
+int unsetGame(int game) {
+    if (runningGames[game].indexOfPlayer1 == FREE_POSITION && runningGames[game].indexOfPlayer2 == FREE_POSITION) {
+        return FAILURE_VALUE;
+    }
+    runningGames[game].indexOfPlayer1 = FREE_POSITION;
+    runningGames[game].indexOfPlayer2 = FREE_POSITION;
+    runningGames[game].firstPlayerScore = 0;
+    runningGames[game].secondPlayerScore = 0;
+    runningGames[game].numberOfPlayedRounds = 0;
+    runningGames[game].numberOfStalemates = 0;
+    return SUCCESS_VALUE;
+}
+
+int getStalemates(int game) {
+    return runningGames[game].numberOfStalemates;
 }
 
 //bool getWhoIsPlayer(int id) {

@@ -13,7 +13,10 @@
 struct lobby {
     int indexOfPlayer1;
     int indexOfPlayer2;
-    int whoTurnedSooner;
+    int numberOfPlayedRounds;
+    int firstPlayerScore;
+    int secondPlayerScore;
+    int numberOfStalemates;
 };
 
 void inicilazePlayerArray();
@@ -54,5 +57,21 @@ void printGamesArray();
 int getIdOfOpponent(int game, int id);
 
 int getWhoTurnedSooner(int game);
+
+void updateGameScore(int game, int player1Gain, int player2Gain, int stalemateGain);
+
+int getScoreOfFirstPlayer(int game);
+
+int getScoreOfSecondPlayer(int game);
+
+int getNumberOfRounds(int game);
+
+bool isFirstPlayer(int id, int game);
+
+int unsetGame(int game);
+
+int freePlayer(int id);
+
+int getStalemates(int game);
 
 #endif //SERVER_GAMEOBJECTS_H

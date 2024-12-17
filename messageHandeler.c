@@ -19,8 +19,14 @@ int handlelogout(char *message) {
 
 void makeMessage(char *buffer, char *type, int id) {
     //char idInChar = id;  //muj genius je tak velky, ze ma vlastni gravitacni pole
-    sprintf(buffer, "Mess:%s:%d:\n", type, id);
-    printf(buffer);
+    if (strcmp(type, "login") == STRINGS_ARE_SAME) {
+        sprintf(buffer, "Mess:%s:%d:\n", type, id);
+    } else {
+        sprintf(buffer, "Mess:%s:OK:\n", type);
+    }
+    //sprintf(buffer, "Mess:%s:%d:\n", type, id);
+    //printf(buffer);
+    //sprintf();
 }
 
 int handleLogin(char *message, int clientSocket) {
@@ -72,26 +78,25 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket) {
         if (fullMessageForInspection[i] == ':') {  // Pokud narazíme na středník, ukončíme parsování
             typeOfMessage[j] = '\0';  // Ukončíme slov
             if (strcmp(typeOfMessage, "login") == STRINGS_ARE_SAME) {
-                printf("Login\n");
                 int id = handleLogin(fullMessageForInspection, clientSocket);
                 if (id != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "login", id);
                 }
-                printf("Po vytvoreni zpravy %d\n", id);
                 navrat = id;
             } else if (strcmp(typeOfMessage, "logout") == STRINGS_ARE_SAME) {
-                printf("logout\n");
                 int id = handlelogout(fullMessageForInspection);
                 if (id != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "logout", id);
                 }
             } else if (strcmp(typeOfMessage, "turn") == STRINGS_ARE_SAME) {
-                printf("turn\n");
                 int turn = handleTurn(fullMessageForInspection);
                 if (turn != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "turn", turn);
                 }
                 navrat = turn;
+            } else if (strcmp(typeOfMessage, "game") == STRINGS_ARE_SAME) {
+                makeMessage(sendBackMessage, "game", -1);
+                navrat = SUCCESS_VALUE;
             }
         }
         typeOfMessage[j] = fullMessageForInspection[i];
