@@ -260,6 +260,7 @@ CMakeFiles/server.dir/messageHandeler.c.o: /mnt/c/Users/Michael/Documents/Skola/
   /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
   /usr/include/alloca.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+  /usr/include/ctype.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h \
@@ -481,6 +482,8 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
+
+/usr/include/ctype.h:
 
 /usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
 

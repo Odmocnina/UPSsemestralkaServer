@@ -129,6 +129,11 @@ void *clientHandler(void *args) {
             }
         }
 
+        if (strncmp(bufferForMessage, "Mess:", 5)) {
+            printf(" %s ", bufferForMessage);
+            printf("pruser");
+        }
+
         strncpy(fullMessage, signature, LENGTH_OF_MESSAGE_SIGNATURE);
 
         // Přijetí zbytku zprávy, dokud nenarazí na '\n'
@@ -212,16 +217,16 @@ void *clientHandler(void *args) {
                 if (isGame != false) {
                     char gameBegin[LENGHT_OF_START_GAME_MESSAGE] = "Mess:gameBegin:\n";
                     opponetId = getIdOfOpponent(game, id);
-                    returnValue = send(clientSocket, gameBegin, strlen(gameBegin), 0);
-                    send(getSocketOfPlayer(opponetId), gameBegin, strlen(gameBegin), 0);
+                    //printf("delka zpravy: %d" , strlen(gameBegin));
+                    returnValue = send(clientSocket, gameBegin, LENGHT_OF_START_GAME_MESSAGE, 0);
+                    send(getSocketOfPlayer(opponetId), gameBegin, LENGHT_OF_START_GAME_MESSAGE, 0);
                 }
             }
             if (strstr(fullMessage, "logout") != NULL) {
                 break;
             }
         }
-        resetNumber(&received, -2); //tady je -2 protoze pokud je zpraovavana dalsi zpravat, tak to
-        // jde do toho prvniho cyklu a nejak to prej precte 2veci, i kdyz je to neprcte
+        resetNumber(&received, 0);
         memset(fullMessage, 0, sizeof(fullMessage));
         memset(bufferForSendBackMessage, 0, sizeof(bufferForSendBackMessage));
     } while (returnValue > 0);

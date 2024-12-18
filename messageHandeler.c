@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "constants.h"
 #include "messageHandeler.h"
 #include "gameObjects.h"
@@ -60,7 +61,23 @@ int getTurnFormMessage(char *message) {
     return handleTurn(message);
 }
 
+char *trimLeft(char *str) {
+    // Kontrola prázdného vstupu
+    if (str == NULL) {
+        return NULL;
+    }
+
+    // Najdi první znak, který není bílý
+    while (isspace((unsigned char)*str)) {
+        str = str + 1;
+    }
+
+    return str; // Vrátí ukazatel na začátek "ořezaného" řetězce
+}
+
+
 int handleMessage(char *message, char *sendBackMessage, int clientSocket) {
+    message = trimLeft(message);
     if (strncmp(message, "Mess:", LENGTH_OF_MESSAGE_SIGNATURE + 1) != 0) {
         printf("Zprava neni validni\n");
         return FAILURE_VALUE;
