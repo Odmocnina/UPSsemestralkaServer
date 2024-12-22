@@ -8,12 +8,16 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 struct player players[MAX_NUMBER_OF_PLAYERS];
 
 struct lobby runningGames[MAX_NUMBER_OF_PLAYERS / 2];
 
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
 void inicilazePlayerArray() {
+    pthread_mutex_lock(&lock);
     printf("Inicializuji pole hracu\n");
     for (int i = 0; i < MAX_NUMBER_OF_PLAYERS; i = i + 1) {
         players[i].state = FREE_POSITION;
@@ -26,9 +30,11 @@ void inicilazePlayerArray() {
         runningGames[i].indexOfPlayer2 = FREE_POSITION;
 
     }
+    pthread_mutex_unlock(&lock);
 }
 
 int addPlayerToGamersArray(char *name, int clientSocket) {
+    pthread_mutex_lock(&lock);
     int i = 0;
     bool found = false;
     int navrat = FAILURE_VALUE;
@@ -44,10 +50,12 @@ int addPlayerToGamersArray(char *name, int clientSocket) {
         }
         i = i + 1;
     }
+    pthread_mutex_unlock(&lock);
     return navrat;
 }
 
 int getFreePlayer(int indexOfConnectedPlayer) {
+    pthread_mutex_lock(&lock);
     int i = 0;
     int navrat = FAILURE_VALUE;
     bool found = false;
@@ -58,6 +66,7 @@ int getFreePlayer(int indexOfConnectedPlayer) {
         }
         i = i + 1;
     }
+    pthread_mutex_unlock(&lock);
     return navrat;
 }
 
@@ -68,12 +77,15 @@ void updatePlayerArray(int index) {
 }
 
 void removePlayerFromGamersArray(int index) {
+    pthread_mutex_lock(&lock);
     players[index].state = FREE_POSITION;
     players[index].name[0] = '\0';
     players[index].index = FREE_POSITION;
+    pthread_mutex_unlock(&lock);
 }
 
 void printPlayerArray() {
+    pthread_mutex_lock(&lock);
     printf("Zacatek vypisu hracu\n");
     for (int i = 0; i < MAX_NUMBER_OF_PLAYERS; i = i + 1) {
         printf("Jmeno: %s\n", players[i].name);
@@ -81,9 +93,11 @@ void printPlayerArray() {
         printf("index: %d\n", players[i].index);
     }
     printf("\n");
+    pthread_mutex_unlock(&lock);
 }
 
 void printPlayerArray2() {
+    pthread_mutex_lock(&lock);
     printf("Zacatek vypisu hracu\n");
     for (int i = 0; i < MAX_NUMBER_OF_PLAYERS; i = i + 1) {
         printf("Jmeno: %s\n", players[i].name);
@@ -93,9 +107,11 @@ void printPlayerArray2() {
         printf("turn: %d\n", players[i].turn);
     }
     printf("\n");
+    pthread_mutex_unlock(&lock);
 }
 
 void printGamesArray() {
+    pthread_mutex_lock(&lock);
     printf("Zacatek vypisu her\n");
     for (int i = 0; i < MAX_NUMBER_OF_PLAYERS / 2; i = i + 1) {
         printf("id1: %d\n", runningGames[i].indexOfPlayer1);
@@ -105,29 +121,41 @@ void printGamesArray() {
         printf("2s: %d\n", runningGames[i].indexOfPlayer2);
     }
     printf("\n");
+    pthread_mutex_unlock(&lock);
 }
 
 int getScoreOfFirstPlayer(int game) {
-    return runningGames[game].firstPlayerScore;
+    pthread_mutex_lock(&lock);
+    int navrat = runningGames[game].firstPlayerScore;
+    pthread_mutex_unlock(&lock);
+    return navrat;
 }
 
 int getScoreOfSecondPlayer(int game) {
-    return runningGames[game].secondPlayerScore;
+    pthread_mutex_lock(&lock);
+    int navrat = runningGames[game].secondPlayerScore;
+    pthread_mutex_unlock(&lock);
+    return navrat;
 }
 
 int getNumberOfRounds(int game) {
-    return runningGames[game].numberOfPlayedRounds;
+    pthread_mutex_lock(&lock);
+    int navrat = runningGames[game].numberOfPlayedRounds;
+    pthread_mutex_unlock(&lock);
+    return navrat;
 }
 
 void updateGameScore(int game, int player1Gain, int player2Gain, int stalemateGain) {
-    printf("v update lobby score %d %d\n", player1Gain, player2Gain);
+    pthread_mutex_lock(&lock);
     runningGames[game].firstPlayerScore = runningGames[game].firstPlayerScore + player1Gain;
     runningGames[game].secondPlayerScore = runningGames[game].secondPlayerScore + player2Gain;
     runningGames[game].numberOfStalemates = runningGames[game].numberOfStalemates + stalemateGain;
     runningGames[game].numberOfPlayedRounds = runningGames[game].numberOfPlayedRounds + 1;
+    pthread_mutex_unlock(&lock);
 }
 
 void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
+    pthread_mutex_lock(&lock);
     int i = 0;
     bool found = false;
     while (!found && i < (MAX_NUMBER_OF_PLAYERS / 2)) {
@@ -149,6 +177,7 @@ void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
         }
         i = i + 1;
     }
+    pthread_mutex_unlock(&lock);
 }
 
 bool attemptGameStart(int id) {
@@ -167,66 +196,96 @@ bool attemptGameStart(int id) {
 }
 
 int getIdOfOpponent(int game, int id) {
+    pthread_mutex_lock(&lock);
     if (runningGames[game].indexOfPlayer2 == id) {
-        return runningGames[game].indexOfPlayer1;
+        int navrat = runningGames[game].indexOfPlayer1;
+        pthread_mutex_unlock(&lock);
+        return navrat;
     } else {
-        return runningGames[game].indexOfPlayer2;
+        int navrat = runningGames[game].indexOfPlayer2;
+        pthread_mutex_unlock(&lock);
+        return navrat;
     }
 }
 
 int getSocketOfPlayer(int id) {
-    return players[id].clientSocket;
+    pthread_mutex_lock(&lock);
+    int navrat = players[id].clientSocket;
+    pthread_mutex_unlock(&lock);
+    return navrat;
 }
 
-void setTurnOfPlayer(int indexOfPlayer, int turn, int game) {
+void setTurnOfPlayer(int indexOfPlayer, int turn) {
+    pthread_mutex_lock(&lock);
     players[indexOfPlayer].turn = turn;
+    pthread_mutex_unlock(&lock);
     /*if (runningGames[game].whoTurnedSooner == NOONE_PLAYED_YET) {
         runningGames[game].whoTurnedSooner = indexOfPlayer;
     }*/
 }
 
 void unSetTurnOfPlayer(int indexOfPlayer) {
+    pthread_mutex_lock(&lock);
     players[indexOfPlayer].turn = TURN_NOT_PICKED_YET;
+    pthread_mutex_unlock(&lock);
 }
 
 bool bothPlayersHaveTurn(int indexOfGame) {
+    pthread_mutex_lock(&lock);
     if (indexOfGame == FAILURE_VALUE) {
-        printf("v saniti checku");
+        pthread_mutex_unlock(&lock);
         return false;
     }
     int turnOfFirstPlayer = players[runningGames[indexOfGame].indexOfPlayer1].turn;
     int turnOfSecondPlayer = players[runningGames[indexOfGame].indexOfPlayer2].turn;
+    pthread_mutex_unlock(&lock);
     return turnOfFirstPlayer != TURN_NOT_PICKED_YET && turnOfSecondPlayer != TURN_NOT_PICKED_YET;
 }
 
 void getIndexOfPlayers(int indexOfGame, int *firstPlayer, int *secondPlayer) {
+    pthread_mutex_lock(&lock);
     *firstPlayer = runningGames[indexOfGame].indexOfPlayer1;
     *secondPlayer = runningGames[indexOfGame].indexOfPlayer2;
+    pthread_mutex_unlock(&lock);
 }
 
 int getTurnOfPlayer(int indexOfPlayer) {
-    return players[indexOfPlayer].turn;
+    pthread_mutex_lock(&lock);
+    int navrat = players[indexOfPlayer].turn;
+    pthread_mutex_unlock(&lock);
+    return navrat;
 }
 
 int getGameOfPlayer(int indexOfPlayer) {
-    return players[indexOfPlayer].game;
+    pthread_mutex_lock(&lock);
+    int navrat = players[indexOfPlayer].game;
+    pthread_mutex_unlock(&lock);
+    return navrat;
 }
 
 bool isFirstPlayer(int id, int game) {
-    return runningGames[game].indexOfPlayer1 == id;
+    pthread_mutex_lock(&lock);
+    bool navrat = runningGames[game].indexOfPlayer1 == id;
+    pthread_mutex_unlock(&lock);
+    return navrat;
 }
 
 int freePlayer(int id) {
+    pthread_mutex_lock(&lock);
     if (players[id].state == WAITING_VALUE) {
+        pthread_mutex_unlock(&lock);
         return FAILURE_VALUE;
     }
     players[id].state = WAITING_VALUE;
     players[id].turn = TURN_NOT_PICKED_YET;
+    pthread_mutex_unlock(&lock);
     return SUCCESS_VALUE;
 }
 
 int unsetGame(int game) {
+    pthread_mutex_lock(&lock);
     if (runningGames[game].indexOfPlayer1 == FREE_POSITION && runningGames[game].indexOfPlayer2 == FREE_POSITION) {
+        pthread_mutex_unlock(&lock);
         return FAILURE_VALUE;
     }
     runningGames[game].indexOfPlayer1 = FREE_POSITION;
@@ -235,11 +294,15 @@ int unsetGame(int game) {
     runningGames[game].secondPlayerScore = 0;
     runningGames[game].numberOfPlayedRounds = 0;
     runningGames[game].numberOfStalemates = 0;
+    pthread_mutex_unlock(&lock);
     return SUCCESS_VALUE;
 }
 
 int getStalemates(int game) {
-    return runningGames[game].numberOfStalemates;
+    pthread_mutex_lock(&lock);
+    int navrat = runningGames[game].numberOfStalemates;
+    pthread_mutex_unlock(&lock);
+    return navrat;
 }
 
 //bool getWhoIsPlayer(int id) {

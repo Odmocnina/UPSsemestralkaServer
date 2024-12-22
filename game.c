@@ -9,7 +9,6 @@
 #include "gameObjects.h"
 
 int handleRock(int firstPlayerTurn) {
-    printf("v kamenu: %d\n", firstPlayerTurn);
     if (firstPlayerTurn == SCISSORS_VALUE || firstPlayerTurn == LIZARD_VALUE) {
         return SECOND_PLAYER_WON;
     } else {
@@ -18,7 +17,6 @@ int handleRock(int firstPlayerTurn) {
 }
 
 int handlePaper(int firstPlayerTurn) {
-    printf("v papiru: %d\n", firstPlayerTurn);
     if (firstPlayerTurn == ROCK_VALUE || firstPlayerTurn == SPOCK_VALUE) {
         return SECOND_PLAYER_WON;
     } else {
@@ -27,7 +25,6 @@ int handlePaper(int firstPlayerTurn) {
 }
 
 int handleScissors(int firstPlayerTurn) {
-    printf("v nuzky: %d\n", firstPlayerTurn);
     if (firstPlayerTurn == PAPER_VALUE || firstPlayerTurn == LIZARD_VALUE) {
         return SECOND_PLAYER_WON;
     } else {
@@ -36,7 +33,6 @@ int handleScissors(int firstPlayerTurn) {
 }
 
 int handleLizard(int firstPlayerTurn) {
-    printf("v tapirovi: %d\n", firstPlayerTurn);
     if (firstPlayerTurn == PAPER_VALUE || firstPlayerTurn == SPOCK_VALUE) {
         return SECOND_PLAYER_WON;
     } else {
@@ -45,7 +41,6 @@ int handleLizard(int firstPlayerTurn) {
 }
 
 int handleSpock(int firstPlayerTurn) {
-    printf("v spock: %d\n", firstPlayerTurn);
     if (firstPlayerTurn == ROCK_VALUE || firstPlayerTurn == SCISSORS_VALUE) {
         return SECOND_PLAYER_WON;
     } else {
@@ -54,7 +49,6 @@ int handleSpock(int firstPlayerTurn) {
 }
 int resultOfGameRound(int firstPlayerTurn, int secondPlayerTurn) {
     int navrat = FAILURE_VALUE;
-    printf("first player: %d second player %d\n", firstPlayerTurn, secondPlayerTurn);
     if (firstPlayerTurn == secondPlayerTurn) {
         navrat = STALEMATE_VALUE;
     } else if (secondPlayerTurn == ROCK_VALUE) {
@@ -77,13 +71,9 @@ void handleGame(int indexOfGame, char *messageForFirstPlayer, char *messageForSe
     int indexOfSecondPlayer;
     getIndexOfPlayers(indexOfGame, &indexOfFirstPlayer, &indexOfSecondPlayer);
     printGamesArray();
-    printf("indexy hracu: %d %d\n", indexOfFirstPlayer, indexOfSecondPlayer);
     int firstPlayerTurn = getTurnOfPlayer(indexOfFirstPlayer);
     int secondPlayerTurn = getTurnOfPlayer(indexOfSecondPlayer);
-    printf("Tahy hracu: %d %d\n", firstPlayerTurn, secondPlayerTurn);
     int result = resultOfGameRound(firstPlayerTurn, secondPlayerTurn);
-    printf("vysledek hry: %d\n", result);
-    printf(":%d:%d:%d:\n", getNumberOfRounds(indexOfGame), getScoreOfFirstPlayer(indexOfGame), getScoreOfSecondPlayer(indexOfGame));
     if (result == STALEMATE_VALUE) {
         updateGameScore(indexOfGame, 0, 0, 1);
         sprintf(messageForFirstPlayer, "Mess:%s:%s:%d:%d:%d:%d:\n", "gameResult", "s", secondPlayerTurn

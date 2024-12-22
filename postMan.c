@@ -15,6 +15,7 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <fcntl.h>
+#include <ctype.h>
 
 // Struktura argumentů pro vlákno
 struct threadArgs {
@@ -28,11 +29,19 @@ void resetNumber(int *number, int resetNumber) {
     *number = resetNumber;
 }
 
+int sendMessage(int socket, char *message, int length) {
+    int navrat = send(socket, message, length, 0);
+    if (navrat < 0) {
+        printf("Chyba pri odesilani zpravy\n");
+    }
+    return navrat;
+}
+
 void *pingHandler(void *args) {
     int clientSocket = *(int *)args;
     free(args); // Pokud alokujete paměť pro předávání argumentů.
 
-    const char *pingMessage = "ping\n";
+    const char *pingMessage = "Mess:břing:\n";
     char pongResponse[16] = {0};
     struct timeval timeout = {5, 0}; // Nastavení timeoutu na 5 sekund.
     int returnValue;
@@ -61,7 +70,7 @@ void *pingHandler(void *args) {
         }
 
         pongResponse[returnValue] = '\0'; // Ujistíme se, že máme validní řetězec.
-        if (strcmp(pongResponse, "pong\n") != 0) {
+        if (strcmp(pongResponse, "Mess:břong:\n") != 0) {
             printf("Neočekávaná odpověď od klienta: %s. Odpojuji klienta.\n", pongResponse);
             close(clientSocket);
             pthread_exit(NULL);
@@ -83,24 +92,6 @@ void *clientHandler(void *args) {
     int clientSocket = targs->clientSocket;
     free(targs);
 
-    /*pthread_t pingThread;
-    int *clientSocketCopy = malloc(sizeof(int));
-    if (clientSocketCopy == NULL) {
-        perror("Chyba při alokaci paměti");
-        close(clientSocket);
-        return NULL;
-    }
-    *clientSocketCopy = clientSocket;
-
-    // Spuštění vlákna pro pingování
-    if (pthread_create(&pingThread, NULL, pingHandler, clientSocketCopy) != 0) {
-        perror("Nepodařilo se vytvořit vlákno pro pingování");
-        close(clientSocket);
-        free(clientSocketCopy);
-        return NULL;
-    }
-    pthread_detach(pingThread); // Uvolní vlákno automaticky po ukončení.*/
-
     char bufferForMessage[MAX_SIZE_OF_MESSAGE];
     char fullMessage[MAX_SIZE_OF_MESSAGE] = {0};
     char bufferForSendBackMessage[MAX_SIZE_OF_MESSAGE] = {0};
@@ -112,7 +103,7 @@ void *clientHandler(void *args) {
     int game = FAILURE_VALUE;
 
     do {
-        while (received < LENGTH_OF_MESSAGE_SIGNATURE) {
+        /*while (received < LENGTH_OF_MESSAGE_SIGNATURE) {
             memset(bufferForMessage, 0, sizeof(bufferForMessage));
             returnValue = recv(clientSocket, bufferForMessage, LENGTH_OF_MESSAGE_SIGNATURE - received, 0);
             if (returnValue > 0) {
@@ -134,23 +125,20 @@ void *clientHandler(void *args) {
             printf("pruser");
         }
 
-        strncpy(fullMessage, signature, LENGTH_OF_MESSAGE_SIGNATURE);
+        strncpy(fullMessage, signature, LENGTH_OF_MESSAGE_SIGNATURE);*/
 
-        // Přijetí zbytku zprávy, dokud nenarazí na '\n'
-        received = LENGTH_OF_MESSAGE_SIGNATURE;
+        // Přijetí zprávy, dokud nenarazí na '\n'
+        received = 0;//LENGTH_OF_MESSAGE_SIGNATURE;
         bool foundNewline = false;
         while (!foundNewline) {
             memset(bufferForMessage, 0, sizeof(bufferForMessage));
             returnValue = recv(clientSocket, bufferForMessage + received, 1, 0); // de pres jedn znak ale upravit pak ze plus do toho bufferForMeessage
             if (returnValue > 0) {
-                //for (int i = 0; i < returnValue; i = i + 1) {
                 if (bufferForMessage[received] == '\n') {
                     foundNewline = true;
-                    //break;
                 }
                 fullMessage[received] = bufferForMessage[received];
                 received = received + 1;
-                //}
             } else if (returnValue == 0) {
                 printf("Klient uzavřel spojení\n");
                 close(clientSocket);
@@ -165,65 +153,18 @@ void *clientHandler(void *args) {
         printf("Přijatá zpráva: %s", fullMessage);
 
         // Zpracování zprávy
-        int messageOk = handleMessage(fullMessage, bufferForSendBackMessage, clientSocket);
-        if (messageOk != FAILURE_VALUE) {
-            returnValue = send(clientSocket, bufferForSendBackMessage, strlen(bufferForSendBackMessage), 0);
+        int messageType = handleMessage(fullMessage, bufferForSendBackMessage, clientSocket, &id);
+        if (messageType != FAILURE_VALUE) {
+            returnValue = sendMessage(clientSocket, bufferForSendBackMessage,
+                                      strlen(bufferForSendBackMessage));
+
             if (returnValue < 0) {
                 printf("Chyba při odesílání zprávy");
             }
-            if (strstr(fullMessage, "login") != NULL) {
-                id = messageOk;
-                bool isGame = attemptGameStart(id);
-                game = getGameOfPlayer(id);
-                if (isGame != false) {
-                    char gameBegin[LENGHT_OF_START_GAME_MESSAGE] = "Mess:gameBegin:\n";
-                    opponetId = getIdOfOpponent(game, id);
-                    returnValue = send(clientSocket, gameBegin, strlen(gameBegin), 0);
-                    send(getSocketOfPlayer(opponetId), gameBegin, strlen(gameBegin), 0);
-                }
-            }
-            if (strstr(fullMessage, "turn") != NULL) {
-                setTurnOfPlayer(id, messageOk, game);
-                game = getGameOfPlayer(id);
-                opponetId = getIdOfOpponent(game, id);
-                if (bothPlayersHaveTurn(game)) {
-                    char messageForFirstPlayer[MAX_SIZE_OF_MESSAGE];
-                    char messageForSecondPlayer[MAX_SIZE_OF_MESSAGE];
-                    //int whoSooner = getWhoTurnedSooner(game);
-                    handleGame(game, messageForFirstPlayer, messageForSecondPlayer);
-                    if (isFirstPlayer(id, game)) {
-                        send(clientSocket, messageForFirstPlayer, strlen(messageForFirstPlayer), 0);
-                        send(getSocketOfPlayer(opponetId), messageForSecondPlayer, strlen(messageForSecondPlayer), 0);
-                    } else {
-                        send(getSocketOfPlayer(opponetId), messageForFirstPlayer, strlen(messageForFirstPlayer), 0);
-                        send(clientSocket, messageForSecondPlayer, strlen(messageForSecondPlayer), 0);
-                    }
-                    printf("posilam ze oba hraci hrali");
-                    char bothPlayerTurn[LENGTH_OF_BOTHPLAYERS_TURED_MESSAGE] = "Mess:bothPlayerTurn:\n";
-                    send(clientSocket, bothPlayerTurn, strlen(bothPlayerTurn), 0);
-                    send(getSocketOfPlayer(opponetId), bothPlayerTurn, strlen(bothPlayerTurn), 0);
-                    unSetTurnOfPlayer(id);
-                    unSetTurnOfPlayer(opponetId);
-                    //unSetWhoTurnedFirst(game);
-                }
-            }
-            if (strstr(fullMessage, "game") != NULL) {
-                unsetGame(game);
-                freePlayer(id);
-                game = FAILURE_VALUE;
-                opponetId = FAILURE_VALUE;
-                bool isGame = attemptGameStart(id);
-                game = getGameOfPlayer(id);
-                if (isGame != false) {
-                    char gameBegin[LENGHT_OF_START_GAME_MESSAGE] = "Mess:gameBegin:\n";
-                    opponetId = getIdOfOpponent(game, id);
-                    //printf("delka zpravy: %d" , strlen(gameBegin));
-                    returnValue = send(clientSocket, gameBegin, LENGHT_OF_START_GAME_MESSAGE, 0);
-                    send(getSocketOfPlayer(opponetId), gameBegin, LENGHT_OF_START_GAME_MESSAGE, 0);
-                }
-            }
-            if (strstr(fullMessage, "logout") != NULL) {
+            if (messageType == LOGOUT_VALUE) {
                 break;
+            } else {
+                handleMessageComplicated(clientSocket, id, messageType, &returnValue);
             }
         }
         resetNumber(&received, 0);

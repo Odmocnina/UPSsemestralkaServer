@@ -6,5 +6,6 @@
 #define SERVER_POSTMAN_H
 
 void *clientHandler(void *args);
+int sendMessage(int socket, char *message, int length);
 
 #endif //SERVER_POSTMAN_H

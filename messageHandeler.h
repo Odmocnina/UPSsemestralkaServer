@@ -5,7 +5,9 @@
 #ifndef SERVER_MESSAGEHANDELER_H
 #define SERVER_MESSAGEHANDELER_H
 
-int handleMessage(char *message, char *sendBackMessage, int clientSocket);
+int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *id);
+
+int handleMessageComplicated(int clientSocket, int id, int messageType, int *returnValue);
 
 int getTurnFormMessage(char *message);
 

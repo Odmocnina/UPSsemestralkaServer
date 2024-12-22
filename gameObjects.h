@@ -36,11 +36,9 @@ bool attemptGameStart(int id);
 
 int getSocketOfPlayer(int id);
 
-void setTurnOfPlayer(int indexOfPlayer, int turn, int game);
+void setTurnOfPlayer(int indexOfPlayer, int turn);
 
 void unSetTurnOfPlayer(int indexOfPlayer);
-
-void unSetWhoTurnedFirst(int game);
 
 bool bothPlayersHaveTurn(int indexOfGame);
 
@@ -55,8 +53,6 @@ void printPlayerArray2();
 void printGamesArray();
 
 int getIdOfOpponent(int game, int id);
-
-int getWhoTurnedSooner(int game);
 
 void updateGameScore(int game, int player1Gain, int player2Gain, int stalemateGain);
 
