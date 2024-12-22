@@ -103,7 +103,7 @@ void *clientHandler(void *args) {
     int game = FAILURE_VALUE;
 
     do {
-        /*while (received < LENGTH_OF_MESSAGE_SIGNATURE) {
+        /*while (received < LENGTH_OF_MESSAGE_SIGNATURE) { //snad neni potreba
             memset(bufferForMessage, 0, sizeof(bufferForMessage));
             returnValue = recv(clientSocket, bufferForMessage, LENGTH_OF_MESSAGE_SIGNATURE - received, 0);
             if (returnValue > 0) {
