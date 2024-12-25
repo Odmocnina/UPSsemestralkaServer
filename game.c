@@ -70,7 +70,7 @@ void handleGame(int indexOfGame, char *messageForFirstPlayer, char *messageForSe
     int indexOfFirstPlayer;
     int indexOfSecondPlayer;
     getIndexOfPlayers(indexOfGame, &indexOfFirstPlayer, &indexOfSecondPlayer);
-    printGamesArray();
+    //printGamesArray();
     int firstPlayerTurn = getTurnOfPlayer(indexOfFirstPlayer);
     int secondPlayerTurn = getTurnOfPlayer(indexOfSecondPlayer);
     int result = resultOfGameRound(firstPlayerTurn, secondPlayerTurn);

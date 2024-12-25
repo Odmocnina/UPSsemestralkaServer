@@ -39,12 +39,19 @@ int handleLogin(char *message, int clientSocket) {
     strtok(message, ":");
     strtok(NULL, ":");
     char *token = strtok(NULL, ":");
-    int navrat = addPlayerToGamersArray(token, clientSocket);
-    if (navrat == FAILURE_VALUE) {
-        printf("Moc hracu\n");
+    int navrat;
+    bool nameAlreadyUsed = checkName(token);
+    if (nameAlreadyUsed) {
+        printf("Jmeno jiz pouzito\n");
+        navrat = NAME_ALREADY_USED;
     } else {
-        printf("Hrac pridan\n");
-        printf("Prihlasen: %s\n", token);
+        navrat = addPlayerToGamersArray(token, clientSocket);
+        if (navrat == FAILURE_VALUE) {
+            printf("Moc hracu\n");
+        } else {
+            printf("Hrac pridan\n");
+            printf("Prihlasen: %s\n", token);
+        }
     }
     //int gameStartAttempt = handleGameStart(navrat);
 
@@ -58,6 +65,14 @@ int handleTurn(char *message, int id) {
     int turn = atoi(strtok(NULL, ":"));
     setTurnOfPlayer(id, turn);
     int navrat = SUCCESS_VALUE;
+    return navrat;
+}
+
+int handlePing(char *message) {
+    strtok(message, ":");
+    strtok(message, ":");
+    int id = atoi(strtok(NULL, ":"));
+    int navrat = setPingOfPlayer(id);
     return navrat;
 }
 
@@ -100,10 +115,15 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
             typeOfMessage[j] = '\0';  // Ukončíme slov
             if (strcmp(typeOfMessage, "login") == STRINGS_ARE_SAME) {
                 *id = handleLogin(fullMessageForInspection, clientSocket);
-                if (*id != FAILURE_VALUE) {
+                if (*id == NAME_ALREADY_USED) {
+                    makeMessage(sendBackMessage, "login", -1);
+                    navrat = LOGOUT_VALUE;
+                } else if (*id != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "login", *id);
+                    navrat = LOGIN_VALUE;
+                } else {
+                    navrat = FAILURE_VALUE;
                 }
-                navrat = LOGIN_VALUE;
             } else if (strcmp(typeOfMessage, "logout") == STRINGS_ARE_SAME) {
                 int id = handlelogout(fullMessageForInspection);
                 if (id != FAILURE_VALUE) {
@@ -119,6 +139,10 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
             } else if (strcmp(typeOfMessage, "game") == STRINGS_ARE_SAME) {
                 makeMessage(sendBackMessage, "game", -1);
                 navrat = GAME_VALUE;
+            } else if (strcmp(typeOfMessage, "ping") == STRINGS_ARE_SAME) {
+                //handlePing(message);
+                makeMessage(sendBackMessage, "pong", *id);
+                navrat = PING_VALUE;
             }
         }
         typeOfMessage[j] = fullMessageForInspection[i];
@@ -126,7 +150,7 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
         j = j + 1;
     }
 
-    printPlayerArray2();
+    //printPlayerArray2();
 
     return navrat;
 }

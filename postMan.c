@@ -37,46 +37,21 @@ int sendMessage(int socket, char *message, int length) {
     return navrat;
 }
 
-void *pingHandler(void *args) {
-    int clientSocket = *(int *)args;
-    free(args); // Pokud alokujete paměť pro předávání argumentů.
+int sendPing(int socket) {
+    char pingMessage[11] = "Mess:ping:\n";
+    int returnValue = sendMessage(socket, pingMessage, 11);
+    if (returnValue < 0) {
+        printf("Chyba pri odesilani ping zpravy\n");
+        return FAILURE_VALUE;
+    }
+    return SUCCESS_VALUE;
+}
 
-    const char *pingMessage = "Mess:břing:\n";
-    char pongResponse[16] = {0};
-    struct timeval timeout = {5, 0}; // Nastavení timeoutu na 5 sekund.
-    int returnValue;
+void *pingHandler() {
 
     while (1) {
+        sendPingToAllPlayers();
         sleep(10); // Posíláme ping každých 10 sekund.
-        printf("Posílám ping klientovi.\n");
-
-        // Odeslání "ping"
-        returnValue = send(clientSocket, pingMessage, strlen(pingMessage), 0);
-        if (returnValue <= 0) {
-            printf("Nepodařilo se odeslat ping. Odpojuji klienta.\n");
-            close(clientSocket);
-            pthread_exit(NULL);
-        }
-
-        // Nastavení timeoutu pro příjem odpovědi
-        setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof timeout);
-
-        // Příjem odpovědi "pong"
-        returnValue = recv(clientSocket, pongResponse, sizeof(pongResponse) - 1, 0);
-        if (returnValue <= 0) {
-            printf("Klient neodpověděl na ping. Odpojuji klienta.\n");
-            close(clientSocket);
-            pthread_exit(NULL);
-        }
-
-        pongResponse[returnValue] = '\0'; // Ujistíme se, že máme validní řetězec.
-        if (strcmp(pongResponse, "Mess:břong:\n") != 0) {
-            printf("Neočekávaná odpověď od klienta: %s. Odpojuji klienta.\n", pongResponse);
-            close(clientSocket);
-            pthread_exit(NULL);
-        }
-
-        printf("Klient odpověděl na ping: %s\n", pongResponse);
     }
 
     return NULL;

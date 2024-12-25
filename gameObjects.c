@@ -4,6 +4,7 @@
 
 #include "gameObjects.h"
 #include "constants.h"
+#include "postMan.h"
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
@@ -305,6 +306,40 @@ int getStalemates(int game) {
     return navrat;
 }
 
+int sendPingToAllPlayers() {
+    pthread_mutex_lock(&lock);
+    for (int i = 0; i < MAX_NUMBER_OF_PLAYERS; i = i + 1) {
+        if (players[i].state != FREE_POSITION) {
+            sendPing(players[i].clientSocket);
+        }
+    }
+    return SUCCESS_VALUE;
+}
+
+int setPingOfPlayer(int id) {
+    pthread_mutex_lock(&lock);
+    int navrat = FAILURE_VALUE;
+    if (players[id].state != FREE_POSITION) {
+        players[id].numberOfNotAnwseredPings = 0;
+        navrat = SUCCESS_VALUE;
+    }
+    pthread_mutex_unlock(&lock);
+}
+
+bool checkName(char *name) {
+    pthread_mutex_lock(&lock);
+    int i = 0;
+    bool navrat = false;
+    while (i < MAX_NUMBER_OF_PLAYERS && !navrat) {
+        if (strcmp(players[i].name, name) == STRINGS_ARE_SAME) {
+            navrat = true;
+        } else {
+            i = i + 1;
+        }
+    }
+    pthread_mutex_unlock(&lock);
+    return navrat;
+}
 //bool getWhoIsPlayer(int id) {
 //    return players[id].makerOfGame;
 //}

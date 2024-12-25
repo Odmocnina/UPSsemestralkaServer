@@ -15,6 +15,7 @@ struct player {
     //int time;
     int turn;
     int game;
+    long numberOfNotAnwseredPings;
 };
 
 #endif //SERVER_PLAYER_H

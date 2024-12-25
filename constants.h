@@ -36,4 +36,6 @@
 #define LOGIN_VALUE -11
 #define TURN_VALUE -12
 #define GAME_VALUE -4
+#define PING_VALUE -5
+#define NAME_ALREADY_USED -2
 #endif //SERVER_CONSTANTS_H

@@ -39,6 +39,7 @@ CMakeFiles/server.dir/gameObjects.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h \
+  /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/postMan.h \
   /usr/include/string.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
   /usr/include/features.h \
@@ -537,6 +538,10 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 
 /usr/include/x86_64-linux-gnu/sys/types.h:
 
+/usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/time_t.h:
+
 /usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
 
 /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.c:
@@ -611,9 +616,9 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 
 /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.c:
 
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/postMan.h:
-
 /usr/include/x86_64-linux-gnu/bits/select.h:
+
+/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/postMan.h:
 
 /usr/include/x86_64-linux-gnu/bits/waitflags.h:
 
@@ -646,7 +651,3 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
 
 /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/time_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:

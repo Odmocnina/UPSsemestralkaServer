@@ -7,5 +7,7 @@
 
 void *clientHandler(void *args);
 int sendMessage(int socket, char *message, int length);
+int sendPing(int socket);
+void *pingHandler();
 
 #endif //SERVER_POSTMAN_H

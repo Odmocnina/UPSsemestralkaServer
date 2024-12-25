@@ -70,4 +70,10 @@ int freePlayer(int id);
 
 int getStalemates(int game);
 
+int sendPingToAllPlayers();
+
+int setPingOfPlayer(int id);
+
+bool checkName(char *name);
+
 #endif //SERVER_GAMEOBJECTS_H

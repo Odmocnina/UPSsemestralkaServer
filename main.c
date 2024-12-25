@@ -46,6 +46,8 @@ int main() {
 
     memset(&maAddress, 0, sizeof(struct sockaddr_in));
 
+
+
     maAddress.sin_family = AF_INET;
     maAddress.sin_port = htons(PORT);
     maAddress.sin_addr.s_addr = INADDR_ANY;
@@ -63,6 +65,9 @@ int main() {
     inicilazePlayerArray();
 
     listen(serverSocket, 5);
+
+    //pthread_t pingThread;
+    //pthread_create(&pingThread, NULL, pingHandler, NULL);
 
     bool serverIsRunning = true;
 
