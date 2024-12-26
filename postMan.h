@@ -9,5 +9,6 @@ void *clientHandler(void *args);
 int sendMessage(int socket, char *message, int length);
 int sendPing(int socket);
 void *pingHandler();
+void *checkPlayers();
 
 #endif //SERVER_POSTMAN_H

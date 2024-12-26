@@ -69,6 +69,13 @@ int main() {
     //pthread_t pingThread;
     //pthread_create(&pingThread, NULL, pingHandler, NULL);
 
+    pthread_t pingThread;
+    if (pthread_create(&pingThread, NULL, checkPlayers, NULL) != 0) {
+        printf("Chyba při vytváření vlákna pingHandler\n");
+        return -1;
+    }
+    pthread_detach(pingThread);
+
     bool serverIsRunning = true;
 
     while (serverIsRunning == true) {

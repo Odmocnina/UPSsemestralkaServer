@@ -46,6 +46,8 @@ int addPlayerToGamersArray(char *name, int clientSocket) {
             players[i].state = WAITING_VALUE;
             players[i].index = i;
             players[i].clientSocket = clientSocket;
+            players[i].numberOfPings = 0;
+            players[i].numberOfPongs = 0;
             navrat = i;
             found = true;
         }
@@ -339,6 +341,34 @@ bool checkName(char *name) {
     }
     pthread_mutex_unlock(&lock);
     return navrat;
+}
+
+int getNumberOfPings(int id) {
+    pthread_mutex_lock(&lock);
+    int navrat = players[id].numberOfPings;
+    pthread_mutex_unlock(&lock);
+    return navrat;
+}
+
+int getNumberOfPongs(int id) {
+    pthread_mutex_lock(&lock);
+    int navrat = players[id].numberOfPongs;
+    pthread_mutex_unlock(&lock);
+    return navrat;
+}
+
+int setNumberOfPings(int id, int numberOfPings) {
+    pthread_mutex_lock(&lock);
+    players[id].numberOfPings = numberOfPings;
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
+}
+
+int setNumberOfPongs(int id, int numberOfPongs) {
+    pthread_mutex_lock(&lock);
+    players[id].numberOfPongs = numberOfPongs;
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
 }
 //bool getWhoIsPlayer(int id) {
 //    return players[id].makerOfGame;

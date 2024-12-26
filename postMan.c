@@ -13,6 +13,7 @@
 #include "gameObjects.h"
 #include "game.h"
 #include <pthread.h>
+//#include <stdbool.h>+;
 #include <stdbool.h>
 #include <fcntl.h>
 #include <ctype.h>
@@ -30,6 +31,7 @@ void resetNumber(int *number, int resetNumber) {
 }
 
 int sendMessage(int socket, char *message, int length) {
+    printf("Posilam: %s", message);
     int navrat = send(socket, message, length, 0);
     if (navrat < 0) {
         printf("Chyba pri odesilani zpravy\n");
@@ -45,6 +47,14 @@ int sendPing(int socket) {
         return FAILURE_VALUE;
     }
     return SUCCESS_VALUE;
+}
+
+void *checkPlayers() {
+    bool checking = true;
+    while (checking) {
+        printf("check\n");
+        sleep(1);
+    }
 }
 
 void *pingHandler() {
@@ -130,6 +140,7 @@ void *clientHandler(void *args) {
         // Zpracování zprávy
         int messageType = handleMessage(fullMessage, bufferForSendBackMessage, clientSocket, &id);
         if (messageType != FAILURE_VALUE) {
+            printf("Delka posilani: %d\n", strlen(bufferForSendBackMessage));
             returnValue = sendMessage(clientSocket, bufferForSendBackMessage,
                                       strlen(bufferForSendBackMessage));
 

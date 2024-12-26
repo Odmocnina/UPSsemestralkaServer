@@ -28,6 +28,7 @@ void makeMessage(char *buffer, char *type, int id) {
     if (strcmp(type, "login") == STRINGS_ARE_SAME) {
         sprintf(buffer, "Mess:%s:%d:\n", type, id);
     } else {
+        printf(buffer);
         sprintf(buffer, "Mess:%s:OK:\n", type);
     }
     //sprintf(buffer, "Mess:%s:%d:\n", type, id);
@@ -141,7 +142,9 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
                 navrat = GAME_VALUE;
             } else if (strcmp(typeOfMessage, "ping") == STRINGS_ARE_SAME) {
                 //handlePing(message);
+                printf("delka buderu %d\n", strlen(sendBackMessage));
                 makeMessage(sendBackMessage, "pong", *id);
+                printf(sendBackMessage);
                 navrat = PING_VALUE;
             }
         }
@@ -166,8 +169,8 @@ int handleMessageComplicated(int clientSocket, int id, int messageType, int *ret
         if (isGame != false) {
             char gameBegin[LENGHT_OF_START_GAME_MESSAGE] = "Mess:gameBegin:\n";
             opponetId = getIdOfOpponent(game, id);
-            *returnValue = sendMessage(clientSocket, gameBegin, strlen(gameBegin));
-            sendMessage(getSocketOfPlayer(opponetId), gameBegin, strlen(gameBegin));
+            *returnValue = sendMessage(clientSocket, gameBegin, LENGHT_OF_START_GAME_MESSAGE);
+            sendMessage(getSocketOfPlayer(opponetId), gameBegin, LENGHT_OF_START_GAME_MESSAGE);
         }
     }
     if (messageType == TURN_VALUE) {
