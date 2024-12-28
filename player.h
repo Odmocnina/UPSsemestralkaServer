@@ -18,6 +18,9 @@ struct player {
     long numberOfNotAnwseredPings;
     int numberOfPongs;
     int numberOfPings;
+    int connectionGood;
+    long timeSinceLastPing;
+    bool isConnectedOrTryingToConnect;
 };
 
 #endif //SERVER_PLAYER_H

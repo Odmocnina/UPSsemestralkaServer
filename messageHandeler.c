@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <sys/time.h>
 #include "constants.h"
 #include "messageHandeler.h"
 #include "gameObjects.h"
@@ -67,6 +68,13 @@ int handleTurn(char *message, int id) {
     setTurnOfPlayer(id, turn);
     int navrat = SUCCESS_VALUE;
     return navrat;
+}
+
+long getTimeInMili() {
+    struct timeval tp;
+
+    gettimeofday(&tp, NULL);
+    return tp.tv_sec * 1000 + tp.tv_usec / 1000;
 }
 
 int handlePing(char *message) {
@@ -142,9 +150,11 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
                 navrat = GAME_VALUE;
             } else if (strcmp(typeOfMessage, "ping") == STRINGS_ARE_SAME) {
                 //handlePing(message);
-                printf("delka buderu %d\n", strlen(sendBackMessage));
+                setNumberOfPings(*id, getNumberOfPings(*id) + 1);
+                setTimeSinceLastPing(*id, getTimeInMili());
+                //printf("delka buderu %d\n", strlen(sendBackMessage));
                 makeMessage(sendBackMessage, "pong", *id);
-                printf(sendBackMessage);
+                //printf(sendBackMessage);
                 navrat = PING_VALUE;
             }
         }
@@ -152,6 +162,8 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
         i = i + 1;
         j = j + 1;
     }
+
+    printGamesArray();
 
     //printPlayerArray2();
 

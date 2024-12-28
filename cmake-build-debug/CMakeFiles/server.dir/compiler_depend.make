@@ -108,7 +108,14 @@ CMakeFiles/server.dir/gameObjects.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/
   /usr/include/x86_64-linux-gnu/bits/setjmp.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
   /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
-  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h
+  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h \
+  /usr/include/unistd.h \
+  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+  /usr/include/x86_64-linux-gnu/bits/environments.h \
+  /usr/include/x86_64-linux-gnu/bits/confname.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
+  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h
 
 CMakeFiles/server.dir/main.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/main.c \
   /usr/include/stdc-predef.h \
@@ -293,6 +300,7 @@ CMakeFiles/server.dir/messageHandeler.c.o: /mnt/c/Users/Michael/Documents/Skola/
   /usr/include/asm-generic/sockios.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct_osockaddr.h \
   /usr/include/x86_64-linux-gnu/sys/un.h \
+  /usr/include/x86_64-linux-gnu/sys/time.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h \
@@ -415,24 +423,35 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
   /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
   /usr/include/x86_64-linux-gnu/bits/stat.h \
   /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
-  /usr/include/ctype.h
+  /usr/include/ctype.h \
+  /usr/include/x86_64-linux-gnu/sys/time.h \
+  /usr/include/errno.h \
+  /usr/include/x86_64-linux-gnu/bits/errno.h \
+  /usr/include/linux/errno.h \
+  /usr/include/x86_64-linux-gnu/asm/errno.h \
+  /usr/include/asm-generic/errno.h \
+  /usr/include/asm-generic/errno-base.h
 
+
+/usr/include/asm-generic/errno-base.h:
+
+/usr/include/x86_64-linux-gnu/bits/errno.h:
+
+/usr/include/errno.h:
 
 /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h:
+
+/usr/include/linux/errno.h:
 
 /usr/include/x86_64-linux-gnu/bits/fcntl.h:
 
 /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.c:
 
+/usr/include/x86_64-linux-gnu/sys/time.h:
+
 /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
 
-/usr/include/x86_64-linux-gnu/bits/unistd_ext.h:
-
-/usr/include/x86_64-linux-gnu/bits/confname.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix_opt.h:
-
-/usr/include/unistd.h:
+/usr/include/asm-generic/errno.h:
 
 /usr/include/x86_64-linux-gnu/sys/un.h:
 
@@ -464,6 +483,14 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 
 /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/main.c:
 
+/usr/include/x86_64-linux-gnu/bits/unistd_ext.h:
+
+/usr/include/x86_64-linux-gnu/bits/confname.h:
+
+/usr/include/x86_64-linux-gnu/bits/posix_opt.h:
+
+/usr/include/unistd.h:
+
 /usr/include/x86_64-linux-gnu/bits/setjmp.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
@@ -491,6 +518,8 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 /usr/include/x86_64-linux-gnu/bits/types/struct_osockaddr.h:
 
 /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h:
+
+/usr/include/x86_64-linux-gnu/asm/errno.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
 
@@ -602,9 +631,9 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 
 /usr/include/features-time64.h:
 
-/usr/include/x86_64-linux-gnu/bits/getopt_core.h:
-
 /usr/include/x86_64-linux-gnu/asm/socket.h:
+
+/usr/include/x86_64-linux-gnu/bits/getopt_core.h:
 
 /usr/include/x86_64-linux-gnu/bits/timesize.h:
 

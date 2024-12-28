@@ -10,12 +10,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <unistd.h>
 
 struct player players[MAX_NUMBER_OF_PLAYERS];
 
 struct lobby runningGames[MAX_NUMBER_OF_PLAYERS / 2];
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+bool connectionOfPlayers2[MAX_NUMBER_OF_PLAYERS] = {true};
 
 void inicilazePlayerArray() {
     pthread_mutex_lock(&lock);
@@ -24,6 +27,8 @@ void inicilazePlayerArray() {
         players[i].state = FREE_POSITION;
 
         players[i].index = FREE_POSITION;
+
+        players[i].isConnectedOrTryingToConnect = true;
     }
     for (int i = 0; i < MAX_NUMBER_OF_PLAYERS / 2; i = i + 1) {
         runningGames[i].indexOfPlayer1 = FREE_POSITION;
@@ -48,6 +53,8 @@ int addPlayerToGamersArray(char *name, int clientSocket) {
             players[i].clientSocket = clientSocket;
             players[i].numberOfPings = 0;
             players[i].numberOfPongs = 0;
+            players[i].connectionGood = SUCCESS_VALUE;
+            players[i].isConnectedOrTryingToConnect = true;
             navrat = i;
             found = true;
         }
@@ -333,7 +340,7 @@ bool checkName(char *name) {
     int i = 0;
     bool navrat = false;
     while (i < MAX_NUMBER_OF_PLAYERS && !navrat) {
-        if (strcmp(players[i].name, name) == STRINGS_ARE_SAME) {
+        if (players[i].state != FREE_POSITION && strcmp(players[i].name, name) == STRINGS_ARE_SAME) {
             navrat = true;
         } else {
             i = i + 1;
@@ -369,6 +376,124 @@ int setNumberOfPongs(int id, int numberOfPongs) {
     players[id].numberOfPongs = numberOfPongs;
     pthread_mutex_unlock(&lock);
     return SUCCESS_VALUE;
+}
+
+int disconnectPlayer(int id) {
+    printf("Odpojuji hrace: %s\n", players[id].name);
+    pthread_mutex_lock(&lock);
+    players[id].state = FREE_POSITION;
+    players[id].index = FREE_POSITION;
+    players[id].clientSocket = FREE_POSITION;
+    players[id].turn = TURN_NOT_PICKED_YET;
+    players[id].game = FREE_POSITION;
+    players[id].isConnectedOrTryingToConnect = false;
+
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
+}
+
+int setTimeSinceLastPing(int id, long time) {
+    pthread_mutex_lock(&lock);
+    players[id].timeSinceLastPing = time;
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
+}
+
+bool getIsConnectedOrTryingToConnect(int id) {
+    pthread_mutex_lock(&lock);
+    printf("chekuji\n");
+    bool navrat = players[id].isConnectedOrTryingToConnect;
+    pthread_mutex_unlock(&lock);
+    return navrat;
+}
+
+int setConnectionIsGood(int id, int connectionIsGood) {
+    pthread_mutex_lock(&lock);
+    pthread_mutex_unlock(&lock);
+}
+
+int removeGame(int id) {
+    pthread_mutex_lock(&lock);
+    runningGames[id].indexOfPlayer1 = FREE_POSITION;
+    runningGames[id].indexOfPlayer2 = FREE_POSITION;
+    runningGames[id].numberOfPlayedRounds = 0;
+    runningGames[id].firstPlayerScore = 0;
+    runningGames[id].secondPlayerScore = 0;
+    runningGames[id].numberOfPlayedRounds = 0;
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
+}
+
+int infromOpponent(int id, int typeOfInfo) {
+    int game = getGameOfPlayer(id);
+    int opponentId = getIdOfOpponent(game, id);
+    if (typeOfInfo == CEKAM_NA_SIGNAL) {
+        char message[33] = "Mess:opponentConnectionProblems:\n";
+        sendMessage(getSocketOfPlayer(opponentId), message, 33);
+    } else if (typeOfInfo == SUCCESS_VALUE) {
+        char message[29] = "Mess:opponentConnectionGood:\n";
+        sendMessage(getSocketOfPlayer(opponentId), message, 29);
+    } else if (typeOfInfo == FAILURE_VALUE) {
+        char message[29] = "Mess:opponentConnectionFall:\n";
+        pthread_mutex_lock(&lock);
+        players[opponentId].state = WAITING_VALUE;
+        pthread_mutex_unlock(&lock);
+        sendMessage(getSocketOfPlayer(opponentId), message, 29);
+    }
+}
+
+int checkPlayer(int id) {
+    int state = players[id].state;
+    int navrat = NEUTRAL_VALUE;
+    if (FREE_POSITION != state) {
+        //slabsi povahy, zakyrte si oci to co se tady prave bude dit je opradu desivy
+        if (players[id].connectionGood == FAILURE_VALUE && ((players[id].numberOfPings == players[id].numberOfPongs) && ((getTimeInMili() - players[id].timeSinceLastPing) < 1010))) {
+            printf("znovu pripojuji hrace: %s", players[id].name);
+            pthread_mutex_lock(&lock);
+            players[id].connectionGood = SUCCESS_VALUE;
+            pthread_mutex_unlock(&lock);
+            if (players[id].state == IN_GAME_VALUE) {
+                infromOpponent(id, SUCCESS_VALUE);
+            }
+            navrat = SUCCESS_VALUE;
+        }
+        if (players[id].connectionGood == FAILURE_VALUE && (((players[id].numberOfPings - players[id].numberOfPongs) >= 10) || ((getTimeInMili() - players[id].timeSinceLastPing) >= 50050))) {
+            printf("Hraci %s je hodne, jeho internet to jumpoval\n", players[id].name);
+            //disconnectPlayer(id);
+            setConnection(id, false);
+            if (players[id].state == IN_GAME_VALUE) {
+                infromOpponent(id, FAILURE_VALUE);
+                removeGame(players[id].game);
+            }
+            navrat = FAILURE_VALUE;
+        }
+        if ((players[id].connectionGood == SUCCESS_VALUE && ((players[id].numberOfPings != players[id].numberOfPongs) || ((getTimeInMili() - players[id].timeSinceLastPing) >= 1010)))) {
+            printf("hrac %s ma problem s pripojenim\n", players[id].name);
+            if (players[id].state == IN_GAME_VALUE) {
+                infromOpponent(id, CEKAM_NA_SIGNAL);
+            }
+            pthread_mutex_lock(&lock);
+            players[id].connectionGood = FAILURE_VALUE;
+            pthread_mutex_unlock(&lock);
+            navrat = CEKAM_NA_SIGNAL;
+        }
+    }
+    return navrat;
+}
+
+int setConnection2(int id, bool connection) {
+    pthread_mutex_lock(&lock);
+    connectionOfPlayers2[id] = connection;
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
+}
+
+bool getConnection2(int id) {
+    bool navrat;
+    pthread_mutex_lock(&lock);
+    navrat = connectionOfPlayers2[id];
+    pthread_mutex_unlock(&lock);
+    return navrat;
 }
 //bool getWhoIsPlayer(int id) {
 //    return players[id].makerOfGame;

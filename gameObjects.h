@@ -76,4 +76,24 @@ int setPingOfPlayer(int id);
 
 bool checkName(char *name);
 
+int getNumberOfPings(int id);
+
+int getNumberOfPongs(int id);
+
+int setNumberOfPings(int id, int numberOfPings);
+
+int setNumberOfPongs(int id, int numberOfPongs);
+
+int checkPlayer(int id);
+
+int setTimeSinceLastPing(int id, long time);
+
+int disconnectPlayer(int id);
+
+bool getIsConnectedOrTryingToConnect(int id);
+
+bool getConnection2(int id);
+
+int setConnection2(int id, bool connection);
+
 #endif //SERVER_GAMEOBJECTS_H

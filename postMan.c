@@ -13,10 +13,14 @@
 #include "gameObjects.h"
 #include "game.h"
 #include <pthread.h>
-//#include <stdbool.h>+;
 #include <stdbool.h>
 #include <fcntl.h>
 #include <ctype.h>
+#include <sys/time.h>
+#include <errno.h>
+
+volatile bool connectionOfPlayers[MAX_NUMBER_OF_PLAYERS] = {true};
+pthread_mutex_t lockPostMan = PTHREAD_MUTEX_INITIALIZER;
 
 // Struktura argumentů pro vlákno
 struct threadArgs {
@@ -49,26 +53,24 @@ int sendPing(int socket) {
     return SUCCESS_VALUE;
 }
 
+int setConnection(int id, bool connection) {
+    printf("setuju connectction pro id %d na %d\n", id, connection);
+    pthread_mutex_lock(&lockPostMan);
+    connectionOfPlayers[id] = connection;
+    pthread_mutex_unlock(&lockPostMan);
+    return SUCCESS_VALUE;
+}
+
 void *checkPlayers() {
     bool checking = true;
+    int count = 0;
     while (checking) {
-        printf("check\n");
+        printf("check players\n");
+        for (int i = 0; i < MAX_NUMBER_OF_PLAYERS; i = i + 1) {
+            checkPlayer(i);
+        }
         sleep(1);
     }
-}
-
-void *pingHandler() {
-
-    while (1) {
-        sendPingToAllPlayers();
-        sleep(10); // Posíláme ping každých 10 sekund.
-    }
-
-    return NULL;
-}
-
-int processMessage() {
-
 }
 
 // Obsluha klienta ve vláknu
@@ -76,6 +78,12 @@ void *clientHandler(void *args) {
     struct threadArgs *targs = (struct threadArgs *)args;
     int clientSocket = targs->clientSocket;
     free(targs);
+
+    struct timeval timeout;
+    timeout.tv_sec = 5;  // Časový limit 5 sekund
+    timeout.tv_usec = 0;
+
+    setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
 
     char bufferForMessage[MAX_SIZE_OF_MESSAGE];
     char fullMessage[MAX_SIZE_OF_MESSAGE] = {0};
@@ -86,33 +94,19 @@ void *clientHandler(void *args) {
     int id;
     int opponetId;
     int game = FAILURE_VALUE;
+    int i = 0;
+    bool toStart = false;
 
     do {
-        /*while (received < LENGTH_OF_MESSAGE_SIGNATURE) { //snad neni potreba
-            memset(bufferForMessage, 0, sizeof(bufferForMessage));
-            returnValue = recv(clientSocket, bufferForMessage, LENGTH_OF_MESSAGE_SIGNATURE - received, 0);
-            if (returnValue > 0) {
-                memcpy(signature + received, bufferForMessage, returnValue);
-                received = received + returnValue;
-            } else if (returnValue == 0) {
-                printf("Klient uzavřel spojení\n");
-                close(clientSocket);
-                return NULL;
-            } else {
-                printf("Chyba při čtení dat");
-                close(clientSocket);
-                return NULL;
-            }
+        toStart = false;
+        pthread_mutex_lock(&lockPostMan);
+        bool connectionState = connectionOfPlayers[id];
+        pthread_mutex_unlock(&lockPostMan);
+        printf("Connection state for id: %d is %d\n", id, connectionState);
+        if (connectionState == false) {
+            break;
         }
-
-        if (strncmp(bufferForMessage, "Mess:", 5)) {
-            printf(" %s ", bufferForMessage);
-            printf("pruser");
-        }
-
-        strncpy(fullMessage, signature, LENGTH_OF_MESSAGE_SIGNATURE);*/
-
-        // Přijetí zprávy, dokud nenarazí na '\n'
+        pthread_mutex_unlock(&lockPostMan);
         received = 0;//LENGTH_OF_MESSAGE_SIGNATURE;
         bool foundNewline = false;
         while (!foundNewline) {
@@ -126,13 +120,24 @@ void *clientHandler(void *args) {
                 received = received + 1;
             } else if (returnValue == 0) {
                 printf("Klient uzavřel spojení\n");
+                disconnectPlayer(id);
                 close(clientSocket);
                 return NULL;
+            }  else if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                // Timeout, znovu zkontrolujeme stav
+                printf("Žádná data nebyla přijata za 5 sekund\n");
+                toStart = true;
+                break;
+                //continue;
             } else {
                 printf("Chyba při čtení dat");
+                disconnectPlayer(id);
                 close(clientSocket);
                 return NULL;
             }
+        }
+        if (toStart) {
+            continue;
         }
         fullMessage[received] = '\0';
         printf("Přijatá zpráva: %s", fullMessage);
@@ -140,12 +145,20 @@ void *clientHandler(void *args) {
         // Zpracování zprávy
         int messageType = handleMessage(fullMessage, bufferForSendBackMessage, clientSocket, &id);
         if (messageType != FAILURE_VALUE) {
-            printf("Delka posilani: %d\n", strlen(bufferForSendBackMessage));
+            //printf("Delka posilani: %d\n", strlen(bufferForSendBackMessage));
             returnValue = sendMessage(clientSocket, bufferForSendBackMessage,
                                       strlen(bufferForSendBackMessage));
 
             if (returnValue < 0) {
                 printf("Chyba při odesílání zprávy");
+            }
+            if (messageType == LOGIN_VALUE) {
+                pthread_mutex_lock(&lockPostMan);
+                connectionOfPlayers[id] = true;
+                pthread_mutex_unlock(&lockPostMan);
+            }
+            if (messageType == PING_VALUE) {
+                setNumberOfPongs(id, getNumberOfPongs(id) + 1);
             }
             if (messageType == LOGOUT_VALUE) {
                 break;
@@ -156,9 +169,12 @@ void *clientHandler(void *args) {
         resetNumber(&received, 0);
         memset(fullMessage, 0, sizeof(fullMessage));
         memset(bufferForSendBackMessage, 0, sizeof(bufferForSendBackMessage));
-    } while (returnValue > 0);
+        i = i + 1;
+    } while ((toStart || returnValue > 0) && connectionOfPlayers[id]);
 
+    disconnectPlayer(id);
     close(clientSocket);
     printf("Klient odpojen\n");
+    setConnection(id, true);
     return NULL;
 }

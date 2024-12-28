@@ -10,5 +10,7 @@ int sendMessage(int socket, char *message, int length);
 int sendPing(int socket);
 void *pingHandler();
 void *checkPlayers();
+long getTimeInMili();
+int setConnection(int id, bool connection);
 
 #endif //SERVER_POSTMAN_H
