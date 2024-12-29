@@ -163,8 +163,6 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
         j = j + 1;
     }
 
-    printGamesArray();
-
     //printPlayerArray2();
 
     return navrat;

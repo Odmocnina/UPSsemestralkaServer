@@ -54,7 +54,7 @@ int sendPing(int socket) {
 }
 
 int setConnection(int id, bool connection) {
-    printf("setuju connectction pro id %d na %d\n", id, connection);
+    //printf("setuju connectction pro id %d na %d\n", id, connection);
     pthread_mutex_lock(&lockPostMan);
     connectionOfPlayers[id] = connection;
     pthread_mutex_unlock(&lockPostMan);

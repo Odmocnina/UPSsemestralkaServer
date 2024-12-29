@@ -386,7 +386,9 @@ int disconnectPlayer(int id) {
     players[id].clientSocket = FREE_POSITION;
     players[id].turn = TURN_NOT_PICKED_YET;
     players[id].game = FREE_POSITION;
-    players[id].isConnectedOrTryingToConnect = false;
+    players[id].connectionGood = NEUTRAL_VALUE;
+    players[id].numberOfPings = 0;
+    players[id].numberOfPongs = 0;
 
     pthread_mutex_unlock(&lock);
     return SUCCESS_VALUE;
@@ -447,7 +449,7 @@ int checkPlayer(int id) {
     int navrat = NEUTRAL_VALUE;
     if (FREE_POSITION != state) {
         //slabsi povahy, zakyrte si oci to co se tady prave bude dit je opradu desivy
-        if (players[id].connectionGood == FAILURE_VALUE && ((players[id].numberOfPings == players[id].numberOfPongs) && ((getTimeInMili() - players[id].timeSinceLastPing) < 1010))) {
+        if (players[id].connectionGood == FAILURE_VALUE && ((players[id].numberOfPings == players[id].numberOfPongs) && ((getTimeInMili() - players[id].timeSinceLastPing) < TIME_FOR_ONE_PING))) {
             printf("znovu pripojuji hrace: %s", players[id].name);
             pthread_mutex_lock(&lock);
             players[id].connectionGood = SUCCESS_VALUE;
@@ -457,7 +459,7 @@ int checkPlayer(int id) {
             }
             navrat = SUCCESS_VALUE;
         }
-        if (players[id].connectionGood == FAILURE_VALUE && (((players[id].numberOfPings - players[id].numberOfPongs) >= 10) || ((getTimeInMili() - players[id].timeSinceLastPing) >= 50050))) {
+        if (players[id].connectionGood == FAILURE_VALUE && (((players[id].numberOfPings - players[id].numberOfPongs) >= MORE_PINGS) || ((getTimeInMili() - players[id].timeSinceLastPing) >= TIME_FOR_MORE_PINGS))) {
             printf("Hraci %s je hodne, jeho internet to jumpoval\n", players[id].name);
             //disconnectPlayer(id);
             setConnection(id, false);
@@ -467,8 +469,9 @@ int checkPlayer(int id) {
             }
             navrat = FAILURE_VALUE;
         }
-        if ((players[id].connectionGood == SUCCESS_VALUE && ((players[id].numberOfPings != players[id].numberOfPongs) || ((getTimeInMili() - players[id].timeSinceLastPing) >= 1010)))) {
-            printf("hrac %s ma problem s pripojenim\n", players[id].name);
+        //if ((players[id].connectionGood == SUCCESS_VALUE && ((players[id].numberOfPings != players[id].numberOfPongs) || ((getTimeInMili() - players[id].timeSinceLastPing) >= 1010)))) {
+        if ((players[id].connectionGood == SUCCESS_VALUE && (getTimeInMili() - players[id].timeSinceLastPing) >= TIME_FOR_ONE_PING)) {
+            printf("hrac %s ma problem s pripojenim\n", players[id].name, getTimeInMili(), players[id].timeSinceLastPing);
             if (players[id].state == IN_GAME_VALUE) {
                 infromOpponent(id, CEKAM_NA_SIGNAL);
             }
