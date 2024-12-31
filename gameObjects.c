@@ -88,7 +88,7 @@ void updatePlayerArray(int index) {
 
 void removePlayerFromGamersArray(int index) {
     pthread_mutex_lock(&lock);
-    players[index].state = FREE_POSITION;
+    //players[index].state = FREE_POSITION;
     players[index].name[0] = '\0';
     players[index].index = FREE_POSITION;
     pthread_mutex_unlock(&lock);
@@ -430,17 +430,17 @@ int infromOpponent(int id, int typeOfInfo) {
     int game = getGameOfPlayer(id);
     int opponentId = getIdOfOpponent(game, id);
     if (typeOfInfo == CEKAM_NA_SIGNAL) {
-        char message[33] = "Mess:opponentConnectionProblems:\n";
-        sendMessage(getSocketOfPlayer(opponentId), message, 33);
+        char message[TYPE_ONE_MESSAGE_LENGTH] = "Mess:opponentConnectionProblems:\n";
+        sendMessage(getSocketOfPlayer(opponentId), message, TYPE_ONE_MESSAGE_LENGTH);
     } else if (typeOfInfo == SUCCESS_VALUE) {
-        char message[29] = "Mess:opponentConnectionGood:\n";
-        sendMessage(getSocketOfPlayer(opponentId), message, 29);
+        char message[TYPE_TWO_MESSAGE_LENGTH] = "Mess:opponentConnectionGood:\n";
+        sendMessage(getSocketOfPlayer(opponentId), message, TYPE_TWO_MESSAGE_LENGTH);
     } else if (typeOfInfo == FAILURE_VALUE) {
-        char message[29] = "Mess:opponentConnectionFall:\n";
+        char message[TYPE_TWO_MESSAGE_LENGTH] = "Mess:opponentConnectionFall:\n";
         pthread_mutex_lock(&lock);
         players[opponentId].state = WAITING_VALUE;
         pthread_mutex_unlock(&lock);
-        sendMessage(getSocketOfPlayer(opponentId), message, 29);
+        sendMessage(getSocketOfPlayer(opponentId), message, TYPE_TWO_MESSAGE_LENGTH);
     }
 }
 
@@ -498,6 +498,15 @@ bool getConnection2(int id) {
     pthread_mutex_unlock(&lock);
     return navrat;
 }
+
+int getStateOfPlayer(int id) {
+    int navrat;
+    pthread_mutex_lock(&lock);
+    navrat = players[id].state;
+    pthread_mutex_unlock(&lock);
+    return navrat;
+}
+
 //bool getWhoIsPlayer(int id) {
 //    return players[id].makerOfGame;
 //}

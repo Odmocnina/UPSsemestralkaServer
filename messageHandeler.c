@@ -85,6 +85,33 @@ int handlePing(char *message) {
     return navrat;
 }
 
+bool canClientSendMessage(int idOfPlayer, int messageType) {
+    bool navrat = false;
+    if (getStateOfPlayer(idOfPlayer) == WAITING_VALUE) {
+        if (messageType == LOGOUT_VALUE) {
+            navrat = true;
+        }
+    } else if (getStateOfPlayer(idOfPlayer) == IN_GAME_VALUE) {     //||
+        if (messageType == TURN_VALUE) {
+            navrat = true;
+        } else if (messageType == GAME_VALUE) {
+            int scoreOfFirstPlayer = getScoreOfFirstPlayer(getGameOfPlayer(idOfPlayer));
+            int scoreOfSecondPlayer = getScoreOfSecondPlayer(getGameOfPlayer(idOfPlayer));
+            int indexFirstPlayer;
+            int indexSecondPlayer;
+            getIndexOfPlayers(getGameOfPlayer(idOfPlayer), &indexFirstPlayer, &indexSecondPlayer);
+            if ((scoreOfFirstPlayer >= ROUNDS || scoreOfSecondPlayer >= ROUNDS) || (indexFirstPlayer == FREE_POSITION && indexSecondPlayer == FREE_POSITION)) {
+                navrat = true;
+            }
+        }
+    }
+    if (messageType == PING_VALUE || messageType == LOGIN_VALUE) {
+        navrat = true;
+    }
+    printf("Stav hrace: %d, typ zpravz: %d\n", getStateOfPlayer(idOfPlayer), messageType);
+    return navrat;
+}
+
 //int getTurnFormMessage(char *message) {
 //    return handleTurn(message);
 //}
@@ -112,7 +139,7 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
     }
 
     char fullMessageForInspection[strlen(message)];
-    strcpy(fullMessageForInspection, message);
+    strncpy(fullMessageForInspection, message, strlen(message));
 
     printf("Zprava je validni\n");
     int i = START_OF_MESSAGE;
@@ -163,6 +190,9 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
         j = j + 1;
     }
 
+    if (!canClientSendMessage(*id, navrat)) {
+        navrat = FAILURE_VALUE;
+    }
     //printPlayerArray2();
 
     return navrat;

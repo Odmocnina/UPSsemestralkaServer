@@ -96,4 +96,6 @@ bool getConnection2(int id);
 
 int setConnection2(int id, bool connection);
 
+int getStateOfPlayer(int id);
+
 #endif //SERVER_GAMEOBJECTS_H

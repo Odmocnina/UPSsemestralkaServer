@@ -79,23 +79,23 @@ void *clientHandler(void *args) {
     int clientSocket = targs->clientSocket;
     free(targs);
 
-    struct timeval timeout;
+    struct timeval timeout;  //nastveni ze pokud 5 sekund recv nic neprijme tak to vyhodi specifickou hodnutu
     timeout.tv_sec = 5;  // Časový limit 5 sekund
     timeout.tv_usec = 0;
 
     setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
 
-    char bufferForMessage[MAX_SIZE_OF_MESSAGE];
-    char fullMessage[MAX_SIZE_OF_MESSAGE] = {0};
-    char bufferForSendBackMessage[MAX_SIZE_OF_MESSAGE] = {0};
+    char bufferForMessage[MAX_SIZE_OF_MESSAGE]; //buffer pro zpravu
+    char fullMessage[MAX_SIZE_OF_MESSAGE] = {0}; //prijata zprava
+    char bufferForSendBackMessage[MAX_SIZE_OF_MESSAGE] = {0}; //buffer pro zpravu zpet
     char signature[LENGTH_OF_MESSAGE_SIGNATURE + 1] = {0};
-    int received = 0;
+    int received = 0;   //hodnta kolik bytu bylo prijato
     int returnValue;
-    int id;
+    int id;     //id hrace/klienta
     int opponetId;
     int game = FAILURE_VALUE;
     int i = 0;
-    bool toStart = false;
+    bool toStart = false; //podminka ktera urcuje jestli se ma podivat na kdyby chtel hlavni cyklus stopnut
 
     do {
         toStart = false;
@@ -136,15 +136,16 @@ void *clientHandler(void *args) {
                 return NULL;
             }
         }
-        if (toStart) {
-            continue;
-        }
+        if (toStart) { //tohle je docela hnusny ale it gets the job done
+            continue;  //system tohdle je tak ze pokud recv nic nedostne zadnou zpravu tak
+        }              //tak aby se to nezaseklo tak to pres boolean zaleze sem pak to posle pres kontinue na podminku
+                       //kde se podiva jestli se ma podkracovat, cos bude vzdy a pokd se uzivatel odpojil tak prvni if
         fullMessage[received] = '\0';
         printf("Přijatá zpráva: %s", fullMessage);
 
         // Zpracování zprávy
         int messageType = handleMessage(fullMessage, bufferForSendBackMessage, clientSocket, &id);
-        if (messageType != FAILURE_VALUE) {
+        if (messageType != FAILURE_VALUE) { //jestli je zprava OK tak dal zpravu zpracuj
             //printf("Delka posilani: %d\n", strlen(bufferForSendBackMessage));
             returnValue = sendMessage(clientSocket, bufferForSendBackMessage,
                                       strlen(bufferForSendBackMessage));
@@ -165,6 +166,9 @@ void *clientHandler(void *args) {
             } else {
                 handleMessageComplicated(clientSocket, id, messageType, &returnValue);
             }
+        } else {
+            sendMessage(clientSocket, "Mess:invalidMessage:\n", 20);
+            break;
         }
         resetNumber(&received, 0);
         memset(fullMessage, 0, sizeof(fullMessage));
