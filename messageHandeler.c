@@ -29,7 +29,8 @@ void makeMessage(char *buffer, char *type, int id) {
     if (strcmp(type, "login") == STRINGS_ARE_SAME) {
         sprintf(buffer, "Mess:%s:%d:\n", type, id);
     } else {
-        printf(buffer);
+        //printf("v else");
+        //printf(buffer);
         sprintf(buffer, "Mess:%s:OK:\n", type);
     }
     //sprintf(buffer, "Mess:%s:%d:\n", type, id);
@@ -51,8 +52,8 @@ int handleLogin(char *message, int clientSocket) {
         if (navrat == FAILURE_VALUE) {
             printf("Moc hracu\n");
         } else {
-            printf("Hrac pridan\n");
-            printf("Prihlasen: %s\n", token);
+            //printf("Hrac pridan\n");
+            //printf("Prihlasen: %s\n", token);
         }
     }
     //int gameStartAttempt = handleGameStart(navrat);
@@ -66,6 +67,7 @@ int handleTurn(char *message, int id) {
     //int id = atoi(strtok(NULL, ":"));
     int turn = atoi(strtok(NULL, ":"));
     setTurnOfPlayer(id, turn);
+    setStateOfPlayer(id, IN_GAME_WAITING_VALUE);
     int navrat = SUCCESS_VALUE;
     return navrat;
 }
@@ -87,12 +89,16 @@ int handlePing(char *message) {
 
 bool canClientSendMessage(int idOfPlayer, int messageType) {
     bool navrat = false;
-    if (getStateOfPlayer(idOfPlayer) == WAITING_VALUE) {
+    if (idOfPlayer != ID_NOT_GIVEN_YET && getStateOfPlayer(idOfPlayer) == WAITING_VALUE) {
         if (messageType == LOGOUT_VALUE) {
             navrat = true;
         }
-    } else if (getStateOfPlayer(idOfPlayer) == IN_GAME_VALUE) {     //||
+    } else if (idOfPlayer != ID_NOT_GIVEN_YET && getStateOfPlayer(idOfPlayer) == IN_GAME_VALUE) {     //||
         if (messageType == TURN_VALUE) {
+            navrat = true;
+        }
+    } else if (idOfPlayer != ID_NOT_GIVEN_YET && getStateOfPlayer(idOfPlayer) == IN_GAME_WAITING_VALUE) {
+        if (messageType == READY_FOR_NEXT_ROUND_VALUE) {
             navrat = true;
         } else if (messageType == GAME_VALUE) {
             int scoreOfFirstPlayer = getScoreOfFirstPlayer(getGameOfPlayer(idOfPlayer));
@@ -104,11 +110,14 @@ bool canClientSendMessage(int idOfPlayer, int messageType) {
                 navrat = true;
             }
         }
+    } else if (idOfPlayer == ID_NOT_GIVEN_YET) {
+        if (messageType == LOGIN_VALUE) {
+            navrat = true;
+        }
     }
-    if (messageType == PING_VALUE || messageType == LOGIN_VALUE) {
+    if (messageType == PING_VALUE) {
         navrat = true;
     }
-    printf("Stav hrace: %d, typ zpravz: %d\n", getStateOfPlayer(idOfPlayer), messageType);
     return navrat;
 }
 
@@ -141,7 +150,7 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
     char fullMessageForInspection[strlen(message)];
     strncpy(fullMessageForInspection, message, strlen(message));
 
-    printf("Zprava je validni\n");
+    //printf("Zprava je validni\n");
     int i = START_OF_MESSAGE;
     int j = 0;
     int navrat = FAILURE_VALUE;
@@ -149,7 +158,7 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
     while (fullMessageForInspection[i] != '\n') {
         if (fullMessageForInspection[i] == ':') {  // Pokud narazíme na středník, ukončíme parsování
             typeOfMessage[j] = '\0';  // Ukončíme slov
-            if (strcmp(typeOfMessage, "login") == STRINGS_ARE_SAME) {
+            if (strcmp(typeOfMessage, "login") == STRINGS_ARE_SAME && canClientSendMessage(*id, LOGIN_VALUE)) {
                 *id = handleLogin(fullMessageForInspection, clientSocket);
                 if (*id == NAME_ALREADY_USED) {
                     makeMessage(sendBackMessage, "login", -1);
@@ -160,22 +169,26 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
                 } else {
                     navrat = FAILURE_VALUE;
                 }
-            } else if (strcmp(typeOfMessage, "logout") == STRINGS_ARE_SAME) {
+            } else if (strcmp(typeOfMessage, "logout") == STRINGS_ARE_SAME && canClientSendMessage(*id, LOGOUT_VALUE)) {
                 int id = handlelogout(fullMessageForInspection);
                 if (id != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "logout", id);
                 }
                 navrat = LOGOUT_VALUE;
-            } else if (strcmp(typeOfMessage, "turn") == STRINGS_ARE_SAME) {
+            } else if (strcmp(typeOfMessage, "turn") == STRINGS_ARE_SAME && canClientSendMessage(*id, TURN_VALUE)) {
                 int turn = handleTurn(fullMessageForInspection, *id);
                 if (turn != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "turn", turn);
                 }
                 navrat = TURN_VALUE;
-            } else if (strcmp(typeOfMessage, "game") == STRINGS_ARE_SAME) {
+            } else if (strcmp(typeOfMessage, "readyForNextRound") == STRINGS_ARE_SAME && canClientSendMessage(*id, READY_FOR_NEXT_ROUND_VALUE)) {
+                makeMessage(sendBackMessage, "readyForNextRound", -1);
+                setStateOfPlayer(*id, IN_GAME_VALUE);
+                navrat = READY_FOR_NEXT_ROUND_VALUE;
+            } else if (strcmp(typeOfMessage, "game") == STRINGS_ARE_SAME && canClientSendMessage(*id, GAME_VALUE)) {
                 makeMessage(sendBackMessage, "game", -1);
                 navrat = GAME_VALUE;
-            } else if (strcmp(typeOfMessage, "ping") == STRINGS_ARE_SAME) {
+            } else if (strcmp(typeOfMessage, "ping") == STRINGS_ARE_SAME && canClientSendMessage(*id, PING_VALUE)) {
                 //handlePing(message);
                 setNumberOfPings(*id, getNumberOfPings(*id) + 1);
                 setTimeSinceLastPing(*id, getTimeInMili());
@@ -189,11 +202,6 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
         i = i + 1;
         j = j + 1;
     }
-
-    if (!canClientSendMessage(*id, navrat)) {
-        navrat = FAILURE_VALUE;
-    }
-    //printPlayerArray2();
 
     return navrat;
 }

@@ -17,6 +17,7 @@ struct lobby {
     int firstPlayerScore;
     int secondPlayerScore;
     int numberOfStalemates;
+    bool gameHalted; // pro krizkovy reconnect
 };
 
 void inicilazePlayerArray();
@@ -97,5 +98,7 @@ bool getConnection2(int id);
 int setConnection2(int id, bool connection);
 
 int getStateOfPlayer(int id);
+
+int setStateOfPlayer(int id, int state);
 
 #endif //SERVER_GAMEOBJECTS_H

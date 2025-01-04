@@ -8,6 +8,11 @@
 #include "constants.h"
 #include "gameObjects.h"
 
+/**
+ * Funkce na zhodnoceni vysledku hry pri volbe kamen
+ *
+ * @param firstPlayerTurn volba prvniho hrace
+ * **/
 int handleRock(int firstPlayerTurn) {
     if (firstPlayerTurn == SCISSORS_VALUE || firstPlayerTurn == LIZARD_VALUE) {
         return SECOND_PLAYER_WON;
@@ -16,6 +21,11 @@ int handleRock(int firstPlayerTurn) {
     }
 }
 
+/**
+ * Funkce na zhodnoceni vysledku hry pri volbe papir
+ *
+ * @param firstPlayerTurn volba prvniho hrace
+ * **/
 int handlePaper(int firstPlayerTurn) {
     if (firstPlayerTurn == ROCK_VALUE || firstPlayerTurn == SPOCK_VALUE) {
         return SECOND_PLAYER_WON;
@@ -24,6 +34,11 @@ int handlePaper(int firstPlayerTurn) {
     }
 }
 
+/**
+ * Funkce na zhodnoceni vysledku hry pri volbe nuzky
+ *
+ * @param firstPlayerTurn volba prvniho hrace
+ * **/
 int handleScissors(int firstPlayerTurn) {
     if (firstPlayerTurn == PAPER_VALUE || firstPlayerTurn == LIZARD_VALUE) {
         return SECOND_PLAYER_WON;
@@ -32,6 +47,11 @@ int handleScissors(int firstPlayerTurn) {
     }
 }
 
+/**
+ * Funkce na zhodnoceni vysledku hry pri volbe tapir
+ *
+ * @param firstPlayerTurn volba prvniho hrace
+ * **/
 int handleLizard(int firstPlayerTurn) {
     if (firstPlayerTurn == PAPER_VALUE || firstPlayerTurn == SPOCK_VALUE) {
         return SECOND_PLAYER_WON;
@@ -40,6 +60,11 @@ int handleLizard(int firstPlayerTurn) {
     }
 }
 
+/**
+ * Funkce na zhodnoceni vysledku hry pri volbe spock
+ *
+ * @param firstPlayerTurn volba prvniho hrace
+ * **/
 int handleSpock(int firstPlayerTurn) {
     if (firstPlayerTurn == ROCK_VALUE || firstPlayerTurn == SCISSORS_VALUE) {
         return SECOND_PLAYER_WON;
@@ -47,6 +72,8 @@ int handleSpock(int firstPlayerTurn) {
         return FIRST_PLAYER_WON;
     }
 }
+
+
 int resultOfGameRound(int firstPlayerTurn, int secondPlayerTurn) {
     int navrat = FAILURE_VALUE;
     if (firstPlayerTurn == secondPlayerTurn) {

@@ -55,6 +55,7 @@ int addPlayerToGamersArray(char *name, int clientSocket) {
             players[i].numberOfPongs = 0;
             players[i].connectionGood = SUCCESS_VALUE;
             players[i].isConnectedOrTryingToConnect = true;
+            players[i].timeSinceLastPing = getTimeInMili(); //kvuli tyhle mrdce to nefungovalo na skolnim zeleze
             navrat = i;
             found = true;
         }
@@ -177,6 +178,7 @@ void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
             runningGames[i].firstPlayerScore = 0;
             runningGames[i].secondPlayerScore = 0;
             runningGames[i].numberOfStalemates = 0;
+            runningGames[i].gameHalted = false;
             players[indexFirstPlayer].state = IN_GAME_VALUE;
             players[indexSecondPlayer].state = IN_GAME_VALUE;
             players[indexFirstPlayer].turn = TURN_NOT_PICKED_YET;
@@ -444,6 +446,49 @@ int infromOpponent(int id, int typeOfInfo) {
     }
 }
 
+int setGameHalted(int game, bool halt) {
+    pthread_mutex_lock(&lock);
+    runningGames[game].gameHalted = halt;
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
+}
+
+bool isGameHalted(int game) {
+    pthread_mutex_lock(&lock);
+    bool navrat = runningGames[game].gameHalted;
+    pthread_mutex_unlock(&lock);
+    return navrat;
+}
+
+int infromOpponentGame(int id, int game, int typeOfInfo) {
+    int opponentId = getIdOfOpponent(game, id);
+    if (typeOfInfo == CEKAM_NA_SIGNAL) {
+        char message[TYPE_ONE_MESSAGE_LENGTH] = "Mess:opponentConnectionProblems:\n";
+        sendMessage(getSocketOfPlayer(opponentId), message, TYPE_ONE_MESSAGE_LENGTH);
+    } else if (typeOfInfo == SUCCESS_VALUE) {
+        char message[TYPE_TWO_MESSAGE_LENGTH] = "Mess:opponentConnectionGood:\n";
+        sendMessage(getSocketOfPlayer(opponentId), message, TYPE_TWO_MESSAGE_LENGTH);
+    } else if (typeOfInfo == FAILURE_VALUE) {
+        char message[TYPE_TWO_MESSAGE_LENGTH] = "Mess:opponentConnectionFall:\n";
+        pthread_mutex_lock(&lock);
+        players[opponentId].state = WAITING_VALUE;
+        pthread_mutex_unlock(&lock);
+        sendMessage(getSocketOfPlayer(opponentId), message, TYPE_TWO_MESSAGE_LENGTH);
+    }
+}
+
+int isInGame(int id) {
+    pthread_mutex_lock(&lock);
+    int navrat = FAILURE_VALUE;
+    for (int i = 0; i < MAX_NUMBER_OF_PLAYERS / 2; i = i + 1) {
+        if (runningGames[i].indexOfPlayer1 == id || runningGames[i].indexOfPlayer2 == id) {
+            navrat = i;
+        }
+    }
+    pthread_mutex_unlock(&lock);
+    return navrat;
+}
+
 int checkPlayer(int id) {
     int state = players[id].state;
     int navrat = NEUTRAL_VALUE;
@@ -480,6 +525,12 @@ int checkPlayer(int id) {
             pthread_mutex_unlock(&lock);
             navrat = CEKAM_NA_SIGNAL;
         }
+    } else {
+        int game = isInGame(id);
+        if (game != FAILURE_VALUE && !isGameHalted(game)) {
+            infromOpponentGame(id, game, CEKAM_NA_SIGNAL);
+            setGameHalted(game, true);
+        }
     }
     return navrat;
 }
@@ -500,11 +551,17 @@ bool getConnection2(int id) {
 }
 
 int getStateOfPlayer(int id) {
-    int navrat;
     pthread_mutex_lock(&lock);
-    navrat = players[id].state;
+    int navrat = players[id].state;
     pthread_mutex_unlock(&lock);
     return navrat;
+}
+
+int setStateOfPlayer(int id, int state) {
+    pthread_mutex_lock(&lock);
+    players[id].state = state;
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
 }
 
 //bool getWhoIsPlayer(int id) {

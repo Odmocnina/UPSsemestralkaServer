@@ -65,7 +65,7 @@ void *checkPlayers() {
     bool checking = true;
     int count = 0;
     while (checking) {
-        printf("check players\n");
+        //printf("check players\n");
         for (int i = 0; i < MAX_NUMBER_OF_PLAYERS; i = i + 1) {
             checkPlayer(i);
         }
@@ -91,22 +91,26 @@ void *clientHandler(void *args) {
     char signature[LENGTH_OF_MESSAGE_SIGNATURE + 1] = {0};
     int received = 0;   //hodnta kolik bytu bylo prijato
     int returnValue;
-    int id;     //id hrace/klienta
+    int id = ID_NOT_GIVEN_YET;     //id hrace/klienta
     int opponetId;
     int game = FAILURE_VALUE;
     int i = 0;
     bool toStart = false; //podminka ktera urcuje jestli se ma podivat na kdyby chtel hlavni cyklus stopnut
+    bool disconnect = false;
+    bool connectionState;
 
     do {
         toStart = false;
-        pthread_mutex_lock(&lockPostMan);
-        bool connectionState = connectionOfPlayers[id];
-        pthread_mutex_unlock(&lockPostMan);
-        printf("Connection state for id: %d is %d\n", id, connectionState);
-        if (connectionState == false) {
-            break;
+        if (id != ID_NOT_GIVEN_YET) {
+            pthread_mutex_lock(&lockPostMan);
+            connectionState = connectionOfPlayers[id];
+            pthread_mutex_unlock(&lockPostMan);
+            //printf("Connection state for id: %d is %d\n", id, connectionState);
+            if (connectionState == false) {
+                break;
+            }
+            //pthread_mutex_unlock(&lockPostMan);
         }
-        pthread_mutex_unlock(&lockPostMan);
         received = 0;//LENGTH_OF_MESSAGE_SIGNATURE;
         bool foundNewline = false;
         while (!foundNewline) {
@@ -162,21 +166,32 @@ void *clientHandler(void *args) {
                 setNumberOfPongs(id, getNumberOfPongs(id) + 1);
             }
             if (messageType == LOGOUT_VALUE) {
+                disconnect = true;
                 break;
             } else {
                 handleMessageComplicated(clientSocket, id, messageType, &returnValue);
             }
         } else {
             sendMessage(clientSocket, "Mess:invalidMessage:\n", 20);
+            disconnect = true;
             break;
         }
         resetNumber(&received, 0);
         memset(fullMessage, 0, sizeof(fullMessage));
         memset(bufferForSendBackMessage, 0, sizeof(bufferForSendBackMessage));
         i = i + 1;
-    } while ((toStart || returnValue > 0) && connectionOfPlayers[id]);
+        //printf("id: %d\n", id);
+        pthread_mutex_lock(&lockPostMan);
+        connectionState = connectionOfPlayers[id];
+        pthread_mutex_unlock(&lockPostMan);
+        if (id == ID_NOT_GIVEN_YET) {
+            connectionState = true;
+        }
+    } while ((toStart || returnValue > 0) && connectionState);
 
-    disconnectPlayer(id);
+    if (disconnect) {
+        disconnectPlayer(id);
+    }
     close(clientSocket);
     printf("Klient odpojen\n");
     setConnection(id, true);
