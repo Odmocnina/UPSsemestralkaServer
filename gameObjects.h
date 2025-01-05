@@ -27,10 +27,6 @@ int addPlayerToGamersArray(char *name, int clientSocket);
 
 void removePlayerFromGamersArray(int index);
 
-void printPlayerArray();
-
-int getFreePlayer();
-
 //void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer);
 
 bool attemptGameStart(int id);
@@ -71,8 +67,6 @@ int freePlayer(int id);
 
 int getStalemates(int game);
 
-int sendPingToAllPlayers();
-
 int setPingOfPlayer(int id);
 
 bool checkName(char *name);
@@ -90,12 +84,6 @@ int checkPlayer(int id);
 int setTimeSinceLastPing(int id, long time);
 
 int disconnectPlayer(int id);
-
-bool getIsConnectedOrTryingToConnect(int id);
-
-bool getConnection2(int id);
-
-int setConnection2(int id, bool connection);
 
 int getStateOfPlayer(int id);
 

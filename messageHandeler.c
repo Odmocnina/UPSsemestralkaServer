@@ -6,10 +6,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 #include <sys/time.h>
+
 #include "constants.h"
 #include "messageHandeler.h"
 #include "gameObjects.h"
@@ -29,8 +27,6 @@ void makeMessage(char *buffer, char *type, int id) {
     if (strcmp(type, "login") == STRINGS_ARE_SAME) {
         sprintf(buffer, "Mess:%s:%d:\n", type, id);
     } else {
-        //printf("v else");
-        //printf(buffer);
         sprintf(buffer, "Mess:%s:OK:\n", type);
     }
     //sprintf(buffer, "Mess:%s:%d:\n", type, id);
@@ -42,6 +38,9 @@ int handleLogin(char *message, int clientSocket) {
     strtok(message, ":");
     strtok(NULL, ":");
     char *token = strtok(NULL, ":");
+    if (strlen(token) > 9) {
+        return FAILURE_VALUE;
+    }
     int navrat;
     bool nameAlreadyUsed = checkName(token);
     if (nameAlreadyUsed) {
@@ -52,11 +51,10 @@ int handleLogin(char *message, int clientSocket) {
         if (navrat == FAILURE_VALUE) {
             printf("Moc hracu\n");
         } else {
-            //printf("Hrac pridan\n");
-            //printf("Prihlasen: %s\n", token);
+            printf("Hrac pridan\n");
+            printf("Prihlasen: %s\n", token);
         }
     }
-    //int gameStartAttempt = handleGameStart(navrat);
 
     return navrat;
 }
@@ -64,7 +62,6 @@ int handleLogin(char *message, int clientSocket) {
 int handleTurn(char *message, int id) {
     strtok(message, ":");
     strtok(NULL, ":");
-    //int id = atoi(strtok(NULL, ":"));
     int turn = atoi(strtok(NULL, ":"));
     setTurnOfPlayer(id, turn);
     setStateOfPlayer(id, IN_GAME_WAITING_VALUE);
@@ -189,12 +186,9 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
                 makeMessage(sendBackMessage, "game", -1);
                 navrat = GAME_VALUE;
             } else if (strcmp(typeOfMessage, "ping") == STRINGS_ARE_SAME && canClientSendMessage(*id, PING_VALUE)) {
-                //handlePing(message);
                 setNumberOfPings(*id, getNumberOfPings(*id) + 1);
                 setTimeSinceLastPing(*id, getTimeInMili());
-                //printf("delka buderu %d\n", strlen(sendBackMessage));
                 makeMessage(sendBackMessage, "pong", *id);
-                //printf(sendBackMessage);
                 navrat = PING_VALUE;
             }
         }

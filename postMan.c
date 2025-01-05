@@ -7,20 +7,18 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
-#include <netinet/in.h>
 #include <stdlib.h>
-#include "messageHandeler.h"
-#include "gameObjects.h"
-#include "game.h"
 #include <pthread.h>
 #include <stdbool.h>
-#include <fcntl.h>
-#include <ctype.h>
 #include <sys/time.h>
 #include <errno.h>
 
+#include "messageHandeler.h"
+#include "gameObjects.h"
+#include "game.h"
+
 volatile bool connectionOfPlayers[MAX_NUMBER_OF_PLAYERS] = {true};
-pthread_mutex_t lockPostMan = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t lockPostMan = PTHREAD_MUTEX_INITIALIZER; //zamek pro pole konekci
 
 // Struktura argumentů pro vlákno
 struct threadArgs {
@@ -75,6 +73,7 @@ void *checkPlayers() {
 
 // Obsluha klienta ve vláknu
 void *clientHandler(void *args) {
+
     struct threadArgs *targs = (struct threadArgs *)args;
     int clientSocket = targs->clientSocket;
     free(targs);
@@ -88,12 +87,9 @@ void *clientHandler(void *args) {
     char bufferForMessage[MAX_SIZE_OF_MESSAGE]; //buffer pro zpravu
     char fullMessage[MAX_SIZE_OF_MESSAGE] = {0}; //prijata zprava
     char bufferForSendBackMessage[MAX_SIZE_OF_MESSAGE] = {0}; //buffer pro zpravu zpet
-    char signature[LENGTH_OF_MESSAGE_SIGNATURE + 1] = {0};
     int received = 0;   //hodnta kolik bytu bylo prijato
     int returnValue;
     int id = ID_NOT_GIVEN_YET;     //id hrace/klienta
-    int opponetId;
-    int game = FAILURE_VALUE;
     int i = 0;
     bool toStart = false; //podminka ktera urcuje jestli se ma podivat na kdyby chtel hlavni cyklus stopnut
     bool disconnect = false;
@@ -180,7 +176,6 @@ void *clientHandler(void *args) {
         memset(fullMessage, 0, sizeof(fullMessage));
         memset(bufferForSendBackMessage, 0, sizeof(bufferForSendBackMessage));
         i = i + 1;
-        //printf("id: %d\n", id);
         pthread_mutex_lock(&lockPostMan);
         connectionState = connectionOfPlayers[id];
         pthread_mutex_unlock(&lockPostMan);

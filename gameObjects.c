@@ -2,23 +2,20 @@
 // Created by Michael on 12.11.2024.
 //
 
-#include "gameObjects.h"
-#include "constants.h"
-#include "postMan.h"
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <pthread.h>
-#include <unistd.h>
+
+#include "gameObjects.h"
+#include "constants.h"
+#include "postMan.h"
 
 struct player players[MAX_NUMBER_OF_PLAYERS];
 
 struct lobby runningGames[MAX_NUMBER_OF_PLAYERS / 2];
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-
-bool connectionOfPlayers2[MAX_NUMBER_OF_PLAYERS] = {true};
 
 void inicilazePlayerArray() {
     pthread_mutex_lock(&lock);
@@ -79,12 +76,6 @@ int getFreePlayer(int indexOfConnectedPlayer) {
     }
     pthread_mutex_unlock(&lock);
     return navrat;
-}
-
-void updatePlayerArray(int index) {
-    for (int i = index; i < MAX_NUMBER_OF_PLAYERS; i = i + 1) {
-
-    }
 }
 
 void removePlayerFromGamersArray(int index) {
@@ -403,19 +394,6 @@ int setTimeSinceLastPing(int id, long time) {
     return SUCCESS_VALUE;
 }
 
-bool getIsConnectedOrTryingToConnect(int id) {
-    pthread_mutex_lock(&lock);
-    printf("chekuji\n");
-    bool navrat = players[id].isConnectedOrTryingToConnect;
-    pthread_mutex_unlock(&lock);
-    return navrat;
-}
-
-int setConnectionIsGood(int id, int connectionIsGood) {
-    pthread_mutex_lock(&lock);
-    pthread_mutex_unlock(&lock);
-}
-
 int removeGame(int id) {
     pthread_mutex_lock(&lock);
     runningGames[id].indexOfPlayer1 = FREE_POSITION;
@@ -532,21 +510,6 @@ int checkPlayer(int id) {
             setGameHalted(game, true);
         }
     }
-    return navrat;
-}
-
-int setConnection2(int id, bool connection) {
-    pthread_mutex_lock(&lock);
-    connectionOfPlayers2[id] = connection;
-    pthread_mutex_unlock(&lock);
-    return SUCCESS_VALUE;
-}
-
-bool getConnection2(int id) {
-    bool navrat;
-    pthread_mutex_lock(&lock);
-    navrat = connectionOfPlayers2[id];
-    pthread_mutex_unlock(&lock);
     return navrat;
 }
 

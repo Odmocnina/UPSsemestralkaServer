@@ -9,6 +9,4 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
 
 int handleMessageComplicated(int clientSocket, int id, int messageType, int *returnValue);
 
-int getTurnFormMessage(char *message);
-
 #endif //SERVER_MESSAGEHANDELER_H
