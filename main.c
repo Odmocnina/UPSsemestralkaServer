@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <stdbool.h>
+#include <errno.h>
 
 #include "gameObjects.h"
 #include "postMan.h"
@@ -15,11 +16,28 @@
 
 
 // Struktura argumentů pro vlákno
+/**struktura pro agrumenty vlakna (socket)**/
 struct threadArgs {
     int clientSocket;
 };
 
-int main() {
+/**
+ * Hlavni funkce programu, postupne pri pripojeni noveho klienta vytvari nove vlakna ktere zpracovavaji zpravy od klient
+ **/
+int main(int argc, char* args[]) {
+
+    char *endptr;
+    long int port;
+
+    port = strtol(args[2], &endptr, 10);
+
+    if (errno == ERANGE) {
+        printf("Spatny port\n");
+        return FAILURE_VALUE;
+    } else if (*endptr != '\0') {
+        printf("Spatny port\n");
+        return FAILURE_VALUE;
+    }
 
     int serverSocket = 0;
     int clientSocket = 0;
@@ -49,8 +67,9 @@ int main() {
 
 
     maAddress.sin_family = AF_INET;
-    maAddress.sin_port = htons(PORT);
-    maAddress.sin_addr.s_addr = INADDR_ANY;
+    maAddress.sin_port = htons(port);
+    //maAddress.sin_addr.s_addr = INADDR_ANY;
+    inet_pton(AF_INET, args[1], &maAddress.sin_addr);
 
     returnValue = bind(serverSocket, (struct sockaddr *) &maAddress, \
 	sizeof(struct sockaddr_in));
@@ -80,7 +99,7 @@ int main() {
 
     while (serverIsRunning == true) {
         clientSocket = accept(serverSocket, (struct sockaddr *)&peerAddress, &lenAdr);
-        if (clientSocket > 0) {
+        if (clientSocket > 0) {            //novy klient nalezen
             printf("Nové spojení\n");
 
             // Vytvoření vlákna pro obsluhu klienta
@@ -88,7 +107,7 @@ int main() {
             struct threadArgs *args = malloc(sizeof(struct threadArgs));
             args->clientSocket = clientSocket;
 
-            if (pthread_create(&threadId, NULL, clientHandler, args) != 0) {
+            if (pthread_create(&threadId, NULL, clientHandler, args) != 0) { //vytvoreni vlakna pro noveho klient
                 printf("Chyba pri vytvareni vlakna");
                 free(args);
                 close(clientSocket);

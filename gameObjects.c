@@ -68,7 +68,8 @@ int getFreePlayer(int indexOfConnectedPlayer) {
     int navrat = FAILURE_VALUE;
     bool found = false;
     while (!found && i < (MAX_NUMBER_OF_PLAYERS)) {
-        if (players[i].state == WAITING_VALUE && i != indexOfConnectedPlayer) {
+        if (players[i].state == WAITING_VALUE && i != indexOfConnectedPlayer
+                                    && players[i].connectionGood == SUCCESS_VALUE) {
             found = true;
             navrat = i;
         }
@@ -184,7 +185,7 @@ void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
 }
 
 bool attemptGameStart(int id) {
-    printf("Pokus o zanuti hry\n");
+    //printf("Pokus o zanuti hry\n");
     //strtok(message, ":");
     //strtok(NULL, ":");
     //int id = atoi(strtok(NULL, ":"));
@@ -404,21 +405,32 @@ int removeGame(int id) {
     runningGames[id].numberOfPlayedRounds = 0;
     pthread_mutex_unlock(&lock);
     return SUCCESS_VALUE;
+
 }
 
 int infromOpponent(int id, int typeOfInfo) {
+    printf("halo");
     int game = getGameOfPlayer(id);
     int opponentId = getIdOfOpponent(game, id);
     if (typeOfInfo == CEKAM_NA_SIGNAL) {
         char message[TYPE_ONE_MESSAGE_LENGTH] = "Mess:opponentConnectionProblems:\n";
+        pthread_mutex_lock(&lock);
+        players[opponentId].connectionGood = CEKAM_NA_SIGNAL;
+        pthread_mutex_unlock(&lock);
         sendMessage(getSocketOfPlayer(opponentId), message, TYPE_ONE_MESSAGE_LENGTH);
     } else if (typeOfInfo == SUCCESS_VALUE) {
+        printf("ahoj");
         char message[TYPE_TWO_MESSAGE_LENGTH] = "Mess:opponentConnectionGood:\n";
+        pthread_mutex_lock(&lock);
+        players[opponentId].connectionGood = SUCCESS_VALUE;
+        pthread_mutex_unlock(&lock);
         sendMessage(getSocketOfPlayer(opponentId), message, TYPE_TWO_MESSAGE_LENGTH);
     } else if (typeOfInfo == FAILURE_VALUE) {
         char message[TYPE_TWO_MESSAGE_LENGTH] = "Mess:opponentConnectionFall:\n";
         pthread_mutex_lock(&lock);
-        players[opponentId].state = WAITING_VALUE;
+        players[opponentId].state = WAITING_VALUE; //dani hrace jehoz oponent se odpojil zpatky do fronty
+        players[opponentId].connectionGood = SUCCESS_VALUE;
+        //players[opponentId].connectionGood = SUCCESS_VALUE;
         pthread_mutex_unlock(&lock);
         sendMessage(getSocketOfPlayer(opponentId), message, TYPE_TWO_MESSAGE_LENGTH);
     }
@@ -467,13 +479,27 @@ int isInGame(int id) {
     return navrat;
 }
 
+int getConnectionGoodOfPlayer(int id) {
+    pthread_mutex_lock(&lock);
+    int navrat = players[id].connectionGood;
+    pthread_mutex_unlock(&lock);
+    return navrat;
+}
+
+int setConnectionGoodOfPlayer(int id, int connectionGood) {
+    pthread_mutex_lock(&lock);
+    players[id].connectionGood = connectionGood;
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
+}
+
 int checkPlayer(int id) {
     int state = players[id].state;
     int navrat = NEUTRAL_VALUE;
     if (FREE_POSITION != state) {
         //slabsi povahy, zakyrte si oci to co se tady prave bude dit je opradu desivy
-        if (players[id].connectionGood == FAILURE_VALUE && ((players[id].numberOfPings == players[id].numberOfPongs) && ((getTimeInMili() - players[id].timeSinceLastPing) < TIME_FOR_ONE_PING))) {
-            printf("znovu pripojuji hrace: %s", players[id].name);
+        /*if (players[id].connectionGood == FAILURE_VALUE && ((players[id].numberOfPings == players[id].numberOfPongs) && ((getTimeInMili() - players[id].timeSinceLastPing) < TIME_FOR_ONE_PING))) {
+            //printf("znovu pripojuji hrace: %s", players[id].name);
             pthread_mutex_lock(&lock);
             players[id].connectionGood = SUCCESS_VALUE;
             pthread_mutex_unlock(&lock);
@@ -481,34 +507,39 @@ int checkPlayer(int id) {
                 infromOpponent(id, SUCCESS_VALUE);
             }
             navrat = SUCCESS_VALUE;
-        }
-        if (players[id].connectionGood == FAILURE_VALUE && (((players[id].numberOfPings - players[id].numberOfPongs) >= MORE_PINGS) || ((getTimeInMili() - players[id].timeSinceLastPing) >= TIME_FOR_MORE_PINGS))) {
-            printf("Hraci %s je hodne, jeho internet to jumpoval\n", players[id].name);
+        }*/
+        if (getConnectionGoodOfPlayer(id) == RECONNECT_VALUE && (((players[id].numberOfPings - players[id].numberOfPongs) >= MORE_PINGS) || ((getTimeInMili() - players[id].timeSinceLastPing) >= TIME_FOR_MORE_PINGS))) {
+            //printf("Hraci %s je hodne, jeho internet to jumpoval\n", players[id].name);
             //disconnectPlayer(id);
-            setConnection(id, false);
-            if (players[id].state == IN_GAME_VALUE) {
+            //setConnection(id, false);
+            if (players[id].state == IN_GAME_VALUE || players[id].state == IN_GAME_WAITING_VALUE) {
                 infromOpponent(id, FAILURE_VALUE);
                 removeGame(players[id].game);
-            }
-            navrat = FAILURE_VALUE;
-        }
-        //if ((players[id].connectionGood == SUCCESS_VALUE && ((players[id].numberOfPings != players[id].numberOfPongs) || ((getTimeInMili() - players[id].timeSinceLastPing) >= 1010)))) {
-        if ((players[id].connectionGood == SUCCESS_VALUE && (getTimeInMili() - players[id].timeSinceLastPing) >= TIME_FOR_ONE_PING)) {
-            printf("hrac %s ma problem s pripojenim\n", players[id].name, getTimeInMili(), players[id].timeSinceLastPing);
-            if (players[id].state == IN_GAME_VALUE) {
-                infromOpponent(id, CEKAM_NA_SIGNAL);
             }
             pthread_mutex_lock(&lock);
             players[id].connectionGood = FAILURE_VALUE;
             pthread_mutex_unlock(&lock);
+            disconnectPlayer(id);
+            navrat = FAILURE_VALUE;
+        }
+        //if ((players[id].connectionGood == SUCCESS_VALUE && ((players[id].numberOfPings != players[id].numberOfPongs) || ((getTimeInMili() - players[id].timeSinceLastPing) >= 1010)))) {
+        if ((getConnectionGoodOfPlayer(id) == SUCCESS_VALUE && (getTimeInMili() - players[id].timeSinceLastPing) >= TIME_FOR_ONE_PING)) {
+            //printf("hrac %s ma problem s pripojenim\n", players[id].name, getTimeInMili(), players[id].timeSinceLastPing);
+            setConnection(id, false);
+            if (players[id].state == IN_GAME_VALUE || players[id].state == IN_GAME_WAITING_VALUE) {
+                infromOpponent(id, CEKAM_NA_SIGNAL);
+            }
+            pthread_mutex_lock(&lock);
+            players[id].connectionGood = RECONNECT_VALUE;
+            pthread_mutex_unlock(&lock);
             navrat = CEKAM_NA_SIGNAL;
         }
     } else {
-        int game = isInGame(id);
-        if (game != FAILURE_VALUE && !isGameHalted(game)) {
-            infromOpponentGame(id, game, CEKAM_NA_SIGNAL);
-            setGameHalted(game, true);
-        }
+        //int game = isInGame(id);
+        //if (game != FAILURE_VALUE && !isGameHalted(game)) {
+            //infromOpponentGame(id, game, CEKAM_NA_SIGNAL);
+            //setGameHalted(game, true);
+        //}
     }
     return navrat;
 }
@@ -523,6 +554,13 @@ int getStateOfPlayer(int id) {
 int setStateOfPlayer(int id, int state) {
     pthread_mutex_lock(&lock);
     players[id].state = state;
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
+}
+
+int setSocket(int id, int socket) {
+    pthread_mutex_lock(&lock);
+    players[id].clientSocket = socket;
     pthread_mutex_unlock(&lock);
     return SUCCESS_VALUE;
 }

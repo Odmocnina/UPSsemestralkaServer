@@ -89,4 +89,14 @@ int getStateOfPlayer(int id);
 
 int setStateOfPlayer(int id, int state);
 
+int infromOpponent(int id, int typeOfInfo);
+
+int setSocket(int id, int socket);
+
+int getConnectionGoodOfPlayer(int id);
+
+int setConnectionGoodOfPlayer(int id, int connectionGood);
+
+int removeGame(int id);
+
 #endif //SERVER_GAMEOBJECTS_H

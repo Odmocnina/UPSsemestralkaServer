@@ -196,6 +196,12 @@ CMakeFiles/server.dir/main.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac
   /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
   /usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h \
+  /usr/include/errno.h \
+  /usr/include/x86_64-linux-gnu/bits/errno.h \
+  /usr/include/linux/errno.h \
+  /usr/include/x86_64-linux-gnu/asm/errno.h \
+  /usr/include/asm-generic/errno.h \
+  /usr/include/asm-generic/errno-base.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h \
@@ -261,6 +267,28 @@ CMakeFiles/server.dir/messageHandeler.c.o: /mnt/c/Users/Michael/Documents/Skola/
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
   /usr/include/ctype.h \
   /usr/include/x86_64-linux-gnu/sys/time.h \
+  /usr/include/unistd.h \
+  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+  /usr/include/x86_64-linux-gnu/bits/environments.h \
+  /usr/include/x86_64-linux-gnu/bits/confname.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
+  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
+  /usr/include/errno.h \
+  /usr/include/x86_64-linux-gnu/bits/errno.h \
+  /usr/include/linux/errno.h \
+  /usr/include/x86_64-linux-gnu/asm/errno.h \
+  /usr/include/asm-generic/errno.h \
+  /usr/include/asm-generic/errno-base.h \
+  /usr/lib/gcc/x86_64-linux-gnu/12/include/limits.h \
+  /usr/lib/gcc/x86_64-linux-gnu/12/include/syslimits.h \
+  /usr/include/limits.h \
+  /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
+  /usr/include/linux/limits.h \
+  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
+  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h \
+  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.h \
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/gameObjects.h \
@@ -384,6 +412,12 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
   /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/game.h
 
 
+/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.c:
+
+/usr/include/x86_64-linux-gnu/bits/local_lim.h:
+
+/usr/include/x86_64-linux-gnu/sys/time.h:
+
 /usr/include/asm-generic/errno-base.h:
 
 /usr/include/linux/errno.h:
@@ -391,10 +425,6 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 /usr/include/x86_64-linux-gnu/bits/errno.h:
 
 /usr/include/errno.h:
-
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.c:
-
-/usr/include/x86_64-linux-gnu/sys/time.h:
 
 /usr/include/alloca.h:
 
@@ -417,6 +447,8 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 /usr/include/asm-generic/errno.h:
 
 /usr/include/x86_64-linux-gnu/sys/un.h:
+
+/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
 
 /usr/include/asm-generic/sockios.h:
 
@@ -450,6 +482,8 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 
 /usr/include/x86_64-linux-gnu/sys/types.h:
 
+/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
+
 /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/main.c:
 
 /usr/include/x86_64-linux-gnu/bits/select.h:
@@ -467,6 +501,8 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 /usr/include/asm-generic/bitsperlong.h:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/12/include/limits.h:
 
 /usr/include/time.h:
 
@@ -526,6 +562,8 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 
 /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/player.h:
 
+/usr/include/linux/limits.h:
+
 /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/messageHandeler.c:
 
 /usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
@@ -547,6 +585,8 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
 
 /mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/constants.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/12/include/syslimits.h:
 
 /usr/include/x86_64-linux-gnu/bits/wordsize.h:
 
@@ -607,6 +647,8 @@ CMakeFiles/server.dir/postMan.c.o: /mnt/c/Users/Michael/Documents/Skola/UPS/SemP
 /usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
+
+/usr/include/limits.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
 

@@ -17,7 +17,11 @@
 #include "gameObjects.h"
 #include "game.h"
 
+/**pole booleanu co v sobe udrzuje kdo je pripojen a kdo ne, jes asi by to slo vyresit pres promenou v stuture player,
+ * maybe, maybe, but uz mi mrda && tohle funguje = pouziju tohle
+ **/
 volatile bool connectionOfPlayers[MAX_NUMBER_OF_PLAYERS] = {true};
+/**zamek pro pristup k ty prasarne o radek vis (vic vlaken k tomu pristupuje)**/
 pthread_mutex_t lockPostMan = PTHREAD_MUTEX_INITIALIZER; //zamek pro pole konekci
 
 // Struktura argumentů pro vlákno
@@ -97,22 +101,24 @@ void *clientHandler(void *args) {
 
     do {
         toStart = false;
-        if (id != ID_NOT_GIVEN_YET) {
+        if (id != ID_NOT_GIVEN_YET) {  //pozustatky stareho reconnectu
             pthread_mutex_lock(&lockPostMan);
             connectionState = connectionOfPlayers[id];
             pthread_mutex_unlock(&lockPostMan);
             //printf("Connection state for id: %d is %d\n", id, connectionState);
             if (connectionState == false) {
+                disconnect = true;
                 break;
             }
             //pthread_mutex_unlock(&lockPostMan);
         }
-        received = 0;//LENGTH_OF_MESSAGE_SIGNATURE;
+        //received = 0;//LENGTH_OF_MESSAGE_SIGNATURE;
         bool foundNewline = false;
         while (!foundNewline) {
             memset(bufferForMessage, 0, sizeof(bufferForMessage));
             returnValue = recv(clientSocket, bufferForMessage + received, 1, 0); // de pres jedn znak ale upravit pak ze plus do toho bufferForMeessage
             if (returnValue > 0) {
+                //printf("%c", bufferForMessage[received]);
                 if (bufferForMessage[received] == '\n') {
                     foundNewline = true;
                 }
@@ -120,17 +126,25 @@ void *clientHandler(void *args) {
                 received = received + 1;
             } else if (returnValue == 0) {
                 printf("Klient uzavřel spojení\n");
+                if (getStateOfPlayer(id) == IN_GAME_VALUE || getStateOfPlayer(id) == IN_GAME_WAITING_VALUE) {
+                    //printf("v if vnitrni");
+                    infromOpponent(id, FAILURE_VALUE);
+                }
                 disconnectPlayer(id);
                 close(clientSocket);
                 return NULL;
             }  else if (errno == EAGAIN || errno == EWOULDBLOCK) {
                 // Timeout, znovu zkontrolujeme stav
-                printf("Žádná data nebyla přijata za 5 sekund\n");
+                //printf("Žádná data nebyla přijata za 5 sekund\n");
                 toStart = true;
                 break;
                 //continue;
             } else {
                 printf("Chyba při čtení dat");
+                if (getStateOfPlayer(id) == IN_GAME_VALUE || getStateOfPlayer(id) == IN_GAME_WAITING_VALUE) {
+                    //printf("v if vnitrni");
+                    infromOpponent(id, FAILURE_VALUE);
+                }
                 disconnectPlayer(id);
                 close(clientSocket);
                 return NULL;
@@ -141,11 +155,11 @@ void *clientHandler(void *args) {
         }              //tak aby se to nezaseklo tak to pres boolean zaleze sem pak to posle pres kontinue na podminku
                        //kde se podiva jestli se ma podkracovat, cos bude vzdy a pokd se uzivatel odpojil tak prvni if
         fullMessage[received] = '\0';
-        printf("Přijatá zpráva: %s", fullMessage);
 
         // Zpracování zprávy
         int messageType = handleMessage(fullMessage, bufferForSendBackMessage, clientSocket, &id);
         if (messageType != FAILURE_VALUE) { //jestli je zprava OK tak dal zpravu zpracuj
+            printf("Přijatá zpráva: %s", fullMessage);
             //printf("Delka posilani: %d\n", strlen(bufferForSendBackMessage));
             returnValue = sendMessage(clientSocket, bufferForSendBackMessage,
                                       strlen(bufferForSendBackMessage));
@@ -162,13 +176,21 @@ void *clientHandler(void *args) {
                 setNumberOfPongs(id, getNumberOfPongs(id) + 1);
             }
             if (messageType == LOGOUT_VALUE) {
+                disconnectPlayer(id);
                 disconnect = true;
                 break;
             } else {
                 handleMessageComplicated(clientSocket, id, messageType, &returnValue);
             }
         } else {
+            //printf("Přijatá zpráva: %s", fullMessage);
+            printf("Přijatá zpráva: nevalidni\n");
             sendMessage(clientSocket, "Mess:invalidMessage:\n", 20);
+            if (getStateOfPlayer(id) == IN_GAME_VALUE || getStateOfPlayer(id) == IN_GAME_WAITING_VALUE) {
+                infromOpponent(id, FAILURE_VALUE);
+                removeGame(id);
+            }
+            disconnectPlayer(id);
             disconnect = true;
             break;
         }
@@ -184,7 +206,12 @@ void *clientHandler(void *args) {
         }
     } while ((toStart || returnValue > 0) && connectionState);
 
+    disconnect = false;
     if (disconnect) {
+        if (getStateOfPlayer(id) == IN_GAME_VALUE || getStateOfPlayer(id) == IN_GAME_WAITING_VALUE) {
+            infromOpponent(id, FAILURE_VALUE);
+            removeGame(id);
+        }
         disconnectPlayer(id);
     }
     close(clientSocket);
