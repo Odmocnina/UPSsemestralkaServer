@@ -24,7 +24,7 @@ volatile bool connectionOfPlayers[MAX_NUMBER_OF_PLAYERS] = {true};
 /**zamek pro pristup k ty prasarne o radek vis (vic vlaken k tomu pristupuje)**/
 pthread_mutex_t lockPostMan = PTHREAD_MUTEX_INITIALIZER; //zamek pro pole konekci
 
-// Struktura argumentů pro vlákno
+// Struktura argumentu pro vlákno
 struct threadArgs {
     int clientSocket;
 };
@@ -75,7 +75,10 @@ void *checkPlayers() {
     }
 }
 
-// Obsluha klienta ve vláknu
+/**
+ * funkce pro zpracovavani jednotlivych klientu, je volana v vlakne, kazdy klient ma svoje vlakno
+ *
+ **/
 void *clientHandler(void *args) {
 
     struct threadArgs *targs = (struct threadArgs *)args;
@@ -83,7 +86,7 @@ void *clientHandler(void *args) {
     free(targs);
 
     struct timeval timeout;  //nastveni ze pokud 5 sekund recv nic neprijme tak to vyhodi specifickou hodnutu
-    timeout.tv_sec = 5;  // Časový limit 5 sekund
+    timeout.tv_sec = 5;  // casovy limit 5 sekund
     timeout.tv_usec = 0;
 
     setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
@@ -125,7 +128,7 @@ void *clientHandler(void *args) {
                 fullMessage[received] = bufferForMessage[received];
                 received = received + 1;
             } else if (returnValue == 0) {
-                printf("Klient uzavřel spojení\n");
+                printf("Klient uzavrel spojeni\n");
                 if (getStateOfPlayer(id) == IN_GAME_VALUE || getStateOfPlayer(id) == IN_GAME_WAITING_VALUE) {
                     //printf("v if vnitrni");
                     infromOpponent(id, FAILURE_VALUE);
@@ -135,12 +138,12 @@ void *clientHandler(void *args) {
                 return NULL;
             }  else if (errno == EAGAIN || errno == EWOULDBLOCK) {
                 // Timeout, znovu zkontrolujeme stav
-                //printf("Žádná data nebyla přijata za 5 sekund\n");
+                //printf("zádná data nebyla prijata za 5 sekund\n");
                 toStart = true;
                 break;
                 //continue;
             } else {
-                printf("Chyba při čtení dat");
+                printf("Chyba pri cteni dat");
                 if (getStateOfPlayer(id) == IN_GAME_VALUE || getStateOfPlayer(id) == IN_GAME_WAITING_VALUE) {
                     //printf("v if vnitrni");
                     infromOpponent(id, FAILURE_VALUE);
@@ -156,16 +159,16 @@ void *clientHandler(void *args) {
                        //kde se podiva jestli se ma podkracovat, cos bude vzdy a pokd se uzivatel odpojil tak prvni if
         fullMessage[received] = '\0';
 
-        // Zpracování zprávy
+        // Zpracováni zprávy
         int messageType = handleMessage(fullMessage, bufferForSendBackMessage, clientSocket, &id);
         if (messageType != FAILURE_VALUE) { //jestli je zprava OK tak dal zpravu zpracuj
-            printf("Přijatá zpráva: %s", fullMessage);
+            printf("Prijatá zpráva: %s", fullMessage);
             //printf("Delka posilani: %d\n", strlen(bufferForSendBackMessage));
             returnValue = sendMessage(clientSocket, bufferForSendBackMessage,
                                       strlen(bufferForSendBackMessage));
 
             if (returnValue < 0) {
-                printf("Chyba při odesílání zprávy");
+                printf("Chyba pri odesiláni zprávy");
             }
             if (messageType == LOGIN_VALUE) {
                 pthread_mutex_lock(&lockPostMan);
@@ -175,6 +178,9 @@ void *clientHandler(void *args) {
             if (messageType == PING_VALUE) {
                 setNumberOfPongs(id, getNumberOfPongs(id) + 1);
             }
+            if (messageType == NAME_ALREADY_USED) {
+                break;
+            }
             if (messageType == LOGOUT_VALUE) {
                 disconnectPlayer(id);
                 disconnect = true;
@@ -183,8 +189,8 @@ void *clientHandler(void *args) {
                 handleMessageComplicated(clientSocket, id, messageType, &returnValue);
             }
         } else {
-            //printf("Přijatá zpráva: %s", fullMessage);
-            printf("Přijatá zpráva: nevalidni\n");
+            //printf("Prijatá zpráva: %s", fullMessage);
+            printf("Prijatá zpráva: nevalidni\n");
             sendMessage(clientSocket, "Mess:invalidMessage:\n", 20);
             if (getStateOfPlayer(id) == IN_GAME_VALUE || getStateOfPlayer(id) == IN_GAME_WAITING_VALUE) {
                 infromOpponent(id, FAILURE_VALUE);

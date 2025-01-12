@@ -38,19 +38,18 @@ void makeMessage(char *buffer, char *type, int id) {
 }
 
 int stringToInt(char *str, int *result) {
-    printf(" %s ", str);
     char *endptr;
-    errno = 0; // Vyčistíme errno před voláním strtol
+    errno = 0; // Vycistime errno pred volánim strtol
 
     long value = strtol(str, &endptr, 10);
 
     // Kontrola chyb
     if (errno == ERANGE || value < INT_MIN || value > INT_MAX) {
-        return FAILURE_VALUE; // Přetečení nebo podtečení
+        return FAILURE_VALUE; // Preteceni nebo podteceni
     }
 
     if (*endptr != '\0') {
-        return FAILURE_VALUE; // Řetězec obsahuje nepovolené znaky
+        return FAILURE_VALUE; // retězec obsahuje nepovolene znaky
     }
 
     *result = (int)value;
@@ -83,9 +82,6 @@ int handleLogin(char *message, int clientSocket) {
 }
 
 bool isIdOk(int number) {
-    printf("vetsi rovno: %d", number >= 0);
-    printf("mensi: %d", number < MAX_NUMBER_OF_PLAYERS);
-    printf("stav reconnect: %d", getConnectionGoodOfPlayer(number) == RECONNECT_VALUE);
     return number >= 0 && number < MAX_NUMBER_OF_PLAYERS && getConnectionGoodOfPlayer(number) == RECONNECT_VALUE;
 }
 
@@ -164,7 +160,7 @@ bool canClientSendMessage(int idOfPlayer, int messageType) {
     } /*else if (idOfPlayer != ID_NOT_GIVEN_YET && getStateOfPlayer(idOfPlayer) == RECONNECT_VALUE) {
         if (messageType == RECONNECT_VALUE) {
             navrat = true;
-        }
+        }y
     } */else if (idOfPlayer == ID_NOT_GIVEN_YET) {
         if (messageType == LOGIN_VALUE) {
             navrat = true;
@@ -173,7 +169,6 @@ bool canClientSendMessage(int idOfPlayer, int messageType) {
     if (messageType == PING_VALUE || messageType == RECONNECT_VALUE) {
         navrat = true;
     }
-    printf("navrat: %d\n", navrat);
     return navrat;
 }
 
@@ -182,26 +177,26 @@ bool canClientSendMessage(int idOfPlayer, int messageType) {
 //}
 
 char *trimLeft(char *str) {
-    // Kontrola prázdného vstupu
+    // Kontrola prázdneho vstupu
     if (str == NULL) {
         return NULL;
     }
 
-    // Najdi první znak, který není bílý
+    // Najdi prvni znak, ktery neni bily
     while (isspace((unsigned char)*str)) {
         str = str + 1;
     }
 
-    return str; // Vrátí ukazatel na začátek "ořezaného" řetězce
+    return str; // Vráti ukazatel na zacátek "orezaneho" retězce
 }
 
 int countChar(const char *str, char character) {
     int navrat = 0;
-    while (*str != '\0') {  // Procházej řetězec, dokud nedosáhneš konce
+    while (*str != '\0') {  // Procházej retězec, dokud nedosáhneš konce
         if (*str == character) {
-            navrat = navrat + 1;  // Zvýšíme počet, pokud je znak dvojtečka
+            navrat = navrat + 1;  // Zvyšime pocet, pokud je znak dvojtecka
         }
-        str = str + 1;  // Posuň ukazatel na další znak
+        str = str + 1;  // Posuň ukazatel na dalši znak
     }
     return navrat;
 }
@@ -230,46 +225,52 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
     int navrat = FAILURE_VALUE;
     char typeOfMessage[MAXIMAL_LENGHT_OF_MESSAGE_TYPE];
     while (fullMessageForInspection[i] != '\n') {
-        if (fullMessageForInspection[i] == ':') {  // Pokud narazíme na středník, ukončíme parsování
-            typeOfMessage[j] = '\0';  // Ukončíme slov
-            if (strcmp(typeOfMessage, "login") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 3) && canClientSendMessage(*id, LOGIN_VALUE)) {
-                printf(" %s %s ", message, fullMessageForInspection);
+        if (fullMessageForInspection[i] == ':') {  // Pokud narazime na strednik, ukoncime parsováni
+            typeOfMessage[j] = '\0';  // Ukoncime slov
+            if (strcmp(typeOfMessage, "login") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 3)
+                                                                    && canClientSendMessage(*id, LOGIN_VALUE)) {
                 usleep(500000);
                 *id = handleLogin(fullMessageForInspection, clientSocket);
                 if (*id == NAME_ALREADY_USED) {
                     makeMessage(sendBackMessage, "login", -1);
-                    navrat = LOGOUT_VALUE;
+                    navrat = NAME_ALREADY_USED;
                 } else if (*id != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "login", *id);
                     navrat = LOGIN_VALUE;
                 } else {
                     navrat = FAILURE_VALUE;
                 }
-            } else if (strcmp(typeOfMessage, "logout") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 3) && canClientSendMessage(*id, LOGOUT_VALUE)) {
+            } else if (strcmp(typeOfMessage, "logout") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 3)
+                                                                        && canClientSendMessage(*id, LOGOUT_VALUE)) {
                 int id = handlelogout(fullMessageForInspection);
                 if (id != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "logout", id);
                 }
                 navrat = LOGOUT_VALUE;
-            } else if (strcmp(typeOfMessage, "turn") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 3) && canClientSendMessage(*id, TURN_VALUE)) {
+            } else if (strcmp(typeOfMessage, "turn") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 3)
+                                                                        && canClientSendMessage(*id, TURN_VALUE)) {
                 int turn = handleTurn(fullMessageForInspection, *id);
                 if (turn != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "turn", turn);
                     navrat = TURN_VALUE;
                 }
-            } else if (strcmp(typeOfMessage, "readyForNextRound") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 3) && canClientSendMessage(*id, READY_FOR_NEXT_ROUND_VALUE)) {
+            } else if (strcmp(typeOfMessage, "readyForNextRound") == STRINGS_ARE_SAME
+                        && isThereCurrectNumber(message, 3) && canClientSendMessage(*id, READY_FOR_NEXT_ROUND_VALUE)) {
                 makeMessage(sendBackMessage, "readyForNextRound", -1);
                 setStateOfPlayer(*id, IN_GAME_VALUE);
                 navrat = READY_FOR_NEXT_ROUND_VALUE;
-            } else if (strcmp(typeOfMessage, "game") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 3) && canClientSendMessage(*id, GAME_VALUE)) {
+            } else if (strcmp(typeOfMessage, "game") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 3)
+                                                                        && canClientSendMessage(*id, GAME_VALUE)) {
                 makeMessage(sendBackMessage, "game", -1);
                 navrat = GAME_VALUE;
-            } else if (strcmp(typeOfMessage, "ping") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 3) && canClientSendMessage(*id, PING_VALUE)) {
+            } else if (strcmp(typeOfMessage, "ping") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 3)
+                                                                    && canClientSendMessage(*id, PING_VALUE)) {
                 setNumberOfPings(*id, getNumberOfPings(*id) + 1);
                 setTimeSinceLastPing(*id, getTimeInMili());
                 makeMessage(sendBackMessage, "pong", *id);
                 navrat = PING_VALUE;
-            } else if (strcmp(typeOfMessage, "reconnect") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 2 + 1) && canClientSendMessage(*id, PING_VALUE)) {
+            } else if (strcmp(typeOfMessage, "reconnect") == STRINGS_ARE_SAME && isThereCurrectNumber(message, 2 + 1)
+                                                                            && canClientSendMessage(*id, PING_VALUE)) {
                 int result = handleReconnect(fullMessageForInspection, clientSocket);
                 if (result != FAILURE_VALUE) {
                     makeMessage(sendBackMessage, "reconnect", -1);

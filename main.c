@@ -15,7 +15,7 @@
 
 
 
-// Struktura argumentů pro vlákno
+// Struktura argumentu pro vlákno
 /**struktura pro agrumenty vlakna (socket)**/
 struct threadArgs {
     int clientSocket;
@@ -48,16 +48,16 @@ int main(int argc, char* args[]) {
 
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
-    // Nastavení SO_REUSEADDR a SO_REUSEPORT
+    // Nastaveni SO_REUSEADDR a SO_REUSEPORT
     int opt = 1;
     if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
-        perror("Chyba při nastavování SO_REUSEADDR");
+        perror("Chyba pri nastavováni SO_REUSEADDR");
         close(serverSocket);
         return -1;
     }
 
     if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) < 0) {
-        perror("Chyba při nastavování SO_REUSEPORT");
+        perror("Chyba pri nastavováni SO_REUSEPORT");
         close(serverSocket);
         return -1;
     }
@@ -90,7 +90,7 @@ int main(int argc, char* args[]) {
 
     pthread_t pingThread;
     if (pthread_create(&pingThread, NULL, checkPlayers, NULL) != 0) {
-        printf("Chyba při vytváření vlákna pingHandler\n");
+        printf("Chyba pri vytváreni vlákna pingHandler\n");
         return -1;
     }
     pthread_detach(pingThread);
@@ -100,15 +100,15 @@ int main(int argc, char* args[]) {
     while (serverIsRunning == true) {
         clientSocket = accept(serverSocket, (struct sockaddr *)&peerAddress, &lenAdr);
         if (clientSocket > 0) {            //novy klient nalezen
-            printf("Nové spojení\n");
+            printf("Nove spojeni\n");
 
-            // Vytvoření vlákna pro obsluhu klienta
+            // Vytvoreni vlákna pro obsluhu klienta
             pthread_t threadId;
             struct threadArgs *args = malloc(sizeof(struct threadArgs));
             args->clientSocket = clientSocket;
 
             if (pthread_create(&threadId, NULL, clientHandler, args) != 0) { //vytvoreni vlakna pro noveho klient
-                printf("Chyba pri vytvareni vlakna");
+                printf("Chyba pri vytvareni vlakna\n");
                 free(args);
                 close(clientSocket);
             }
@@ -116,7 +116,7 @@ int main(int argc, char* args[]) {
             // Volitelně odpojit vlákno
             pthread_detach(threadId);
         } else {
-            printf("Chyba pri prijeti spojeni");
+            printf("Chyba pri prijeti spojeni\n");
         }
     }
 

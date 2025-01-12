@@ -11,12 +11,18 @@
 #include "constants.h"
 #include "postMan.h"
 
+/**pole hracu, kazdy hrac zabira jednu pozici, id hrace je jeho index v poli**/
 struct player players[MAX_NUMBER_OF_PLAYERS];
 
+/**pole bezicich her**/
 struct lobby runningGames[MAX_NUMBER_OF_PLAYERS / 2];
 
+/**mutex pro zamknuti dat pristupovanych vice vlakny**/
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
+/**
+ * metoda pro inicializaci pole hracu, volana pri spusteni serveru
+ **/
 void inicilazePlayerArray() {
     pthread_mutex_lock(&lock);
     printf("Inicializuji pole hracu\n");
@@ -36,6 +42,13 @@ void inicilazePlayerArray() {
     pthread_mutex_unlock(&lock);
 }
 
+/**
+ * funkce pro pridani hrace do pole hracu
+ *
+ * @param name jemeno hrace
+ * @param clientSocket socket pripojenho hrace
+ * @return index v poli hracu, pokud se nepodrari pridat hrace je vraceno FAILURE_VALUE
+ **/
 int addPlayerToGamersArray(char *name, int clientSocket) {
     pthread_mutex_lock(&lock);
     int i = 0;
@@ -62,6 +75,12 @@ int addPlayerToGamersArray(char *name, int clientSocket) {
     return navrat;
 }
 
+/**
+ * funkce pro ziskani volneho hrace
+ *
+ * @param indexOfConnectedPlayer index hrace ke kteremu hledame spoluhrace
+ * @return index volneho hrace, pokud neni zadny hrac volny je vraceno FAILURE_VALUE
+ **/
 int getFreePlayer(int indexOfConnectedPlayer) {
     pthread_mutex_lock(&lock);
     int i = 0;
@@ -79,6 +98,11 @@ int getFreePlayer(int indexOfConnectedPlayer) {
     return navrat;
 }
 
+/**
+ * podporgram pro odstraneni hrace z pole hracu
+ *
+ * @param index index hrace co ma byt smazan
+ **/
 void removePlayerFromGamersArray(int index) {
     pthread_mutex_lock(&lock);
     //players[index].state = FREE_POSITION;
@@ -87,6 +111,9 @@ void removePlayerFromGamersArray(int index) {
     pthread_mutex_unlock(&lock);
 }
 
+/**
+ * metoda pro vypsani pole hracu, pouzito pri debugu
+ **/
 void printPlayerArray() {
     pthread_mutex_lock(&lock);
     printf("Zacatek vypisu hracu\n");
@@ -99,6 +126,9 @@ void printPlayerArray() {
     pthread_mutex_unlock(&lock);
 }
 
+/**
+ * metoda pro sofistikovanejsi vypsani pole hracu, pouzito pri debugu
+ **/
 void printPlayerArray2() {
     pthread_mutex_lock(&lock);
     printf("Zacatek vypisu hracu\n");
@@ -113,6 +143,9 @@ void printPlayerArray2() {
     pthread_mutex_unlock(&lock);
 }
 
+/**
+ * metoda pro vypsani pole her, pouzito pri debugu
+ **/
 void printGamesArray() {
     pthread_mutex_lock(&lock);
     printf("Zacatek vypisu her\n");
@@ -127,6 +160,11 @@ void printGamesArray() {
     pthread_mutex_unlock(&lock);
 }
 
+/**
+ * funkce pro zjistieni skore prvniho hrace v hre
+ *
+ * @param game index hry
+ **/
 int getScoreOfFirstPlayer(int game) {
     pthread_mutex_lock(&lock);
     int navrat = runningGames[game].firstPlayerScore;
@@ -134,6 +172,11 @@ int getScoreOfFirstPlayer(int game) {
     return navrat;
 }
 
+/**
+ * funkce pro zjistieni skore druheho hrace v hre
+ *
+ * @param game index hry
+ **/
 int getScoreOfSecondPlayer(int game) {
     pthread_mutex_lock(&lock);
     int navrat = runningGames[game].secondPlayerScore;
@@ -141,6 +184,11 @@ int getScoreOfSecondPlayer(int game) {
     return navrat;
 }
 
+/**
+ * funkce pro zjistieni poctu kol co bylo v hre odehrano
+ *
+ * @param game index hry
+ **/
 int getNumberOfRounds(int game) {
     pthread_mutex_lock(&lock);
     int navrat = runningGames[game].numberOfPlayedRounds;
@@ -148,6 +196,14 @@ int getNumberOfRounds(int game) {
     return navrat;
 }
 
+/**
+ * podprogram pro updatovani herniho stavu hry
+ *
+ * @param game index hry
+ * @param player1Gain zisk prvniho hrace
+ * @param player2Gain zisk druheho hrace
+ * @param stalemateGain pocet pridanych remiz
+ **/
 void updateGameScore(int game, int player1Gain, int player2Gain, int stalemateGain) {
     pthread_mutex_lock(&lock);
     runningGames[game].firstPlayerScore = runningGames[game].firstPlayerScore + player1Gain;
@@ -157,6 +213,13 @@ void updateGameScore(int game, int player1Gain, int player2Gain, int stalemateGa
     pthread_mutex_unlock(&lock);
 }
 
+/**
+ * vytvori novou hru
+ *
+ * @param indexOfFirstPlayer index prvniho hrace
+ * @param indexOfSecondPlayer index druheho hrace
+ * @param game int ukazatel do ktereho je dan index nove vytvorene hry
+ **/
 void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
     pthread_mutex_lock(&lock);
     int i = 0;
@@ -184,6 +247,12 @@ void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
     pthread_mutex_unlock(&lock);
 }
 
+/**
+ * pokusi se k hraci najit volheho hrace, pokud najde tak vyvori novou hru
+ *
+ * @param id hrace
+ * @return true pokud se podarilo vytvorit hru, jinak false
+ **/
 bool attemptGameStart(int id) {
     //printf("Pokus o zanuti hry\n");
     //strtok(message, ":");
@@ -199,6 +268,13 @@ bool attemptGameStart(int id) {
     return navrat;
 }
 
+/**
+ * ziska id opponenta hrace co je v hre
+ *
+ * @param game index hry ve ktere hledame opponenta
+ * @param id hrace ke kteremu hledame oppoenta
+ * @return id opponenta
+ **/
 int getIdOfOpponent(int game, int id) {
     pthread_mutex_lock(&lock);
     if (runningGames[game].indexOfPlayer2 == id) {
@@ -212,6 +288,12 @@ int getIdOfOpponent(int game, int id) {
     }
 }
 
+/**
+ * ziska socket hrace podle jeho id
+ *
+ * @param id hrace jehoz socket hledame
+ * @return socket hrace
+ **/
 int getSocketOfPlayer(int id) {
     pthread_mutex_lock(&lock);
     int navrat = players[id].clientSocket;
@@ -219,6 +301,12 @@ int getSocketOfPlayer(int id) {
     return navrat;
 }
 
+/**
+ * nastavi tah hraci
+ *
+ * @param indexOfPlayer index hrace
+ * @param turn tah co hrac zvolil
+ **/
 void setTurnOfPlayer(int indexOfPlayer, int turn) {
     pthread_mutex_lock(&lock);
     players[indexOfPlayer].turn = turn;
@@ -228,12 +316,23 @@ void setTurnOfPlayer(int indexOfPlayer, int turn) {
     }*/
 }
 
+/**
+ * odnastavi tah hraci (nastavi zpatky na TURN_NOT_PICKED_YET)
+ *
+ * @param indexOfPlayer index hrace
+ **/
 void unSetTurnOfPlayer(int indexOfPlayer) {
     pthread_mutex_lock(&lock);
     players[indexOfPlayer].turn = TURN_NOT_PICKED_YET;
     pthread_mutex_unlock(&lock);
 }
 
+/**
+ * funkce na zjisteni jestli oba hraci hrali, true pokud no, false pokud ne
+ *
+ * @param indexOfGame index hry, kde zjistujem jestli oba hraci hrali
+ * @return true pokud oba hraci hrali, false pokud ne
+ **/
 bool bothPlayersHaveTurn(int indexOfGame) {
     pthread_mutex_lock(&lock);
     if (indexOfGame == FAILURE_VALUE) {
@@ -246,6 +345,13 @@ bool bothPlayersHaveTurn(int indexOfGame) {
     return turnOfFirstPlayer != TURN_NOT_PICKED_YET && turnOfSecondPlayer != TURN_NOT_PICKED_YET;
 }
 
+/**
+ * ziska indexy obou hracu v hre a da je do int ukazetelu predanych v parametrech
+ *
+ * @param indexOfGame index hry kde zjsitujem hrace
+ * @param firstPlayer ukazatel do ktereho je ulozen index prevniho hrace
+ * @param secondPlayer ukazatel do ktereho je ulozen index druheho hrace
+ **/
 void getIndexOfPlayers(int indexOfGame, int *firstPlayer, int *secondPlayer) {
     pthread_mutex_lock(&lock);
     *firstPlayer = runningGames[indexOfGame].indexOfPlayer1;
@@ -373,7 +479,7 @@ int setNumberOfPongs(int id, int numberOfPongs) {
 }
 
 int disconnectPlayer(int id) {
-    printf("Odpojuji hrace: %s\n", players[id].name);
+    //printf("Odpojuji hrace: %s\n", players[id].name);
     pthread_mutex_lock(&lock);
     players[id].state = FREE_POSITION;
     players[id].index = FREE_POSITION;
@@ -409,7 +515,6 @@ int removeGame(int id) {
 }
 
 int infromOpponent(int id, int typeOfInfo) {
-    printf("halo");
     int game = getGameOfPlayer(id);
     int opponentId = getIdOfOpponent(game, id);
     if (typeOfInfo == CEKAM_NA_SIGNAL) {
@@ -419,7 +524,6 @@ int infromOpponent(int id, int typeOfInfo) {
         pthread_mutex_unlock(&lock);
         sendMessage(getSocketOfPlayer(opponentId), message, TYPE_ONE_MESSAGE_LENGTH);
     } else if (typeOfInfo == SUCCESS_VALUE) {
-        printf("ahoj");
         char message[TYPE_TWO_MESSAGE_LENGTH] = "Mess:opponentConnectionGood:\n";
         pthread_mutex_lock(&lock);
         players[opponentId].connectionGood = SUCCESS_VALUE;
@@ -512,7 +616,8 @@ int checkPlayer(int id) {
             //printf("Hraci %s je hodne, jeho internet to jumpoval\n", players[id].name);
             //disconnectPlayer(id);
             //setConnection(id, false);
-            if (players[id].state == IN_GAME_VALUE || players[id].state == IN_GAME_WAITING_VALUE) {
+            bool runningGame = !(getScoreOfFirstPlayer(players[id].game) != ROUNDS && getScoreOfSecondPlayer(players[id].game) != ROUNDS);
+            if ((players[id].state == IN_GAME_VALUE || players[id].state == IN_GAME_WAITING_VALUE) && runningGame) {
                 infromOpponent(id, FAILURE_VALUE);
                 removeGame(players[id].game);
             }
