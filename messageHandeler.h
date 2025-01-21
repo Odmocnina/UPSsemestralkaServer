@@ -9,4 +9,6 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
 
 int handleMessageComplicated(int clientSocket, int id, int messageType, int *returnValue);
 
+char *trimLeft(char *str);
+
 #endif //SERVER_MESSAGEHANDELER_H

@@ -29,6 +29,24 @@ void makeMessage(char *buffer, char *type, int id) {
     //char idInChar = id;  //muj genius je tak velky, ze ma vlastni gravitacni pole
     if (strcmp(type, "login") == STRINGS_ARE_SAME) {
         sprintf(buffer, "Mess:%s:%d:\n", type, id);
+    } else if (strcmp(type, "reconnect") == STRINGS_ARE_SAME) {
+        if (isInGame(id) != FAILURE_VALUE) {
+            int winner = getWinnerLastRound(getGameOfPlayer(id));
+            char update;
+            if (winner == STALEMATE_VALUE) {
+                update = 's';
+            } else if (winner == id) {
+                update = 'w';
+            } else if (winner == NOONE_WON_YET) {
+                update = 'n';
+            } else {
+                update = 'l';
+            }
+            sprintf(buffer, "Mess:%s:OK:%c:%d\n", type, update,
+                    getTurnOfPlayer(getIdOfOpponent(getGameOfPlayer(id), id)));
+        } else {
+            sprintf(buffer, "Mess:%s:OK:\n", type);
+        }
     } else {
         sprintf(buffer, "Mess:%s:OK:\n", type);
     }
@@ -273,7 +291,7 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
                                                                             && canClientSendMessage(*id, PING_VALUE)) {
                 int result = handleReconnect(fullMessageForInspection, clientSocket);
                 if (result != FAILURE_VALUE) {
-                    makeMessage(sendBackMessage, "reconnect", -1);
+                    makeMessage(sendBackMessage, "reconnect", result);
                     *id = result;
                     if (getStateOfPlayer(*id) == IN_GAME_VALUE || getStateOfPlayer(*id) == IN_GAME_WAITING_VALUE) {
                         infromOpponent(*id, SUCCESS_VALUE);
@@ -326,8 +344,8 @@ int handleMessageComplicated(int clientSocket, int id, int messageType, int *ret
             char bothPlayerTurn[LENGTH_OF_BOTHPLAYERS_TURED_MESSAGE] = "Mess:bothPlayerTurn:\n";
             sendMessage(clientSocket, bothPlayerTurn, strlen(bothPlayerTurn));
             sendMessage(getSocketOfPlayer(opponetId), bothPlayerTurn, strlen(bothPlayerTurn));
-            unSetTurnOfPlayer(id);
-            unSetTurnOfPlayer(opponetId);
+            //unSetTurnOfPlayer(id);
+            //unSetTurnOfPlayer(opponetId);
             //unSetWhoTurnedFirst(game);
         }
     }
@@ -345,6 +363,24 @@ int handleMessageComplicated(int clientSocket, int id, int messageType, int *ret
             //printf("delka zpravy: %d" , strlen(gameBegin));
             *returnValue = sendMessage(clientSocket, gameBegin, LENGHT_OF_START_GAME_MESSAGE);
             sendMessage(getSocketOfPlayer(opponetId), gameBegin, LENGHT_OF_START_GAME_MESSAGE);
+        }
+    }
+    if (messageType == READY_FOR_NEXT_ROUND_VALUE) {
+        game = getGameOfPlayer(id);
+        opponetId = getIdOfOpponent(game, id);
+        addPlayerReadyness(game);
+        unSetTurnOfPlayer(id);
+        unSetTurnOfPlayer(opponetId);
+        if (getPlayerReadyness(game) == 2) {
+            setWinnerLastRound(game, NOONE_WON_YET);
+            resetPlayerReadyness(game);
+            char gameBegin[24] = "Mess:bothPlayersReady:\n";
+            usleep(50000);
+            printf("soket prvniho: %d\n", clientSocket);
+            printf("socket druhyho: %d\n", getSocketOfPlayer(opponetId));
+            printf("id oppoennta: %d\n", opponetId);
+            *returnValue = sendMessage(clientSocket, gameBegin, 24);
+            sendMessage(getSocketOfPlayer(opponetId), gameBegin, 24);
         }
     }
 

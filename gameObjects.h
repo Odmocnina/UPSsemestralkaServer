@@ -18,6 +18,8 @@ struct lobby {
     int secondPlayerScore;
     int numberOfStalemates;
     bool gameHalted; // pro krizkovy reconnect
+    int winnerLastRound;
+    int numberOfReadyPlayers;
 };
 
 void inicilazePlayerArray();
@@ -98,5 +100,17 @@ int getConnectionGoodOfPlayer(int id);
 int setConnectionGoodOfPlayer(int id, int connectionGood);
 
 int removeGame(int id);
+
+int isInGame(int id);
+
+int getWinnerLastRound(int game);
+
+int setWinnerLastRound(int game, int id);
+
+int addPlayerReadyness(int game);
+
+int getPlayerReadyness(int game);
+
+int resetPlayerReadyness(int game);
 
 #endif //SERVER_GAMEOBJECTS_H

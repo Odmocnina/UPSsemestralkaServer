@@ -107,18 +107,21 @@ void handleGame(int indexOfGame, char *messageForFirstPlayer, char *messageForSe
                 , getNumberOfRounds(indexOfGame), getStalemates(indexOfGame), getScoreOfFirstPlayer(indexOfGame));
         sprintf(messageForSecondPlayer, "Mess:%s:%s:%d:%d:%d:%d:\n", "gameResult", "s", firstPlayerTurn
                 , getNumberOfRounds(indexOfGame), getStalemates(indexOfGame), getScoreOfSecondPlayer(indexOfGame));
+        setWinnerLastRound(indexOfGame, STALEMATE_VALUE);
     } else if (result == FIRST_PLAYER_WON) {
         updateGameScore(indexOfGame, 1, 0, 0);
         sprintf(messageForFirstPlayer, "Mess:%s:%s:%d:%d:%d:%d:\n", "gameResult", "w", secondPlayerTurn
                 , getNumberOfRounds(indexOfGame), getStalemates(indexOfGame), getScoreOfFirstPlayer(indexOfGame));
         sprintf(messageForSecondPlayer, "Mess:%s:%s:%d:%d:%d:%d:\n", "gameResult", "l", firstPlayerTurn
                 , getNumberOfRounds(indexOfGame), getStalemates(indexOfGame), getScoreOfSecondPlayer(indexOfGame));
+        setWinnerLastRound(indexOfGame, indexOfFirstPlayer);
     } else if (result == SECOND_PLAYER_WON) {
         updateGameScore(indexOfGame, 0, 1, 0);
         sprintf(messageForFirstPlayer, "Mess:%s:%s:%d:%d:%d:%d:\n", "gameResult", "l", secondPlayerTurn
                 , getNumberOfRounds(indexOfGame), getStalemates(indexOfGame), getScoreOfFirstPlayer(indexOfGame));
         sprintf(messageForSecondPlayer, "Mess:%s:%s:%d:%d:%d:%d:\n", "gameResult", "w", firstPlayerTurn
                 , getNumberOfRounds(indexOfGame), getStalemates(indexOfGame), getScoreOfSecondPlayer(indexOfGame));
+        setWinnerLastRound(indexOfGame, indexOfSecondPlayer);
     } else {
         printf("Chyba pri zracovavani hry\n");
     }

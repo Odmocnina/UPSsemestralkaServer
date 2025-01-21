@@ -38,6 +38,10 @@ void inicilazePlayerArray() {
 
         runningGames[i].indexOfPlayer2 = FREE_POSITION;
 
+        runningGames[i].numberOfReadyPlayers = 0;
+
+        runningGames[i].winnerLastRound = NOONE_WON_YET;
+
     }
     pthread_mutex_unlock(&lock);
 }
@@ -276,6 +280,7 @@ bool attemptGameStart(int id) {
  * @return id opponenta
  **/
 int getIdOfOpponent(int game, int id) {
+    printf("v get id of oppoennt: %d %d\n", game, id);
     pthread_mutex_lock(&lock);
     if (runningGames[game].indexOfPlayer2 == id) {
         int navrat = runningGames[game].indexOfPlayer1;
@@ -405,6 +410,8 @@ int unsetGame(int game) {
     runningGames[game].numberOfPlayedRounds = 0;
     runningGames[game].numberOfStalemates = 0;
     pthread_mutex_unlock(&lock);
+    setWinnerLastRound(game, NOONE_WON_YET);
+    resetPlayerReadyness(game);
     return SUCCESS_VALUE;
 }
 
@@ -481,14 +488,16 @@ int setNumberOfPongs(int id, int numberOfPongs) {
 int disconnectPlayer(int id) {
     //printf("Odpojuji hrace: %s\n", players[id].name);
     pthread_mutex_lock(&lock);
-    players[id].state = FREE_POSITION;
-    players[id].index = FREE_POSITION;
-    players[id].clientSocket = FREE_POSITION;
-    players[id].turn = TURN_NOT_PICKED_YET;
-    players[id].game = FREE_POSITION;
-    players[id].connectionGood = NEUTRAL_VALUE;
-    players[id].numberOfPings = 0;
-    players[id].numberOfPongs = 0;
+    if (id != ID_NOT_GIVEN_YET) {
+        players[id].state = FREE_POSITION;
+        players[id].index = FREE_POSITION;
+        players[id].clientSocket = FREE_POSITION;
+        players[id].turn = TURN_NOT_PICKED_YET;
+        players[id].game = FREE_POSITION;
+        players[id].connectionGood = NEUTRAL_VALUE;
+        players[id].numberOfPings = 0;
+        players[id].numberOfPongs = 0;
+    }
 
     pthread_mutex_unlock(&lock);
     return SUCCESS_VALUE;
@@ -651,7 +660,12 @@ int checkPlayer(int id) {
 
 int getStateOfPlayer(int id) {
     pthread_mutex_lock(&lock);
-    int navrat = players[id].state;
+    int navrat = FAILURE_VALUE;
+    if (id == ID_NOT_GIVEN_YET) {
+        navrat = FREE_POSITION;
+    } else {
+        navrat = players[id].state;
+    }
     pthread_mutex_unlock(&lock);
     return navrat;
 }
@@ -666,6 +680,41 @@ int setStateOfPlayer(int id, int state) {
 int setSocket(int id, int socket) {
     pthread_mutex_lock(&lock);
     players[id].clientSocket = socket;
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
+}
+
+int setWinnerLastRound(int game, int id) {
+    pthread_mutex_lock(&lock);
+    runningGames[game].winnerLastRound = id;
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
+}
+
+int getWinnerLastRound(int game) {
+    pthread_mutex_lock(&lock);
+    int navrat = runningGames[game].winnerLastRound;
+    pthread_mutex_unlock(&lock);
+    return navrat;
+}
+
+int addPlayerReadyness(int game) {
+    pthread_mutex_lock(&lock);
+    runningGames[game].numberOfReadyPlayers = runningGames[game].numberOfReadyPlayers + 1;
+    pthread_mutex_unlock(&lock);
+    return SUCCESS_VALUE;
+}
+
+int getPlayerReadyness(int game) {
+    pthread_mutex_lock(&lock);
+    int navrat = runningGames[game].numberOfReadyPlayers;
+    pthread_mutex_unlock(&lock);
+    return navrat;
+}
+
+int resetPlayerReadyness(int game) {
+    pthread_mutex_lock(&lock);
+    runningGames[game].numberOfReadyPlayers = 0;
     pthread_mutex_unlock(&lock);
     return SUCCESS_VALUE;
 }

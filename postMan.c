@@ -212,6 +212,8 @@ void *clientHandler(void *args) {
         }
     } while ((toStart || returnValue > 0) && connectionState);
 
+    printf("vysel jsem z whilu pro id: %d\n", id);
+
     disconnect = false;
     if (disconnect) {
         if (getStateOfPlayer(id) == IN_GAME_VALUE || getStateOfPlayer(id) == IN_GAME_WAITING_VALUE) {
