@@ -21,6 +21,7 @@ int handleRock(int firstPlayerTurn) {
     }
 }
 
+
 /**
  * Funkce na zhodnoceni vysledku hry pri volbe papir
  *
