@@ -22,6 +22,7 @@ struct threadArgs {
 };
 
 /**
+ *
  * Funkce co kotnroluje jestli je port v spravnem rozmenzi pro port
  *
  * @param pozt, ktery chceme zkontrolovat
@@ -31,7 +32,12 @@ bool isPortWithinBounds(int port) {
 }
 
 /**
- * Hlavni funkce programu, postupne pri pripojeni noveho klienta vytvari nove vlakna ktere zpracovavaji zpravy od klient
+ * hlavni funkce programu. pokud se pripoji novi kleint je polsan do metody handleclient, je zde zalozeno vlakno
+ * kontrolu pripojeni hracu, jestli pinguji
+ *
+ *
+ * @param argc pocet argumentu prikazove radky
+ * @param args argumentz prikzove radkz
  **/
 int main(int argc, char* args[]) {
 

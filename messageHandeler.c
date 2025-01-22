@@ -17,6 +17,12 @@
 #include "game.h"
 #include "postMan.h"
 
+/**
+ * funkce na obsaouzeni zpravy typu logout
+ *
+ * @param message zprava
+ * @return id hrace
+ **/
 int handlelogout(char *message) {
     strtok(message, ":");
     strtok(NULL, ":");
@@ -25,14 +31,24 @@ int handlelogout(char *message) {
     return atoi(token);
 }
 
+/**
+ * funkce na vytovreni zpravy co bude poslana jako odpoved na zpravu co prisla od klient, zprava je vetsinou totozn, do
+ * zpravy je pridano OK, pri loginu je poslano s id, ktere bylo hraci poslano id ktere mu bylo serverem prirazeno, pri
+ * reconnectu je poslan update hry
+ *
+ *
+ * @param buffer buffer pro zpravu pro klient
+ * @param type typ zpravy
+ * @param id, id hrace co zpravu poslal
+ **/
 void makeMessage(char *buffer, char *type, int id) {
     //char idInChar = id;  //muj genius je tak velky, ze ma vlastni gravitacni pole
     if (strcmp(type, "login") == STRINGS_ARE_SAME) {
         sprintf(buffer, "Mess:%s:%d:\n", type, id);
-    } else if (strcmp(type, "reconnect") == STRINGS_ARE_SAME) {
-        if (isInGame(id) != FAILURE_VALUE) {
-            int winner = getWinnerLastRound(getGameOfPlayer(id));
-            char update;
+    } else if (strcmp(type, "reconnect") == STRINGS_ARE_SAME) { //pokud prisel reconnect message je nutno slozit
+        if (isInGame(id) != FAILURE_VALUE) {                    //zpravu s updatem hry, aby se pripadne zmeny v hre
+            int winner = getWinnerLastRound(getGameOfPlayer(id));//hraci ukazali, na konec reconnect zpravy se da char
+            char update;                                         //ktery kilentovi rekna co se stalo kdyz neprijimal
             if (winner == STALEMATE_VALUE) {
                 update = 's';
             } else if (winner == id) {
@@ -50,11 +66,16 @@ void makeMessage(char *buffer, char *type, int id) {
     } else {
         sprintf(buffer, "Mess:%s:OK:\n", type);
     }
-    //sprintf(buffer, "Mess:%s:%d:\n", type, id);
-    //printf(buffer);
-    //sprintf();
 }
 
+/**
+ * funkce co ziska z stringu cislo v int
+ *
+ *
+ * @param str retezec co prevadime na string
+ * @param result buffer pro cislo
+ * @return int hodnta vyjadrujici jestli se ziskani intu podarilo
+ **/
 int stringToInt(char *str, int *result) {
     char *endptr;
     errno = 0; // Vycistime errno pred volánim strtol
@@ -144,14 +165,6 @@ long getTimeInMili() {
     return tp.tv_sec * 1000 + tp.tv_usec / 1000;
 }
 
-int handlePing(char *message) {
-    strtok(message, ":");
-    strtok(message, ":");
-    int id = atoi(strtok(NULL, ":"));
-    int navrat = setPingOfPlayer(id);
-    return navrat;
-}
-
 bool canClientSendMessage(int idOfPlayer, int messageType) {
     bool navrat = false;
     if (idOfPlayer != ID_NOT_GIVEN_YET && getStateOfPlayer(idOfPlayer) == WAITING_VALUE) {
@@ -175,11 +188,7 @@ bool canClientSendMessage(int idOfPlayer, int messageType) {
                 navrat = true;
             }
         }
-    } /*else if (idOfPlayer != ID_NOT_GIVEN_YET && getStateOfPlayer(idOfPlayer) == RECONNECT_VALUE) {
-        if (messageType == RECONNECT_VALUE) {
-            navrat = true;
-        }y
-    } */else if (idOfPlayer == ID_NOT_GIVEN_YET) {
+    } else if (idOfPlayer == ID_NOT_GIVEN_YET) {
         if (messageType == LOGIN_VALUE) {
             navrat = true;
         }
@@ -194,6 +203,13 @@ bool canClientSendMessage(int idOfPlayer, int messageType) {
 //    return handleTurn(message);
 //}
 
+/**
+ * funkce odstraneni neviditelnych znaku co jsou na levo zpravy
+ *
+ *
+ * @param str string co chceme odriznout neviditelne znaky z leva
+ * @return string timunty z leva
+ **/
 char *trimLeft(char *str) {
     // Kontrola prázdneho vstupu
     if (str == NULL) {
@@ -208,6 +224,14 @@ char *trimLeft(char *str) {
     return str; // Vráti ukazatel na zacátek "orezaneho" retězce
 }
 
+/**
+ * funkce co napocitak kolikrat je znak v retezci
+ *
+ *
+ * @param str string kde pocitame char
+ * @param character znak ktery v stringu pocitame
+ * @return int kolikrat je char v stringu
+ **/
 int countChar(const char *str, char character) {
     int navrat = 0;
     while (*str != '\0') {  // Procházej retězec, dokud nedosáhneš konce
@@ -219,6 +243,14 @@ int countChar(const char *str, char character) {
     return navrat;
 }
 
+/**
+ * funkce co zjsiti jestli je v zprave spravy pocet :, oddelovacich znaku v zprv
+ *
+ *
+ * @param message zprv, kde kontrolujeme pocet :
+ * @param number cislo kolik : ma v zprave mit
+ * @return bool vyjadrujici jestli je v zprav sprvny pocet :
+ **/
 bool isThereCurrectNumber(char *message, int number) {
     return countChar(message, ':') == number;
 }
@@ -227,6 +259,18 @@ bool isThereCurrectNumber(char *message, int number) {
 
 //}
 
+/**
+ * funkce na jednoduche oblsouzeni zpravy, precte zpravu zpracu je ji a naplni buffer pro zpravu zptky, funkce take
+ * kontroluje jestli zprv vyhovuje protokolu, jestli ne tak vrati FAILURE_VALUE, jinak vrati hodntu rikjici co typ zprvy
+ * je
+ *
+ *
+ * @param message zprv kterou handalujem
+ * @param sendBackMessage buffer pro zpravu co bude posln klientovi jako odpoved I<3Pilsner
+ * @param clientSocket socket pres ktery prisla zprv
+ * @param id id hrace co zprvu poslal
+ * @return typ zpravy vyjadren v int
+ **/
 int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *id) {
     message = trimLeft(message);
     if (strncmp(message, "Mess:", LENGTH_OF_MESSAGE_SIGNATURE + 1) != 0) {
@@ -308,12 +352,24 @@ int handleMessage(char *message, char *sendBackMessage, int clientSocket, int *i
     return navrat;
 }
 
+/**
+ * funkce na komplikovane oblsouzeni zpravy, napriklad pokud jsou 2 hraci v queue ta,k, jsou dani do hrz, obou jim je
+ * poslno, ze se jde gming
+ *
+ *
+ *
+ *
+ * I<3Pilsner
+ * @param clientSocket socket pres ktery prisla zprv
+ * @param id id hrace co zprvu posll
+ * @param messageType typ zpravy
+ * @param returnValue asi vysledek sendu, moc nevim proc to tam je
+ * @return int cislo jestli se cel funkce spachl
+ **/
 int handleMessageComplicated(int clientSocket, int id, int messageType, int *returnValue) {
     int game;
     int opponetId;
-    //cislo = 0;
     if (messageType == LOGIN_VALUE) {
-        //id = messageOk;
         bool isGame = attemptGameStart(id);
         game = getGameOfPlayer(id);
         if (isGame != false) {
@@ -324,13 +380,11 @@ int handleMessageComplicated(int clientSocket, int id, int messageType, int *ret
         }
     }
     if (messageType == TURN_VALUE) {
-        //setTurnOfPlayer(id, messageOk, game);
         game = getGameOfPlayer(id);
         opponetId = getIdOfOpponent(game, id);
         if (bothPlayersHaveTurn(game)) {        //jestli oba dva hraci hrali
             char messageForFirstPlayer[MAX_SIZE_OF_MESSAGE];
             char messageForSecondPlayer[MAX_SIZE_OF_MESSAGE];
-            //int whoSooner = getWhoTurnedSooner(game);
             handleGame(game, messageForFirstPlayer, messageForSecondPlayer);
             if (isFirstPlayer(id, game)) {
                 sendMessage(clientSocket, messageForFirstPlayer, strlen(messageForFirstPlayer));
@@ -344,9 +398,6 @@ int handleMessageComplicated(int clientSocket, int id, int messageType, int *ret
             char bothPlayerTurn[LENGTH_OF_BOTHPLAYERS_TURED_MESSAGE] = "Mess:bothPlayerTurn:\n";
             sendMessage(clientSocket, bothPlayerTurn, strlen(bothPlayerTurn));
             sendMessage(getSocketOfPlayer(opponetId), bothPlayerTurn, strlen(bothPlayerTurn));
-            //unSetTurnOfPlayer(id);
-            //unSetTurnOfPlayer(opponetId);
-            //unSetWhoTurnedFirst(game);
         }
     }
     if (messageType == GAME_VALUE) {
@@ -360,7 +411,6 @@ int handleMessageComplicated(int clientSocket, int id, int messageType, int *ret
         if (isGame != false) {
             char gameBegin[LENGHT_OF_START_GAME_MESSAGE] = "Mess:gameBegin:\n";
             opponetId = getIdOfOpponent(game, id);
-            //printf("delka zpravy: %d" , strlen(gameBegin));
             *returnValue = sendMessage(clientSocket, gameBegin, LENGHT_OF_START_GAME_MESSAGE);
             sendMessage(getSocketOfPlayer(opponetId), gameBegin, LENGHT_OF_START_GAME_MESSAGE);
         }
@@ -368,7 +418,7 @@ int handleMessageComplicated(int clientSocket, int id, int messageType, int *ret
     if (messageType == READY_FOR_NEXT_ROUND_VALUE) {
         game = getGameOfPlayer(id);
         opponetId = getIdOfOpponent(game, id);
-        addPlayerReadyness(game);
+        setPlayerReadyness(game);
         unSetTurnOfPlayer(id);
         unSetTurnOfPlayer(opponetId);
         if (getPlayerReadyness(game) == 2) {

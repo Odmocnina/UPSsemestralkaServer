@@ -107,7 +107,7 @@ int getWinnerLastRound(int game);
 
 int setWinnerLastRound(int game, int id);
 
-int addPlayerReadyness(int game);
+int setPlayerReadyness(int game);
 
 int getPlayerReadyness(int game);
 

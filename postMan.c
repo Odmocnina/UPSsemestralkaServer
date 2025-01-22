@@ -18,17 +18,24 @@
 #include "game.h"
 
 /**pole booleanu co v sobe udrzuje kdo je pripojen a kdo ne, jes asi by to slo vyresit pres promenou v stuture player,
- * maybe, maybe, but uz mi mrda && tohle funguje = pouziju tohle
+ * maybe, maybe, but uz mi mrda && tohle funguje = pouziju tohle, =========Z STAREHO RECONNECTU POZUSTATE===========
+ * ........ ale nejde smazat
  **/
 volatile bool connectionOfPlayers[MAX_NUMBER_OF_PLAYERS] = {true};
 /**zamek pro pristup k ty prasarne o radek vis (vic vlaken k tomu pristupuje)**/
 pthread_mutex_t lockPostMan = PTHREAD_MUTEX_INITIALIZER; //zamek pro pole konekci
 
-// Struktura argumentu pro vlákno
+/**Struktura pro argumenty v vlanku klienta**/
 struct threadArgs {
     int clientSocket;
 };
 
+/**
+ * Procedura na vyresetovani integeru
+ *
+ * @param number ukazatel na cislo, ktere chceme vyrestovat
+ * @param resetNumber cislo, na ktere chceme vyresetovat
+ **/
 void resetNumber(int *number, int resetNumber) {
     if (number == NULL) {
         return;
@@ -36,6 +43,14 @@ void resetNumber(int *number, int resetNumber) {
     *number = resetNumber;
 }
 
+/**
+ * Funkce na posilani zprav klientovi pres socket
+ *
+ * @param socket socket kam chceme zpravu poslat
+ * @param message char * ve kterem je zprava co chceme poslat
+ * @param length delka zpravy co posilame
+ * @return pocet bitu bo bylo poslano, pokud se nepodarilo zpravu poslat bude hodnota zaporna
+ **/
 int sendMessage(int socket, char *message, int length) {
     printf("Posilam: %s", message);
     int navrat = send(socket, message, length, 0);
@@ -55,6 +70,14 @@ int sendPing(int socket) {
     return SUCCESS_VALUE;
 }
 
+/**
+ * Funkce na nasteveni pozice v poli connectionOfPlayers, pred pristupem do pole je pouzit mutex aby nedochazelo
+ * k soubehu
+ *
+ * @param id index v poli connectionOfPlayers
+ * @param connection hodnota na kterou chceme nastavit v pozici v poli connectionOfPlayers
+ * @return SUCCESS_VALUE
+ **/
 int setConnection(int id, bool connection) {
     //printf("setuju connectction pro id %d na %d\n", id, connection);
     pthread_mutex_lock(&lockPostMan);
@@ -63,9 +86,14 @@ int setConnection(int id, bool connection) {
     return SUCCESS_VALUE;
 }
 
+/**
+ * Metoda na kontrolu jestli jou hraci pripojeni a pinguji, bezi v separatnim vlakne
+ *
+ *
+ * @return void * aby mohlo bězet v pthread_create
+ **/
 void *checkPlayers() {
     bool checking = true;
-    int count = 0;
     while (checking) {
         //printf("check players\n");
         for (int i = 0; i < MAX_NUMBER_OF_PLAYERS; i = i + 1) {
@@ -76,8 +104,11 @@ void *checkPlayers() {
 }
 
 /**
- * funkce pro zpracovavani jednotlivych klientu, je volana v vlakne, kazdy klient ma svoje vlakno
+ * Funkce na zpracovanavani zprav od uzivatele ktery se pripojil, tato metoda je metda, ktrera se da do vlakna, kdyz se
+ * klient pripoji
  *
+ * @param args ukazatel na strukturu s argumenty pro vlakno
+ * @return NULL po prvedeni cele funkce
  **/
 void *clientHandler(void *args) {
 
@@ -104,16 +135,14 @@ void *clientHandler(void *args) {
 
     do {
         toStart = false;
-        if (id != ID_NOT_GIVEN_YET) {  //pozustatky stareho reconnectu
+        if (id != ID_NOT_GIVEN_YET) {  //pozustatky stareho reconnectu, ale smazat to nejde, cely se to pak domrda
             pthread_mutex_lock(&lockPostMan);
             connectionState = connectionOfPlayers[id];
             pthread_mutex_unlock(&lockPostMan);
-            //printf("Connection state for id: %d is %d\n", id, connectionState);
             if (connectionState == false) {
                 disconnect = true;
                 break;
             }
-            //pthread_mutex_unlock(&lockPostMan);
         }
         //received = 0;//LENGTH_OF_MESSAGE_SIGNATURE;
         bool foundNewline = false;
@@ -163,7 +192,6 @@ void *clientHandler(void *args) {
         int messageType = handleMessage(fullMessage, bufferForSendBackMessage, clientSocket, &id);
         if (messageType != FAILURE_VALUE) { //jestli je zprava OK tak dal zpravu zpracuj
             printf("Prijatá zpráva: %s", fullMessage);
-            //printf("Delka posilani: %d\n", strlen(bufferForSendBackMessage));
             returnValue = sendMessage(clientSocket, bufferForSendBackMessage,
                                       strlen(bufferForSendBackMessage));
 
@@ -189,7 +217,6 @@ void *clientHandler(void *args) {
                 handleMessageComplicated(clientSocket, id, messageType, &returnValue);
             }
         } else {
-            //printf("Prijatá zpráva: %s", fullMessage);
             printf("Prijatá zpráva: nevalidni\n");
             sendMessage(clientSocket, "Mess:invalidMessage:\n", 20);
             if (getStateOfPlayer(id) == IN_GAME_VALUE || getStateOfPlayer(id) == IN_GAME_WAITING_VALUE) {
@@ -212,10 +239,8 @@ void *clientHandler(void *args) {
         }
     } while ((toStart || returnValue > 0) && connectionState);
 
-    printf("vysel jsem z whilu pro id: %d\n", id);
-
     disconnect = false;
-    if (disconnect) {
+    if (disconnect) { //Drive se odpojovalo tady, nyni je to primo v whilu pokud se clovek odpoji/domrda pripojeni
         if (getStateOfPlayer(id) == IN_GAME_VALUE || getStateOfPlayer(id) == IN_GAME_WAITING_VALUE) {
             infromOpponent(id, FAILURE_VALUE);
             removeGame(id);

@@ -7,12 +7,15 @@
 
 #include "constants.h"
 
+/**
+ * Struktura pro hrace (pripjeny klient)
+ *
+ **/
 struct player {
     char name[MAX_NAME_LENGTH];
     int state;
     int index; //funguje zaroven jako id
     int clientSocket;
-    //int time;
     int turn;
     int game;
     long numberOfNotAnwseredPings;

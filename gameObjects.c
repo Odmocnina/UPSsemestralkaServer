@@ -258,11 +258,6 @@ void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
  * @return true pokud se podarilo vytvorit hru, jinak false
  **/
 bool attemptGameStart(int id) {
-    //printf("Pokus o zanuti hry\n");
-    //strtok(message, ":");
-    //strtok(NULL, ":");
-    //int id = atoi(strtok(NULL, ":"));
-    //printf("id: %d\n", id);
     int freePlayer = getFreePlayer(id);
     int navrat = false;
     if (freePlayer != FAILURE_VALUE) {
@@ -280,7 +275,6 @@ bool attemptGameStart(int id) {
  * @return id opponenta
  **/
 int getIdOfOpponent(int game, int id) {
-    printf("v get id of oppoennt: %d %d\n", game, id);
     pthread_mutex_lock(&lock);
     if (runningGames[game].indexOfPlayer2 == id) {
         int navrat = runningGames[game].indexOfPlayer1;
@@ -316,9 +310,6 @@ void setTurnOfPlayer(int indexOfPlayer, int turn) {
     pthread_mutex_lock(&lock);
     players[indexOfPlayer].turn = turn;
     pthread_mutex_unlock(&lock);
-    /*if (runningGames[game].whoTurnedSooner == NOONE_PLAYED_YET) {
-        runningGames[game].whoTurnedSooner = indexOfPlayer;
-    }*/
 }
 
 /**
@@ -364,6 +355,13 @@ void getIndexOfPlayers(int indexOfGame, int *firstPlayer, int *secondPlayer) {
     pthread_mutex_unlock(&lock);
 }
 
+/**
+ * funkce co ziska tah, ktery hrac v kole udelal
+ *
+ *
+ * @param indexOfPlayer index (id) hrace v poli hracu
+ * @return tah hrace na danem indexu
+ * **/
 int getTurnOfPlayer(int indexOfPlayer) {
     pthread_mutex_lock(&lock);
     int navrat = players[indexOfPlayer].turn;
@@ -371,6 +369,14 @@ int getTurnOfPlayer(int indexOfPlayer) {
     return navrat;
 }
 
+
+/**
+ * funkce pro zjisteni v ktere hre je hrac
+ *
+ *
+ * @param indexOfPlayer index (id) hrace v poli hracu
+ * @return index hry ve ktere je hrac
+ **/
 int getGameOfPlayer(int indexOfPlayer) {
     pthread_mutex_lock(&lock);
     int navrat = players[indexOfPlayer].game;
@@ -378,6 +384,14 @@ int getGameOfPlayer(int indexOfPlayer) {
     return navrat;
 }
 
+/**
+ * funkce co zjsiti jestli je hrac s danym id prvni hrac v hre
+ *
+ *
+ * @param id id hrace v poli hracu
+ * @param game index hry ve ktere hrac je
+ * @return bool hodnota jestli je hrac prvni, nebo druhy hrac v hre
+ **/
 bool isFirstPlayer(int id, int game) {
     pthread_mutex_lock(&lock);
     bool navrat = runningGames[game].indexOfPlayer1 == id;
@@ -385,6 +399,13 @@ bool isFirstPlayer(int id, int game) {
     return navrat;
 }
 
+/**
+ * uvolni hrace o zadenem id ze hry, pokud v nejake je
+ *
+ *
+ * @param id id hrace, ktereho uvolnujeme
+ * @return int hodnata znaci jestli se podarilo uvolnit hrace
+ **/
 int freePlayer(int id) {
     pthread_mutex_lock(&lock);
     if (players[id].state == WAITING_VALUE) {
@@ -397,6 +418,14 @@ int freePlayer(int id) {
     return SUCCESS_VALUE;
 }
 
+
+/**
+ * funkce co uvolni hru
+ *
+ *
+ * @param game index hry kterou uvolnujeme
+ * @return int cislo pokud se uvolneni podari
+ **/
 int unsetGame(int game) {
     pthread_mutex_lock(&lock);
     if (runningGames[game].indexOfPlayer1 == FREE_POSITION && runningGames[game].indexOfPlayer2 == FREE_POSITION) {
@@ -415,6 +444,13 @@ int unsetGame(int game) {
     return SUCCESS_VALUE;
 }
 
+/**
+ * funkce co zjisti pocet remiz v dane hre
+ *
+ *
+ * @param game id hry ve ktere chceme zjistit pocet remiz
+ * @return pocet remiz v dane hre
+ **/
 int getStalemates(int game) {
     pthread_mutex_lock(&lock);
     int navrat = runningGames[game].numberOfStalemates;
@@ -422,26 +458,14 @@ int getStalemates(int game) {
     return navrat;
 }
 
-int sendPingToAllPlayers() {
-    pthread_mutex_lock(&lock);
-    for (int i = 0; i < MAX_NUMBER_OF_PLAYERS; i = i + 1) {
-        if (players[i].state != FREE_POSITION) {
-            sendPing(players[i].clientSocket);
-        }
-    }
-    return SUCCESS_VALUE;
-}
 
-int setPingOfPlayer(int id) {
-    pthread_mutex_lock(&lock);
-    int navrat = FAILURE_VALUE;
-    if (players[id].state != FREE_POSITION) {
-        players[id].numberOfNotAnwseredPings = 0;
-        navrat = SUCCESS_VALUE;
-    }
-    pthread_mutex_unlock(&lock);
-}
-
+/**
+ * Funkce co projde pole hracu a zjisti jestli je nekym pouzito zadane jmeno
+ *
+ *
+ * @param name jmeno u ktereho zjistujem jestli je pouzito
+ * @return bool hodnota definujici jestli bylo jmeno pouzite
+ **/
 bool checkName(char *name) {
     pthread_mutex_lock(&lock);
     int i = 0;
@@ -457,6 +481,13 @@ bool checkName(char *name) {
     return navrat;
 }
 
+/**
+ * funkce co zjisti kolikrat dany klijent pingnul server
+ *
+ *
+ * @param id id hrace v poli hracu
+ * @return pocet pingu hrace
+ **/
 int getNumberOfPings(int id) {
     pthread_mutex_lock(&lock);
     int navrat = players[id].numberOfPings;
@@ -464,6 +495,13 @@ int getNumberOfPings(int id) {
     return navrat;
 }
 
+/**
+ * funkce co zjisti kolikrat server pongnul klijenta
+ *
+ *
+ * @param id id hrace v poli hracu
+ * @return pocet pongu hrace
+ **/
 int getNumberOfPongs(int id) {
     pthread_mutex_lock(&lock);
     int navrat = players[id].numberOfPongs;
@@ -471,6 +509,13 @@ int getNumberOfPongs(int id) {
     return navrat;
 }
 
+/**
+ * funkce co hraci nastavi kolikrat pingnul
+ *
+ *
+ * @param id id hrace v poli hracu
+ * @return int hodnota jestli cela funkce probehla
+ **/
 int setNumberOfPings(int id, int numberOfPings) {
     pthread_mutex_lock(&lock);
     players[id].numberOfPings = numberOfPings;
@@ -478,6 +523,13 @@ int setNumberOfPings(int id, int numberOfPings) {
     return SUCCESS_VALUE;
 }
 
+/**
+ * funkce co hraci nastavi kolikrat mu byl poslan pong
+ *
+ *
+ * @param id id hrace v poli hracu
+ * @return int hodnota jestli cela funkce probehla
+ **/
 int setNumberOfPongs(int id, int numberOfPongs) {
     pthread_mutex_lock(&lock);
     players[id].numberOfPongs = numberOfPongs;
@@ -485,11 +537,17 @@ int setNumberOfPongs(int id, int numberOfPongs) {
     return SUCCESS_VALUE;
 }
 
+/**
+ * funkce co odpoji hrace, to udela tak, ze pronuluje pozici v poli, kde je hrac
+ *
+ *
+ * @param id id hrace co je odpojovan
+ * @return int hodnota jestli cela funkce probehla
+ **/
 int disconnectPlayer(int id) {
-    //printf("Odpojuji hrace: %s\n", players[id].name);
     pthread_mutex_lock(&lock);
-    if (id != ID_NOT_GIVEN_YET) {
-        players[id].state = FREE_POSITION;
+    if (id != ID_NOT_GIVEN_YET) {//tadyto je at to nedela picoviny kdyz se klient co jeste nebyl prihlasen, kvuli tomu
+        players[id].state = FREE_POSITION; //mi to bylo vraceno na 3 pokusu
         players[id].index = FREE_POSITION;
         players[id].clientSocket = FREE_POSITION;
         players[id].turn = TURN_NOT_PICKED_YET;
@@ -503,6 +561,13 @@ int disconnectPlayer(int id) {
     return SUCCESS_VALUE;
 }
 
+/**
+ * funkce co zjisti cas, kdy byl prijat ping od klient
+ *
+ *
+ * @param id id hrace co je odpojovan
+ * @return long cislo vyjadrujici od posledniho pingu
+ **/
 int setTimeSinceLastPing(int id, long time) {
     pthread_mutex_lock(&lock);
     players[id].timeSinceLastPing = time;
@@ -510,6 +575,13 @@ int setTimeSinceLastPing(int id, long time) {
     return SUCCESS_VALUE;
 }
 
+/**
+ * funkce co odstarni hru z pole her
+ *
+ *
+ * @param id id hry
+ * @return int cislo jestli cela funkce probehl
+ **/
 int removeGame(int id) {
     pthread_mutex_lock(&lock);
     runningGames[id].indexOfPlayer1 = FREE_POSITION;
@@ -523,6 +595,14 @@ int removeGame(int id) {
 
 }
 
+/**
+ * funkce, ktera infromuje opponenta hrace pokud ma hrac v hre problem pri pripojeni
+ *
+ *
+ * @param id id hrace jehoz opponent infromujeme
+ * @param typeOfInfo typ infromace kterou chceme zdelit opponentovi
+ * @return int cislo jestli cela funkce spachan, by melo byt ale neni to tam, i forgor
+ * **/
 int infromOpponent(int id, int typeOfInfo) {
     int game = getGameOfPlayer(id);
     int opponentId = getIdOfOpponent(game, id);
@@ -549,37 +629,13 @@ int infromOpponent(int id, int typeOfInfo) {
     }
 }
 
-int setGameHalted(int game, bool halt) {
-    pthread_mutex_lock(&lock);
-    runningGames[game].gameHalted = halt;
-    pthread_mutex_unlock(&lock);
-    return SUCCESS_VALUE;
-}
-
-bool isGameHalted(int game) {
-    pthread_mutex_lock(&lock);
-    bool navrat = runningGames[game].gameHalted;
-    pthread_mutex_unlock(&lock);
-    return navrat;
-}
-
-int infromOpponentGame(int id, int game, int typeOfInfo) {
-    int opponentId = getIdOfOpponent(game, id);
-    if (typeOfInfo == CEKAM_NA_SIGNAL) {
-        char message[TYPE_ONE_MESSAGE_LENGTH] = "Mess:opponentConnectionProblems:\n";
-        sendMessage(getSocketOfPlayer(opponentId), message, TYPE_ONE_MESSAGE_LENGTH);
-    } else if (typeOfInfo == SUCCESS_VALUE) {
-        char message[TYPE_TWO_MESSAGE_LENGTH] = "Mess:opponentConnectionGood:\n";
-        sendMessage(getSocketOfPlayer(opponentId), message, TYPE_TWO_MESSAGE_LENGTH);
-    } else if (typeOfInfo == FAILURE_VALUE) {
-        char message[TYPE_TWO_MESSAGE_LENGTH] = "Mess:opponentConnectionFall:\n";
-        pthread_mutex_lock(&lock);
-        players[opponentId].state = WAITING_VALUE;
-        pthread_mutex_unlock(&lock);
-        sendMessage(getSocketOfPlayer(opponentId), message, TYPE_TWO_MESSAGE_LENGTH);
-    }
-}
-
+/**
+ * funkce, co zjsiti jestli je hrac v hre a pripadne v ktere hre je
+ *
+ *
+ * @param id id hrace jehoz hru hledame
+ * @return FAILURE_VALUE jestli hrac neni v hre, jestli je, tak je vracen index hry
+ **/
 int isInGame(int id) {
     pthread_mutex_lock(&lock);
     int navrat = FAILURE_VALUE;
@@ -592,6 +648,13 @@ int isInGame(int id) {
     return navrat;
 }
 
+/**
+ * funkce co zjsiti pripojeni hrace
+ *
+ *
+ * @param id id hrace jehoz pripojeni zjistujem
+ * @return int hodnota vyjadrujici jestli je hrac pripojen, jestli se reconnectuje, nebo jestli ma pokazene ynternety
+ **/
 int getConnectionGoodOfPlayer(int id) {
     pthread_mutex_lock(&lock);
     int navrat = players[id].connectionGood;
@@ -599,6 +662,14 @@ int getConnectionGoodOfPlayer(int id) {
     return navrat;
 }
 
+/**
+ * funkce co nastavi pripojeni hrace
+ *
+ *
+ * @param id id hrace jemuz nastavujeme spojeni
+ * @param connectionGood hodnot na kterou nastavujeme pripojeni
+ * @return int cislo jestli se spachala cela funkc
+ **/
 int setConnectionGoodOfPlayer(int id, int connectionGood) {
     pthread_mutex_lock(&lock);
     players[id].connectionGood = connectionGood;
@@ -606,26 +677,24 @@ int setConnectionGoodOfPlayer(int id, int connectionGood) {
     return SUCCESS_VALUE;
 }
 
+/**
+ * funkce na kontrolu hrace, jestli pinguje, jestli je zjisteno, ze nepinguje, je oznacen jako ze se reconnectuje,
+ * jestli je v hre, je infromovan opponent, pokud neprijima moc dlouho, tak toto https://youtu.be/inPbGaOU4_0?t=20
+ *
+ *
+ * @param id id hrace jehoz stav zjistujem
+ * @return vysledek hodnoty
+ **/
 int checkPlayer(int id) {
     int state = players[id].state;
     int navrat = NEUTRAL_VALUE;
     if (FREE_POSITION != state) {
         //slabsi povahy, zakyrte si oci to co se tady prave bude dit je opradu desivy
-        /*if (players[id].connectionGood == FAILURE_VALUE && ((players[id].numberOfPings == players[id].numberOfPongs) && ((getTimeInMili() - players[id].timeSinceLastPing) < TIME_FOR_ONE_PING))) {
-            //printf("znovu pripojuji hrace: %s", players[id].name);
-            pthread_mutex_lock(&lock);
-            players[id].connectionGood = SUCCESS_VALUE;
-            pthread_mutex_unlock(&lock);
-            if (players[id].state == IN_GAME_VALUE) {
-                infromOpponent(id, SUCCESS_VALUE);
-            }
-            navrat = SUCCESS_VALUE;
-        }*/
-        if (getConnectionGoodOfPlayer(id) == RECONNECT_VALUE && (((players[id].numberOfPings - players[id].numberOfPongs) >= MORE_PINGS) || ((getTimeInMili() - players[id].timeSinceLastPing) >= TIME_FOR_MORE_PINGS))) {
-            //printf("Hraci %s je hodne, jeho internet to jumpoval\n", players[id].name);
-            //disconnectPlayer(id);
-            //setConnection(id, false);
-            bool runningGame = !(getScoreOfFirstPlayer(players[id].game) != ROUNDS && getScoreOfSecondPlayer(players[id].game) != ROUNDS);
+        if (getConnectionGoodOfPlayer(id) == RECONNECT_VALUE
+                     && (((players[id].numberOfPings - players[id].numberOfPongs) >= MORE_PINGS)
+                     || ((getTimeInMili() - players[id].timeSinceLastPing) >= TIME_FOR_MORE_PINGS))) {
+            bool runningGame = !(getScoreOfFirstPlayer(players[id].game) != ROUNDS
+                    && getScoreOfSecondPlayer(players[id].game) != ROUNDS);
             if ((players[id].state == IN_GAME_VALUE || players[id].state == IN_GAME_WAITING_VALUE) && runningGame) {
                 infromOpponent(id, FAILURE_VALUE);
                 removeGame(players[id].game);
@@ -636,9 +705,8 @@ int checkPlayer(int id) {
             disconnectPlayer(id);
             navrat = FAILURE_VALUE;
         }
-        //if ((players[id].connectionGood == SUCCESS_VALUE && ((players[id].numberOfPings != players[id].numberOfPongs) || ((getTimeInMili() - players[id].timeSinceLastPing) >= 1010)))) {
-        if ((getConnectionGoodOfPlayer(id) == SUCCESS_VALUE && (getTimeInMili() - players[id].timeSinceLastPing) >= TIME_FOR_ONE_PING)) {
-            //printf("hrac %s ma problem s pripojenim\n", players[id].name, getTimeInMili(), players[id].timeSinceLastPing);
+        if ((getConnectionGoodOfPlayer(id) == SUCCESS_VALUE
+                    && (getTimeInMili() - players[id].timeSinceLastPing) >= TIME_FOR_ONE_PING)) {
             setConnection(id, false);
             if (players[id].state == IN_GAME_VALUE || players[id].state == IN_GAME_WAITING_VALUE) {
                 infromOpponent(id, CEKAM_NA_SIGNAL);
@@ -648,16 +716,16 @@ int checkPlayer(int id) {
             pthread_mutex_unlock(&lock);
             navrat = CEKAM_NA_SIGNAL;
         }
-    } else {
-        //int game = isInGame(id);
-        //if (game != FAILURE_VALUE && !isGameHalted(game)) {
-            //infromOpponentGame(id, game, CEKAM_NA_SIGNAL);
-            //setGameHalted(game, true);
-        //}
     }
     return navrat;
 }
 
+/**
+ * funkce co zjisti stav hrace
+ *
+ * @param id id hrace jehoz stav zjistujem
+ * @return int hodnota vyjadrujici stav hrace
+ **/
 int getStateOfPlayer(int id) {
     pthread_mutex_lock(&lock);
     int navrat = FAILURE_VALUE;
@@ -670,6 +738,14 @@ int getStateOfPlayer(int id) {
     return navrat;
 }
 
+/**
+ * funkce co nastavi hraci zadany stav
+ *
+ *
+ * @param id id hrace, kteremu nastavujeme stav
+ * @param state stav, ktary hraci nastavujeme
+ * @return int hodnota jestli cela funkce spachal
+ **/
 int setStateOfPlayer(int id, int state) {
     pthread_mutex_lock(&lock);
     players[id].state = state;
@@ -677,6 +753,14 @@ int setStateOfPlayer(int id, int state) {
     return SUCCESS_VALUE;
 }
 
+/**
+ * funkce co nastavi socket hraci, pouzito pri reconnectu
+ *
+ *
+ * @param id id hrace, kteremu nastavujeme socket
+ * @param socket socket, ktery hraci nastavujeme
+ * @return int hodnota jestli cela funkce spachal
+ **/
 int setSocket(int id, int socket) {
     pthread_mutex_lock(&lock);
     players[id].clientSocket = socket;
@@ -684,6 +768,14 @@ int setSocket(int id, int socket) {
     return SUCCESS_VALUE;
 }
 
+/**
+ * funkce co nastavi vyhrce posledniho deni hry
+ *
+ *
+ * @param game id hry kde nastavujeme viteze
+ * @param id id hrace co vyhral
+ * @return int hodnota jestli cela funkce spachal
+ **/
 int setWinnerLastRound(int game, int id) {
     pthread_mutex_lock(&lock);
     runningGames[game].winnerLastRound = id;
@@ -691,6 +783,13 @@ int setWinnerLastRound(int game, int id) {
     return SUCCESS_VALUE;
 }
 
+/**
+ * funkce co zjisti vyhrce posledniho deni hry
+ *
+ *
+ * @param game id hry kde nastavujeme viteze
+ * @return id hrace co vyhral posledni deni hry
+ **/
 int getWinnerLastRound(int game) {
     pthread_mutex_lock(&lock);
     int navrat = runningGames[game].winnerLastRound;
@@ -698,13 +797,27 @@ int getWinnerLastRound(int game) {
     return navrat;
 }
 
-int addPlayerReadyness(int game) {
+/**
+ * funkce na nastaveni kolik hracu v hre je ready
+ *
+ *
+ * @param game id hry, kde nastavujeme pocet hracu co jsou ready
+ * @return int hodnota jestli cela funkce spachal
+ **/
+int setPlayerReadyness(int game) {
     pthread_mutex_lock(&lock);
     runningGames[game].numberOfReadyPlayers = runningGames[game].numberOfReadyPlayers + 1;
     pthread_mutex_unlock(&lock);
     return SUCCESS_VALUE;
 }
 
+/**
+ * funkce na ziskani kolik hracu v hre je ready
+ *
+ *
+ * @param game id hry, kde zjistujem pocet hracu co jsou ready
+ * @return int cislo pocet hracu co jsou ready
+ **/
 int getPlayerReadyness(int game) {
     pthread_mutex_lock(&lock);
     int navrat = runningGames[game].numberOfReadyPlayers;
@@ -712,6 +825,13 @@ int getPlayerReadyness(int game) {
     return navrat;
 }
 
+/**
+ * funkce na resetovani poctu hracu v hre co je ready
+ *
+ *
+ * @param game id hry, kde resetujeme pocet hracu co jsou ready
+ * @return int hodnota jestli cela funkce spachal
+ **/
 int resetPlayerReadyness(int game) {
     pthread_mutex_lock(&lock);
     runningGames[game].numberOfReadyPlayers = 0;
