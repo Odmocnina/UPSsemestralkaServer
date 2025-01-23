@@ -75,6 +75,16 @@ int handleSpock(int firstPlayerTurn) {
 }
 
 
+
+
+/**
+ * funkce na zjsiteni vysledku hry ze dvou tahu
+ *
+ *
+ * @param firstPlayerTurn tah prvniho hrace
+ * @param secondPlayerTurn tah druheho hrace
+ * @return vysledek hry
+ **/
 int resultOfGameRound(int firstPlayerTurn, int secondPlayerTurn) {
     int navrat = FAILURE_VALUE;
     if (firstPlayerTurn == secondPlayerTurn) {
@@ -94,6 +104,14 @@ int resultOfGameRound(int firstPlayerTurn, int secondPlayerTurn) {
 }
 
 
+/**
+ * na smasotantou oblosuhu hry kdyz oba hraci zvoli svuj tah
+ *
+ *
+ * @param indexOfGame index hry, kterou vyhodnocujeme
+ * @param messageForFirstPlayer zprv pro prvniho hrace
+ * @param messageForSecondPlayer zprv pro druheho hrace
+ **/
 void handleGame(int indexOfGame, char *messageForFirstPlayer, char *messageForSecondPlayer) {
     int indexOfFirstPlayer;
     int indexOfSecondPlayer;

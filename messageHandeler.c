@@ -199,10 +199,6 @@ bool canClientSendMessage(int idOfPlayer, int messageType) {
     return navrat;
 }
 
-//int getTurnFormMessage(char *message) {
-//    return handleTurn(message);
-//}
-
 /**
  * funkce odstraneni neviditelnych znaku co jsou na levo zpravy
  *

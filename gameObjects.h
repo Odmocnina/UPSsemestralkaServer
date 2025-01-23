@@ -10,6 +10,10 @@
 #include "constants.h"
 #include "player.h"
 
+/**
+ * struktur pro lobby (hru)
+ *
+ **/
 struct lobby {
     int indexOfPlayer1;
     int indexOfPlayer2;
