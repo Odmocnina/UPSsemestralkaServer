@@ -237,7 +237,6 @@ void addNewRunningGame(int indexFirstPlayer, int indexSecondPlayer, int *game) {
             runningGames[i].firstPlayerScore = 0;
             runningGames[i].secondPlayerScore = 0;
             runningGames[i].numberOfStalemates = 0;
-            runningGames[i].gameHalted = false;
             players[indexFirstPlayer].state = IN_GAME_VALUE;
             players[indexSecondPlayer].state = IN_GAME_VALUE;
             players[indexFirstPlayer].turn = TURN_NOT_PICKED_YET;

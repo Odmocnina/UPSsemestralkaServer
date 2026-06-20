@@ -33,6 +33,7 @@ struct threadArgs {
 /**
  * Procedura na vyresetovani integeru
  *
+ *
  * @param number ukazatel na cislo, ktere chceme vyrestovat
  * @param resetNumber cislo, na ktere chceme vyresetovat
  **/
@@ -45,6 +46,7 @@ void resetNumber(int *number, int resetNumber) {
 
 /**
  * Funkce na posilani zprav klientovi pres socket
+ *
  *
  * @param socket socket kam chceme zpravu poslat
  * @param message char * ve kterem je zprava co chceme poslat
@@ -106,6 +108,7 @@ void *checkPlayers() {
 /**
  * Funkce na zpracovanavani zprav od uzivatele ktery se pripojil, tato metoda je metda, ktrera se da do vlakna, kdyz se
  * klient pripoji
+ *
  *
  * @param args ukazatel na strukturu s argumenty pro vlakno
  * @return NULL po prvedeni cele funkce

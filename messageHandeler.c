@@ -16,7 +16,6 @@
 #include "gameObjects.h"
 #include "game.h"
 #include "postMan.h"
-
 /**
  * funkce na obsaouzeni zpravy typu logout
  *
@@ -30,6 +29,7 @@ int handlelogout(char *message) {
     removePlayerFromGamersArray(atoi(token));
     return atoi(token);
 }
+
 
 /**
  * funkce na vytovreni zpravy co bude poslana jako odpoved na zpravu co prisla od klient, zprava je vetsinou totozn, do
@@ -95,6 +95,14 @@ int stringToInt(char *str, int *result) {
     return SUCCESS_VALUE; // Úspěšná konverze
 }
 
+/**
+ * funkce obsluhujici zrvu login
+ *
+ *
+ * @param message zpv s loginem
+ * @param clientSocket socke, kde zpv prisel
+ * @return int jesli se login vydril
+ **/
 int handleLogin(char *message, int clientSocket) {
     strtok(message, ":");
     strtok(NULL, ":");
@@ -120,10 +128,27 @@ int handleLogin(char *message, int clientSocket) {
     return navrat;
 }
 
+/**
+ * funkce kontrolujici jestli je id zadane v reconnect zprave ok, jestli je v rozmezi pole hracu, jestli se zadane id
+ * reconnectuje
+ *
+ *
+ * @param number cislo ktere kontrlujem jestli je oki na reconnect
+ * @return bool jestli hrac s timto id se muze poslat zpravu reconnect
+ **/
 bool isIdOk(int number) {
     return number >= 0 && number < MAX_NUMBER_OF_PLAYERS && getConnectionGoodOfPlayer(number) == RECONNECT_VALUE;
 }
 
+
+/**
+ * funkce na obsouzeni zprvy reconnect
+ *
+ *
+ * @param message reconnect zprv
+ * @param clientSocket socket kde prisel reconnect
+ * @return int jestli je reconnect OK
+ **/
 int handleReconnect(char *message, int clientSocket) {
     strtok(message, ":");
     strtok(NULL, ":");
@@ -140,10 +165,27 @@ int handleReconnect(char *message, int clientSocket) {
     return navrat;
 }
 
+
+
+
+/**
+ * funkce zjisujici jesli je cislo jedno z cisel v hre oznacujici th
+ *
+ *
+ * @param number cislo kere konrolujeme
+ * @return bool jesli je cislo OK
+ **/
 bool isNumberOk(int number) {
     return number == ROCK_VALUE || number == SCISSORS_VALUE || number == PAPER_VALUE || number == LIZARD_VALUE || number == SPOCK_VALUE;
 }
 
+/**
+ * funkce na obsouzeni tahu
+ *
+ *
+ * @param message, zprv s tahem
+ * @param id id hrace co zprvu posll
+ **/
 int handleTurn(char *message, int id) {
     strtok(message, ":");
     strtok(NULL, ":");
@@ -158,13 +200,29 @@ int handleTurn(char *message, int id) {
     return navrat;
 }
 
+
+/**
+ * funkce na zjisteni casu v milisekundch, pouzito reconnectem
+ *
+ *
+ * @return long cs v milisekundch
+ **/
 long getTimeInMili() {
     struct timeval tp;
 
     gettimeofday(&tp, NULL);
     return tp.tv_sec * 1000 + tp.tv_usec / 1000;
 }
-
+/**
+ * funkce vyhdonocujici jestli klient muze zpravu poslt
+ *
+ *
+ *
+ *
+ * @param idOfPlayer id hrace, co zprvu posll
+ * @param messageType typ zpvy
+ * @return bool jestli muze zpvu poslt
+ **/
 bool canClientSendMessage(int idOfPlayer, int messageType) {
     bool navrat = false;
     if (idOfPlayer != ID_NOT_GIVEN_YET && getStateOfPlayer(idOfPlayer) == WAITING_VALUE) {
@@ -250,10 +308,6 @@ int countChar(const char *str, char character) {
 bool isThereCurrectNumber(char *message, int number) {
     return countChar(message, ':') == number;
 }
-
-//int handleReconnect(int id) {
-
-//}
 
 /**
  * funkce na jednoduche oblsouzeni zpravy, precte zpravu zpracu je ji a naplni buffer pro zpravu zptky, funkce take

@@ -1,3 +1,0 @@
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/cmake-build-debug/CMakeFiles/server.dir
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/cmake-build-debug/CMakeFiles/edit_cache.dir
-/mnt/c/Users/Michael/Documents/Skola/UPS/SemPrac/server/cmake-build-debug/CMakeFiles/rebuild_cache.dir

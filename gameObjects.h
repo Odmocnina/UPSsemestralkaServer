@@ -21,7 +21,6 @@ struct lobby {
     int firstPlayerScore;
     int secondPlayerScore;
     int numberOfStalemates;
-    bool gameHalted; // pro krizkovy reconnect
     int winnerLastRound;
     int numberOfReadyPlayers;
 };
